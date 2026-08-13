@@ -72,11 +72,23 @@ Mietwagen, sonst `Train`, `Airplane`, `Taxi`, `Bus`, `Public Transport`), `from`
 Weicht das Ergebnis des Systems von deiner Erwartung ab: **das System hat recht**, oder eine
 Eingabe ist falsch. Prüfe die Eingaben, nicht die Rechnung.
 
+## Wie du auf die Daten zugreifst
+
+**Über die Dokument-API, nie an ihr vorbei.** Lesen mit `get_list` / `get_value` / `get_doc`,
+schreiben mit `insert` / `save` / `set_value` — damit laufen Validierung, Berechnung und
+Berechtigungen mit. Kein direktes SQL, um Werte zu setzen, und keine Abfrage, die
+Berechtigungen umgeht: Was ein Nutzer nicht sehen darf, darfst du für ihn nicht lesen.
+
+SQL nur lesend und nur, wenn eine Auswertung anders nicht geht — nie als Weg, eine Validierung
+oder eine Rechteprüfung zu umgehen. Die Beträge entstehen im Lifecycle des Dokuments
+(`before_save`); wer sie per SQL setzt, umgeht genau die Logik, die die Abrechnung korrekt macht.
+
 ## Verboten
 
 - Beträge schätzen, runden oder nachrechnen.
 - Kilometer erfinden.
 - Submitten, bezahlen, oder einen Expense Claim von Hand anlegen.
+- Felder per SQL schreiben oder Berechtigungen umgehen.
 - Eine zweite Reise für einen Tag anlegen, für den schon eine existiert — vorher `Business Trip`
   nach `employee` und Datum prüfen und im Zweifel fragen.
 
