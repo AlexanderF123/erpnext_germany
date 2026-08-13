@@ -265,6 +265,39 @@ Verhalten:
 
 Tests decken Richtung, Groß-/Kleinschreibung, Gesellschaftsvorrang, Duplikate und Deaktivierung ab.
 
+### Fahrzeuge je Mitarbeiter (`Employee Vehicle`)
+
+Wer zwei Privatwagen hat, konnte bisher nur „Car (private)" ankreuzen — welches Auto gefahren
+wurde, stand nirgends. Der DocType hält die Fahrzeuge eines Mitarbeiters fest
+(`vehicle_name`, `license_plate`, `ownership`, `vehicle_class`, `is_default`), die Fahrt
+verweist über `employee_vehicle` auf eines davon.
+
+Die Auswahl ist nicht nur Dokumentation: Der Satz hängt daran. Motorräder und andere
+motorbetriebene Fahrzeuge werden mit 0,20 €/km statt 0,30 €/km erstattet
+(`Business Trip Settings.mileage_allowance_other_motor_vehicle`; ohne Angabe gilt der Pkw-Satz,
+damit bestehende Reisen unverändert rechnen).
+
+Drei Fälle, die stillschweigend falsch abgerechnet hätten, brechen jetzt ab: ein Fahrzeug eines
+anderen Mitarbeiters, ein deaktiviertes Fahrzeug, und ein Firmen- oder Mietwagen, für den
+„Car (private)" gewählt wurde. Wer nur ein Fahrzeug hat, muss nichts auswählen — es wird
+vorgeschlagen. Die Belegzeile im Expense Claim nennt das Fahrzeug statt nur „Privatauto".
+
+### Konfiguration im Zielsystem (bereits angelegt)
+
+| Was | Wert |
+|---|---|
+| Expense Claim Type `Verpflegungsmehraufwand` | Konto 6664 (Arbeitnehmer) bzw. 6674 (Unternehmer) je Gesellschaft |
+| Expense Claim Type `Kilometerpauschale` | Konto 6663 bzw. 6673 je Gesellschaft |
+| `Business Trip Settings` | 0,30 €/km, beide Expense Claim Types verknüpft |
+| Konto 3720 „Verb. aus Lohn und Gehalt" | `account_type` = Payable (Voraussetzung für den Expense Claim) |
+| Company-Vorgabe `default_expense_claim_payable_account` | 3720, für axessio Unternehmensgruppe, Hausverwaltung und Hotel Baden-Baden |
+| Mitarbeiter Alexander Finkeißen | `expense_approver` gesetzt |
+
+Bewusst **nicht** gesetzt: das Gegenkonto für die Unternehmer-Gesellschaften
+(*Christina Finkeißen Rechtsanwältin*, *MPF Immobilien KG*). Dort gehört die Erstattung nicht auf
+ein Lohnkonto, sondern auf ein Privat-/Gesellschafterverrechnungskonto — das ist eine
+Entscheidung für den Steuerberater (Abschnitt 10).
+
 ---
 
 ## 8. Umsetzung in Stufen
@@ -310,7 +343,58 @@ Buchhalter · Feature-Datensatz vor Baubeginn · Deploy dienstags, davor Dry-Run
 
 ---
 
-## 9. Offene Punkte
+## 9. Ablauf der Abrechnung und Auszahlung
+
+### 9.1 Die Kette vom Satz bis zum Geld
+
+| # | Schritt | Wer | Ergebnis |
+|---|---|---|---|
+| 1 | Reise beschreiben, Rückfragen beantworten | Reisender (Chat oder Formular) | `Business Trip` als **Entwurf**, Beträge vom Server gerechnet |
+| 2 | Prüfen und **Submit** | Reisender | Status `Submitted`, Dokument unveränderbar; **automatisch** entsteht ein `Expense Claim` als Entwurf mit je einer Zeile pro Fahrt und pro Tag |
+| 3 | Genehmigen | `expense_approver` am Mitarbeiter | `approval_status` = Approved |
+| 4 | Expense Claim **Submit** | Buchhaltung | Buchung: Reisekostenkonto (6664 / 6663 bzw. 6674 / 6673) **an** 3720 Verb. aus Lohn und Gehalt, Party = Mitarbeiter |
+| 5 | **Auszahlung** | Buchhaltung | Der Saldo auf 3720 wird ausgeglichen (Wege siehe unten) |
+| 6 | Rückmeldung | Buchhaltung | `Business Trip.status` = `Paid` |
+
+Erst Schritt 4 bucht. Alles davor ist reversibel — deshalb darf die KI bis Schritt 1 arbeiten
+und keinen Schritt weiter.
+
+### 9.2 Wie das Geld fließt — drei Wege
+
+1. **Sofortzahlung** (Bargeld, Firmenkarte): Im Expense Claim `is_paid` setzen und eine
+   Zahlungsart wählen. Die Zahlung wird mit derselben Buchung erledigt, es entsteht kein
+   offener Saldo. Passt für Kleinbeträge aus der Kasse.
+2. **Payment Entry** (Standardweg): Am submitteten Expense Claim „Zahlung erstellen"; es
+   entsteht ein Payment Entry mit Party Type *Employee*, der 3720 ausgleicht. Ein Schritt von
+   Hand, dafür ohne weitere Infrastruktur.
+3. **Sammelüberweisung über die Bank** — das ist der Automatismus: Die installierte
+   *banking*-App bringt `SEPA Payment Order` mit; die Kindtabelle `SEPA Payment` verweist über
+   `reference_doctype` / `reference_name` direkt auf den Expense Claim. Mehrere Erstattungen
+   laufen in einer Order zur Bank (Download oder EBICS), der Stand steht am Expense Claim im
+   Feld `sepa_payment_order_status` (Draft → Approved → Transmitted). Alternativ übernimmt der
+   hauseigene `axessio Zahlungsauftrag` (aktiver Freigabe-Workflow) oder *kefiya* per FinTS.
+
+**Heute noch nicht einsatzbereit:** Es existiert noch keine einzige SEPA Payment Order, und am
+Mitarbeiter *Alexander Finkeißen* ist keine IBAN hinterlegt. Ohne IBAN kann kein Weg 3 laufen.
+Für die erste Abrechnung genügt Weg 2; Weg 3 sollte einmal mit einem Kleinbetrag getestet
+werden, bevor er Routine wird.
+
+**Grenze der Automatisierung:** Eine Auszahlung ist eine Geldbewegung und damit Risikoklasse C.
+Die KI erzeugt niemals Zahlungen, und auch der Automatismus bleibt bei „vorbereiten, Mensch gibt
+frei" — das entspricht dem bestehenden Freigabe-Gate für ausgehende Zahlungen.
+
+### 9.3 Wer darf was
+
+| Rolle | Darf |
+|---|---|
+| Mitarbeiter (`Employee`) | Eigene Reise erfassen, eigene Fahrzeuge pflegen, eigene Reise einreichen |
+| `expense_approver` | Erstattung genehmigen oder ablehnen |
+| Buchhaltung (`Accounts User`) | Expense Claim buchen, Zahlung auslösen, Strecken pflegen |
+| KI (beide Kanäle) | Entwürfe anlegen und ergänzen — **nie** submitten, genehmigen oder zahlen |
+
+---
+
+## 10. Offene Punkte
 
 | # | Punkt |
 |---|---|
