@@ -9,7 +9,7 @@ Stand 15.08.2026. Zielsystem: axessio.de (Frappe Cloud, v15).
 | Expense Claim Types `Verpflegungsmehraufwand` (6664 / 6674) und `Kilometerpauschale` (6663 / 6673), je Gesellschaft | angelegt |
 | `Business Trip Settings`: 0,30 €/km, beide Typen verknüpft | gesetzt |
 | Konto 3720 als *Payable* markiert, als Verbindlichkeitskonto je Gesellschaft hinterlegt (axessio Unternehmensgruppe, Hausverwaltung, Hotel Baden-Baden) | gesetzt |
-| Mitarbeiterdatensätze: Alexander und Maximilian bei allen 17 Gesellschaften, Christina bei ihrer Kanzlei | angelegt |
+| Mitarbeiterdatensätze: Alexander, Maximilian, Christina und Philipp bei **allen 17 Gesellschaften** (68 Datensätze) | angelegt |
 | Bezeichnungen `Inhaber` / `Mitarbeiter` (Stiftungen) | angelegt |
 | Mitarbeiter-Benennung auf Nummernkreis `HR-EMP-` umgestellt | erledigt |
 | Ask-ALYF-Skill „axessio – Reisekosten & Spesenabrechnung" | angelegt |
@@ -43,14 +43,15 @@ einzelnen Mitarbeiterdatensatz):
 
 | Person | Fahrzeug | Kennzeichen | Eigentum | Art |
 |---|---|---|---|---|
-| Alexander Finkeißen | (Bezeichnung ergänzen) | HD-AX90 | Privat | Pkw |
-| Alexander Finkeißen | (Bezeichnung ergänzen) | HD-PJ70 | Privat | Pkw |
-| Alexander Finkeißen | (Bezeichnung ergänzen) | HD-XK88 | Privat | Pkw |
-| Christina Finkeißen | dieselben drei Kennzeichen | | Privat | Pkw |
+| Alexander Finkeißen | Jaguar XF Sportbrake | HD-AX90 | Privat | Pkw |
+| Alexander Finkeißen | BMW 120 | HD-PJ70 | Privat | Pkw |
+| Alexander Finkeißen | Jaguar XKR | HD-XK88 | Privat | Pkw |
+| Christina Finkeißen | Jaguar XF Sportbrake | HD-AX90 | Privat | Pkw |
+| Christina Finkeißen | BMW 120 | HD-PJ70 | Privat | Pkw |
+| Christina Finkeißen | Jaguar XKR | HD-XK88 | Privat | Pkw |
 
-Eines davon als **Standardfahrzeug** markieren — dann fragt die Erfassung nicht jedes Mal nach.
-Sind es Motorräder oder andere motorbetriebene Fahrzeuge, die Fahrzeugart entsprechend setzen:
-davon hängt der Satz ab (0,20 statt 0,30 €/km).
+Alle sechs als Pkw — damit gilt durchgehend der Satz von 0,30 €/km. Je Person **ein**
+Standardfahrzeug markieren, sonst fragt die Erfassung bei jeder Fahrt nach, welches es war.
 
 ### 3. IBAN eintragen
 
@@ -60,38 +61,49 @@ Mitarbeiterdatensatz:
 | Person | IBAN | Bank |
 |---|---|---|
 | Alexander Finkeißen | `DE79200411110679723700` (comdirect Giro) | comdirect bank |
-| Christina Finkeißen | zu bestätigen — im System liegt **kein** comdirect-Konto auf ihren Namen | |
+| Christina Finkeißen | `DE79200411110679723700` (dasselbe comdirect-Konto) | comdirect bank |
 | Maximilian Finkeißen | `DE02670923000033108982` (Volksbank Kurpfalz) | bereits gesetzt |
 
 Die Bankbezeichnung ist bei allen neuen Datensätzen schon eingetragen; es fehlt nur die IBAN.
-Für die Erstattung genügt sie auf dem Datensatz der zahlenden Gesellschaft.
+Für die Erstattung genügt sie auf dem Datensatz der zahlenden Gesellschaft. Philipps Bankdaten
+liegen nicht im System — bei Bedarf nachtragen.
 
 ### 4. Entfernungstabelle füllen
 
-`Business Trip Distance`, Startpunkt einheitlich schreiben (Vorschlag: **„Heidelberg, Büro"**),
-Ziel = Objektname wie unten. Einzutragen ist die **einfache** Strecke; auf jede kommen laut
-Vorgabe **+7,5 km** für Parkplatzsuche.
+Startpunkt einheitlich **„Heidelberg, Büro"** (Sofienstraße 6-10, 69115 Heidelberg), Ziel = der
+Objektname. Einzutragen ist die **einfache** Strecke inklusive der 7,5 km für Parkplatzsuche.
 
-**Die Kilometer fehlen noch, und ich trage sie nicht geraten ein.** Routing-Dienste sind aus
-diesem Container nicht erreichbar (Proxy blockt Nominatim und OSRM), und eine erfundene
-Entfernung ist genau das, was diese Lösung überall sonst verhindert. Sobald die Werte vorliegen
-— aus dem Navi, aus Google Maps oder als Freigabe eines Routing-Dienstes — sind die Zeilen in
-einem Zug angelegt.
+Routing-Dienste sind aus der Entwicklungsumgebung gesperrt (Nominatim, OSRM und ADAC laufen
+alle in den Egress-Filter). Die Werte unten stammen deshalb aus veröffentlichten
+Streckenangaben zwischen den Stadtzentren, gerundet auf ganze Kilometer — das Feld `distance`
+ist ganzzahlig, die 7,5 km ergeben daher einen Rundungsschritt.
 
-Die 37 Objekte (ohne die beiden Abrechnungsgruppen und das Demo-Objekt):
+| Ziel (Stadt) | Fahrstrecke lt. Quelle | + 7,5 km | einzutragen | Objekte |
+|---|---|---|---|---|
+| Mannheim | 21 km | 28,5 | **29** | 10 Objekte (Hebelstr., Augustaanlage 13 + 50, I7, D6, A3, Kaiserring, Gluckstr., Ifflandstr., Käfertaler Str.) |
+| Ludwigshafen | 23 km | 30,5 | **31** | 12 Objekte (Knollstr. 1/3/19, Saarlandstr. 135–141, Pestalozzistr. 2–10, Garagen) |
+| Bruchsal | 37 km | 44,5 | **45** | Hildastraße 1 |
+| Darmstadt | 57 km | 64,5 | **65** | 6 Objekte (Wilhelminenstr., Karlstr., Osannstr., Magdalenenstr. 9 + 11c, Heidenreichstr.) |
+| Kirchheimbolanden | 78 km | 85,5 | **86** | Albrecht-Dürer-Str., Eisenberg Plakatwand |
+| Baden-Baden | 90 km | 97,5 | **98** | Ooser Bahnhofstraße 6 |
 
-| Stadt | Objekte |
-|---|---|
-| Heidelberg | Schloss-Wolfsbrunnenweg 62 · Lutherstraße 25a · Sofienstraße · Bergstraße 29b · Kranichweg 35-37 |
-| Darmstadt | Wilhelminenstraße 50 · Karlstraße 85 · Osannstraße 4 · Magdalenenstraße 9/9a/9b · Magdalenenstraße 11c · Heidenreichstraße 40+40A |
-| Mannheim | Hebelstraße 1 · Augustaanlage 50 · I7, 15 · D6, 2 · A3, 2 · Kaiserring 8-16 · Gluckstraße 6 · Augustaanlage 13 · Ifflandstraße 2-6 · Käfertaler Straße 39-41 |
-| Ludwigshafen | Knollstraße 1 · Knollstraße 3 · Knollstraße 19 · Saarlandstraße 135 · 137 · 139 · 141 · Pestalozzistraße 2 · 6 · 8 · 10 · Garagen/Stellplätze |
-| Kirchheimbolanden | Albrecht-Dürer-Straße 14-16 · Eisenberg Plakatwand |
-| Bruchsal | Hildastraße 1 |
-| Baden-Baden | Ooser Bahnhofstraße 6 |
+Quellen: luftlinie.org, ADAC Maps, entfernungsrechnerkm.com, routenplaner.cc (abgerufen
+15.08.2026). Die Angaben streuen je Quelle um ein bis drei Kilometer; genommen wurde jeweils
+der mittlere Wert.
 
-Innerhalb einer Stadt unterscheiden sich die Strecken oft nur um ein bis zwei Kilometer — ein
-Wert je Stadt plus Korrektur bei Ausreißern reicht in der Praxis, solange er belegbar ist.
+**Heidelberg innerorts — hier fehlt eine belastbare Quelle:**
+
+| Objekt | Vorschlag | Anmerkung |
+|---|---|---|
+| HD Sofienstraße (H-103) | — | Das ist das Büro selbst; eine Fahrt dorthin ist keine Dienstreise |
+| HD Lutherstraße 25a (H-102) | 2 + 7,5 → **10** | geschätzt |
+| HD Bergstraße 29b (H-104) | 3 + 7,5 → **11** | geschätzt |
+| HD Schloss-Wolfsbrunnenweg 62 (H-101) | 4 + 7,5 → **12** | geschätzt |
+| HD Kranichweg 35-37 (H-105) | 6 + 7,5 → **14** | geschätzt |
+
+Diese vier sind **Schätzungen**, keine recherchierten Werte — innerorts liefert keine
+Streckendatenbank Haus-zu-Haus-Werte. Bitte einmal mit dem Navi gegenprüfen; danach stehen sie
+dauerhaft.
 
 ### 5. Testreise
 
