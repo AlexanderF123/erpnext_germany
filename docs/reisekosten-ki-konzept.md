@@ -156,7 +156,7 @@ wenn das Modell wechselt. Die Prompt-Bausteine beschreiben nur die Bedienung, ni
 Weil die Erfassung ein eigener Datensatz ist, dürfen Rückfragen tagelang offen bleiben —
 die Anforderung „zunächst speichern" ist damit erfüllt.
 
-### 4.4 Business Trip Intake (neuer DocType, geplant)
+### 4.4 Business Trip Intake (gebaut)
 
 | Feld | Zweck |
 |---|---|
@@ -282,6 +282,31 @@ anderen Mitarbeiters, ein deaktiviertes Fahrzeug, und ein Firmen- oder Mietwagen
 „Car (private)" gewählt wurde. Wer nur ein Fahrzeug hat, muss nichts auswählen — es wird
 vorgeschlagen. Die Belegzeile im Expense Claim nennt das Fahrzeug statt nur „Privatauto".
 
+### Erfassung mit Rückfragen (`Business Trip Intake`)
+
+Der Eintrittspunkt für beide Kanäle. Die KI legt einen Datensatz mit den Fakten an, die sie aus
+dem Satz ziehen konnte — mehr nicht. Beim Speichern passiert dreierlei:
+
+* **Ableiten, was ableitbar ist**: Mitarbeiter aus dem angemeldeten Benutzer, Gesellschaft aus
+  dem Mitarbeiter, Region aus dem Ziel (sonst die Standard-Region aus den Einstellungen, was in
+  der Vorschau ausdrücklich vermerkt wird), Kilometer aus der Entfernungstabelle, das Fahrzeug,
+  wenn es nur eines gibt oder eines als Standard markiert ist.
+* **Fragen, was fehlt**: `open_questions` enthält je Zeile `feldname: Frage`. Beide Kanäle
+  stellen damit dieselben Fragen, ohne dass der Katalog im Prompt steht. Eine unbeantwortete
+  Mahlzeitenfrage wird nie stillschweigend zum „Nein" — dafür gibt es `meals_confirmed`.
+* **Rechnen lassen, ohne zu speichern**: `calculation_preview` entsteht, indem eine
+  Dienstreise im Arbeitsspeicher gebaut und die echte Berechnung darauf ausgeführt wird.
+  Was in der Vorschau steht, steht später auch im Beleg.
+
+Tagesableitung: eine Zeile je Kalendertag, Eintagesreise mit den tatsächlichen Uhrzeiten,
+mehrtägig mit An-/Abreisetag und vollen Zwischentagen — und **alle vier Mahlzeiten-Flags immer
+explizit gesetzt**, weil die Vorgabewerte sonst 20 % kürzen. Fahrten entstehen als Hin- und
+Rückfahrt mit der einfachen Strecke je Zeile.
+
+Erzeugt wird die Dienstreise erst, wenn keine Frage mehr offen ist: Häkchen `create_trip` (das
+funktioniert auch im Chat, der keine Methode aufrufen kann) oder Knopf im Formular. Es entsteht
+immer nur ein **Entwurf** — submitten bleibt beim Menschen.
+
 ### Konfiguration im Zielsystem (bereits angelegt)
 
 | Was | Wert |
@@ -311,9 +336,10 @@ jeder Submit fehl.**
 **Stufe 1 — Entfernungstabelle (fertig in diesem Branch)**
 Nach dem Deploy: die regelmäßigen Strecken einpflegen (Büro → Baden-Baden usw.).
 
-**Stufe 2 — Intake + Generator (2–4 Tage)**
-DocType `Business Trip Intake`, Tagesableitung, explizite Kürzungsflags, Regionsauflösung,
-Rückfragen-Katalog, Prüfungen, Berechnungsvorschau, Anbindung ans Automation Run Log.
+**Stufe 2 — Intake + Generator (fertig, bis auf das Run Log)**
+DocType `Business Trip Intake` mit Tagesableitung, expliziten Kürzungsflags, Regionsauflösung,
+serverseitigem Rückfragen-Katalog, Doppelerfassungsprüfung und Berechnungsvorschau.
+Offen: Anbindung ans Automation Run Log.
 
 **Stufe 3 — Kanäle (1–2 Tage)**
 Whitelisted API mit Plan/Execute für Claude, Prompt-Baustein für Ask ALYF, End-to-End-Test

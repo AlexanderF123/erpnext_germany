@@ -18,13 +18,30 @@ und liegt erfahrungsgemäß daneben, sobald Kürzungen oder die 8-Stunden-Grenze
 
 ## Ablauf
 
-1. **Fakten aus dem Satz ziehen**: Datum, Uhrzeiten, Ziel, Anlass.
-2. **Fehlendes gebündelt erfragen** (Tabelle unten). Nichts raten, nichts mit Platzhaltern füllen.
-3. **`Business Trip` als Entwurf anlegen** — nie direkt submitten.
-4. **Ergebnis melden**: Link auf das Dokument plus die vom System berechneten Summen.
-5. Der Submit ist Sache des Menschen; er erzeugt automatisch den Expense Claim.
+Der Weg führt über **`Business Trip Intake`** — einen Erfassungsdatensatz, der die Rückfragen
+selbst stellt. Du musst den Fragenkatalog nicht auswendig können; der Server sagt dir, was fehlt.
 
-## Pflicht-Rückfragen
+1. **Fakten aus dem Satz ziehen** und einen `Business Trip Intake` anlegen. Was du nicht weißt,
+   lässt du leer — auf keinen Fall raten. Den Originalsatz in `raw_input` mitgeben.
+2. **`open_questions` lesen.** Jede Zeile hat die Form `feldname: Frage`. Stelle genau diese
+   Fragen, gebündelt in einer Nachricht.
+3. **Antworten in die genannten Felder eintragen** und speichern. Der Server rechnet neu und
+   aktualisiert `open_questions`, `calculation_preview` und `status`.
+4. Sobald `status` = `Ready`: **`calculation_preview` vorlesen** — das sind die vom Server
+   berechneten Beträge — und die Bestätigung des Nutzers einholen.
+5. **`create_trip` auf 1 setzen und speichern.** Damit entsteht der `Business Trip` als
+   **Entwurf**; sein Name steht danach im Feld `business_trip`. (Außerhalb des Desk geht auch
+   `create_business_trip_from_intake(intake)`.)
+6. Der Submit ist Sache des Menschen; er erzeugt automatisch den Expense Claim.
+
+Ein „Mahlzeiten"-Häkchen, das niemand gesetzt hat, ist keine Antwort: `meals_confirmed` setzt du
+erst, **nachdem** du gefragt hast. Solange es fehlt, fragt die Erfassung weiter — genau so ist es
+gemeint.
+
+Ist `Business Trip Intake` in der Instanz nicht vorhanden (Modul noch nicht installiert), legst du
+ersatzweise direkt einen `Business Trip` an und arbeitest den Fragenkatalog unten selbst ab.
+
+## Pflicht-Rückfragen (was die Erfassung von sich aus fragt)
 
 | Wenn unklar | Frage | Warum |
 |---|---|---|
