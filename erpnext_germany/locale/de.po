@@ -1147,3 +1147,503 @@ msgstr "{} Ungültig"
 msgid "{} Open"
 msgstr "{} Offen"
 
+
+#. Name of a DocType
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
+msgid "Business Trip Distance"
+msgstr "Reisestrecke"
+
+#. Name of a DocType
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Employee Vehicle"
+msgstr "Fahrzeug des Mitarbeiters"
+
+#. Label of a Data field in DocType 'Business Trip Distance'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
+msgid "From Location"
+msgstr "Von"
+
+#. Label of a Data field in DocType 'Business Trip Distance'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
+msgid "To Location"
+msgstr "Nach"
+
+#. Description of the 'From Location' (Data) field in DocType 'Business Trip
+#. Distance'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
+msgid "Starting point as it is written in the journey, e.g. <i>Heidelberg, Büro</i>."
+msgstr "Startpunkt, so geschrieben wie in der Fahrt, z.B. <i>Heidelberg, Büro</i>."
+
+#. Description of the 'To Location' (Data) field in DocType 'Business Trip
+#. Distance'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
+msgid "Destination as it is written in the journey, e.g. <i>Baden-Baden</i>."
+msgstr "Ziel, so geschrieben wie in der Fahrt, z.B. <i>Baden-Baden</i>."
+
+#. Description of the 'Distance' (Int) field in DocType 'Business Trip Distance'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
+msgid ""
+"One way, in kilometers. A return journey is entered as two rows in the "
+"Business Trip."
+msgstr ""
+"Einfache Strecke in Kilometern. Hin- und Rückfahrt werden als zwei Zeilen in "
+"der Dienstreise erfasst."
+
+#. Label of a Check field in DocType 'Business Trip Distance'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
+msgid "Both Directions"
+msgstr "Beide Richtungen"
+
+#. Description of the 'Both Directions' (Check) field in DocType 'Business Trip
+#. Distance'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
+msgid "Also use this distance for the opposite direction."
+msgstr "Diese Strecke auch für die Gegenrichtung verwenden."
+
+#. Description of the 'Company' (Link) field in DocType 'Business Trip
+#. Distance'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
+msgid "Leave empty to make this distance available to all companies."
+msgstr "Leer lassen, damit die Strecke für alle Gesellschaften gilt."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.py
+msgid "Distance must be greater than zero."
+msgstr "Die Entfernung muss größer als null sein."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.py
+msgid "From and To must be different."
+msgstr "Von und Nach müssen unterschiedlich sein."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.py
+msgid "{0} already covers this route."
+msgstr "{0} deckt diese Strecke bereits ab."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.py
+msgid "Duplicate Distance"
+msgstr "Doppelte Strecke"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.js
+msgid "Distance filled in from {0}"
+msgstr "Entfernung übernommen aus {0}"
+
+#. Label of a Data field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Vehicle Name"
+msgstr "Fahrzeugname"
+
+#. Description of the 'Vehicle Name' (Data) field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "How you call this vehicle, e.g. <i>VW Passat</i>."
+msgstr "Wie Sie dieses Fahrzeug nennen, z.B. <i>VW Passat</i>."
+
+#. Label of a Data field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "License Plate"
+msgstr "Kennzeichen"
+
+#. Label of a Select field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Ownership"
+msgstr "Eigentum"
+
+#. Description of the 'Ownership' (Select) field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Only privately owned vehicles are eligible for a mileage allowance."
+msgstr "Nur für private Fahrzeuge wird eine Kilometerpauschale gezahlt."
+
+#. Option for the 'Ownership' (Select) field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Private"
+msgstr "Privat"
+
+#. Option for the 'Ownership' (Select) field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Company Car"
+msgstr "Firmenwagen"
+
+#. Option for the 'Ownership' (Select) field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Rental"
+msgstr "Mietwagen"
+
+#. Label of a Select field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Vehicle Class"
+msgstr "Fahrzeugart"
+
+#. Description of the 'Vehicle Class' (Select) field in DocType 'Employee
+#. Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Motorcycles and other motor vehicles are reimbursed at a lower rate than cars."
+msgstr ""
+"Für Motorräder und andere motorbetriebene Fahrzeuge gilt ein niedrigerer Satz "
+"als für Pkw."
+
+#. Option for the 'Vehicle Class' (Select) field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Motorcycle"
+msgstr "Motorrad"
+
+#. Option for the 'Vehicle Class' (Select) field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Other Motor Vehicle"
+msgstr "Anderes motorbetriebenes Fahrzeug"
+
+#. Label of a Link field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Fleet Vehicle"
+msgstr "Fahrzeug aus dem Fuhrpark"
+
+#. Description of the 'Fleet Vehicle' (Link) field in DocType 'Employee
+#. Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "The fleet record, if this vehicle belongs to the company."
+msgstr "Der Fuhrpark-Datensatz, falls das Fahrzeug der Gesellschaft gehört."
+
+#. Label of a Check field in DocType 'Employee Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Default Vehicle"
+msgstr "Standardfahrzeug"
+
+#. Description of the 'Default Vehicle' (Check) field in DocType 'Employee
+#. Vehicle'
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
+msgid "Proposed first when a journey is entered."
+msgstr "Wird bei der Erfassung einer Fahrt zuerst vorgeschlagen."
+
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.py
+msgid "{0} is already the default vehicle of this employee."
+msgstr "{0} ist bereits das Standardfahrzeug dieses Mitarbeiters."
+
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.py
+msgid "Duplicate Default Vehicle"
+msgstr "Doppeltes Standardfahrzeug"
+
+#. Label of a Link field in DocType 'Business Trip Journey'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_journey/business_trip_journey.json
+msgid "Vehicle"
+msgstr "Fahrzeug"
+
+#. Description of the 'Vehicle' (Link) field in DocType 'Business Trip Journey'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_journey/business_trip_journey.json
+msgid "Which of the employee's vehicles was driven. Determines the rate per kilometer."
+msgstr ""
+"Welches Fahrzeug des Mitarbeiters gefahren wurde. Bestimmt den Satz je "
+"Kilometer."
+
+#. Label of a Currency field in DocType 'Business Trip Settings'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_settings/business_trip_settings.json
+msgid "Mileage Allowance for Other Motor Vehicles"
+msgstr "Kilometerpauschale für andere motorbetriebene Fahrzeuge"
+
+#. Description of the 'Mileage Allowance for Other Motor Vehicles' (Currency)
+#. field in DocType 'Business Trip Settings'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_settings/business_trip_settings.json
+msgid ""
+"Rate for motorcycles and other motor vehicles, e.g. 0.20€/km. Falls back to "
+"the <i>Mileage Allowance</i> if left empty."
+msgstr ""
+"Satz für Motorräder und andere motorbetriebene Fahrzeuge, z.B. 0,20€/km. "
+"Ohne Angabe gilt die <i>Kilometerpauschale</i>."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
+msgid "Row {0}: {1} does not belong to {2}."
+msgstr "Zeile {0}: {1} gehört nicht zu {2}."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
+msgid "Wrong Vehicle"
+msgstr "Falsches Fahrzeug"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
+msgid "Row {0}: {1} is disabled."
+msgstr "Zeile {0}: {1} ist deaktiviert."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
+msgid "Disabled Vehicle"
+msgstr "Deaktiviertes Fahrzeug"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
+msgid "Row {0}: {1} is not a private vehicle, so no mileage allowance can be paid."
+msgstr ""
+"Zeile {0}: {1} ist kein privates Fahrzeug, daher kann keine "
+"Kilometerpauschale gezahlt werden."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
+msgid "No Mileage Allowance"
+msgstr "Keine Kilometerpauschale"
+
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.py
+msgid "You can only maintain your own vehicles."
+msgstr "Sie können nur Ihre eigenen Fahrzeuge pflegen."
+
+#: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.py
+msgid "Not Your Employee"
+msgstr "Nicht Ihr Mitarbeiter"
+
+#. Name of a DocType
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Business Trip Intake"
+msgstr "Reisekosten-Erfassung"
+
+#. Label of a Small Text field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Original Wording"
+msgstr "Originalwortlaut"
+
+#. Description of the 'Original Wording' (Small Text) field in DocType
+#. 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "What the traveller said, word for word. Kept for traceability only."
+msgstr "Was der Reisende gesagt hat, wörtlich. Dient nur der Nachvollziehbarkeit."
+
+#. Label of a Data field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Purpose"
+msgstr "Anlass"
+
+#. Description of the 'Purpose' (Data) field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Reason for the trip, e.g. <i>Bauvorhaben Baden-Baden</i>. Required for tax purposes."
+msgstr "Anlass der Reise, z.B. <i>Bauvorhaben Baden-Baden</i>. Steuerlich erforderlich."
+
+#. Label of a Datetime field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Departure"
+msgstr "Abfahrt"
+
+#. Label of a Datetime field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Return"
+msgstr "Rückkehr"
+
+#. Label of a Data field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Origin"
+msgstr "Startort"
+
+#. Label of a Data field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Destination"
+msgstr "Ziel"
+
+#. Label of a Check field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Return Journey"
+msgstr "Rückfahrt"
+
+#. Description of the 'Return Journey' (Check) field in DocType 'Business Trip
+#. Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Create a second journey for the way back."
+msgstr "Eine zweite Fahrt für den Rückweg anlegen."
+
+#. Label of a Check field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Meals Confirmed"
+msgstr "Mahlzeiten bestätigt"
+
+#. Description of the 'Meals Confirmed' (Check) field in DocType 'Business Trip
+#. Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid ""
+"Set once the traveller has been asked about meals. Without it, the intake keeps asking -- an "
+"unanswered question must not silently become a \"no\"."
+msgstr ""
+"Setzen, sobald nach gestellten Mahlzeiten gefragt wurde. Ohne dieses Häkchen fragt die "
+"Erfassung weiter -- eine unbeantwortete Frage darf nicht stillschweigend zum \"Nein\" werden."
+
+#. Label of a Section Break in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Meals and Accommodation"
+msgstr "Mahlzeiten und Übernachtung"
+
+#. Label of a Section Break in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Cost Assignment"
+msgstr "Kostenzuordnung"
+
+#. Label of a Small Text field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Open Questions"
+msgstr "Offene Rückfragen"
+
+#. Description of the 'Open Questions' (Small Text) field in DocType 'Business
+#. Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "One question per line. Answer them by filling in the named fields, then save again."
+msgstr ""
+"Eine Frage je Zeile. Zum Beantworten die genannten Felder füllen und erneut speichern."
+
+#. Label of a Small Text field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Calculation Preview"
+msgstr "Berechnungsvorschau"
+
+#. Description of the 'Calculation Preview' (Small Text) field in DocType
+#. 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Calculated by the server, not by an assistant."
+msgstr "Vom Server berechnet, nicht von einem Assistenten."
+
+#. Label of a Check field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Create Business Trip"
+msgstr "Dienstreise erzeugen"
+
+#. Description of the 'Create Business Trip' (Check) field in DocType 'Business
+#. Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Tick once all questions are answered: saving then creates the Business Trip as a draft."
+msgstr ""
+"Setzen, wenn alle Rückfragen beantwortet sind: Beim Speichern entsteht die Dienstreise als "
+"Entwurf."
+
+#. Option for the 'Status' (Select) field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Questions Open"
+msgstr "Rückfragen offen"
+
+#. Option for the 'Status' (Select) field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Ready"
+msgstr "Bereit"
+
+#. Option for the 'Status' (Select) field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Transferred"
+msgstr "Übernommen"
+
+#. Option for the 'Status' (Select) field in DocType 'Business Trip Intake'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
+msgid "Discarded"
+msgstr "Verworfen"
+
+#. Label of a Link field in DocType 'Business Trip Settings'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_settings/business_trip_settings.json
+msgid "Default Region"
+msgstr "Standard-Region"
+
+#. Description of the 'Default Region' (Link) field in DocType 'Business Trip
+#. Settings'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_settings/business_trip_settings.json
+msgid "Used when a destination does not name a region of its own, e.g. for domestic travel."
+msgstr ""
+"Wird verwendet, wenn das Ziel keine eigene Region benennt, z.B. bei Inlandsreisen."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "The return must not be before the departure."
+msgstr "Die Rückkehr darf nicht vor der Abfahrt liegen."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Who travelled? No employee is linked to this user."
+msgstr "Wer ist gereist? Diesem Benutzer ist kein Mitarbeiter zugeordnet."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Which company is this trip for?"
+msgstr "Für welche Gesellschaft ist diese Reise?"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "What was the reason for the trip? Required for tax purposes."
+msgstr "Was war der Anlass der Reise? Steuerlich erforderlich."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "When exactly did the trip start and end, including the time of day?"
+msgstr "Wann genau begann und endete die Reise, mit Uhrzeit?"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Where did the trip go?"
+msgstr "Wohin ging die Reise?"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Where did the trip start?"
+msgstr "Wo begann die Reise?"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid ""
+"Which region applies to {0}? Set a default region in Business Trip Settings for domestic "
+"travel."
+msgstr ""
+"Welche Region gilt für {0}? Für Inlandsreisen eine Standard-Region in den "
+"Dienstreise-Einstellungen hinterlegen."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Own car, company car or train? A mileage allowance is only paid for a private car."
+msgstr ""
+"Eigenes Auto, Firmenwagen oder Bahn? Eine Kilometerpauschale gibt es nur für das private "
+"Fahrzeug."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "How many kilometers is the route, one way?"
+msgstr "Wie viele Kilometer ist die Strecke, einfach?"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Which private vehicle was driven? None is recorded for this employee yet."
+msgstr ""
+"Welches private Fahrzeug wurde gefahren? Für diesen Mitarbeiter ist noch keines hinterlegt."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Which of your vehicles did you drive?"
+msgstr "Welches Ihrer Fahrzeuge sind Sie gefahren?"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid ""
+"Were any meals provided (hotel breakfast, business lunch)? Tick Meals Confirmed once "
+"answered."
+msgstr ""
+"Wurden Mahlzeiten gestellt (Frühstück im Hotel, Bewirtung)? Nach der Antwort "
+"\"Mahlzeiten bestätigt\" setzen."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "{0} already covers these days. Add to it, or is this a separate trip?"
+msgstr "{0} deckt diese Tage bereits ab. Ergänzen, oder ist das eine eigene Reise?"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Meal allowance: {0}"
+msgstr "Verpflegungsmehraufwand: {0}"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Mileage allowance: {0}"
+msgstr "Kilometerpauschale: {0}"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Total: {0}"
+msgstr "Summe: {0}"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "No meal allowance: a one-day trip has to be longer than {0} hours."
+msgstr ""
+"Kein Verpflegungsmehraufwand: Eine Eintagesreise muss länger als {0} Stunden dauern."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "No mileage allowance: it is only paid for a private car."
+msgstr "Keine Kilometerpauschale: Sie wird nur für das private Fahrzeug gezahlt."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Region {0} was assumed. Change it for a trip abroad."
+msgstr "Es wurde die Region {0} angenommen. Bei Auslandsreisen bitte ändern."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "{0} was already created from this intake."
+msgstr "Aus dieser Erfassung wurde bereits {0} erzeugt."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Already Transferred"
+msgstr "Bereits übernommen"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Please answer the open questions first:"
+msgstr "Bitte zuerst die offenen Rückfragen beantworten:"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "The trip is still incomplete."
+msgstr "Die Reise ist noch unvollständig."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
+msgid "Who travelled for {0}? There is no employee record for them there."
+msgstr "Wer ist für {0} gereist? Dort gibt es keinen Mitarbeiterdatensatz für diese Person."
+
+#. Description of the 'Breakfast was Provided' (Check) field in DocType
+#. 'Business Trip Allowance'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_allowance/business_trip_allowance.json
+msgid "Only tick what was actually provided. Nothing here is assumed."
+msgstr "Nur ankreuzen, was tatsächlich gestellt wurde. Hier wird nichts unterstellt."

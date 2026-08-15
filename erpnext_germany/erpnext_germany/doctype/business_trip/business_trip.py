@@ -3,9 +3,16 @@
 from typing import TYPE_CHECKING
 
 import frappe
-from frappe import get_installed_apps
+from frappe import _, get_installed_apps
 from frappe.model.document import Document
 from frappe.utils.data import fmt_money
+
+from erpnext_germany.erpnext_germany.doctype.employee_vehicle.employee_vehicle import (
+	PRIVATE,
+	get_lower_mileage_rate,
+	get_mileage_rate,
+	get_vehicles,
+)
 
 DEFAULT_EXPENSE_CLAIM_TYPE = "Additional meal expenses"
 ONE_DAY_TRIP_MINIMUM_HOURS = 8
@@ -68,6 +75,48 @@ class BusinessTrip(Document):
 
 	def validate(self):
 		self.validate_from_to_dates("from_date", "to_date")
+		self.validate_vehicles()
+
+	def validate_vehicles(self):
+		"""A mileage allowance is only paid for the traveller's own, private vehicle."""
+		vehicles = get_vehicles(journey.employee_vehicle for journey in self.journeys)
+		already_linked = self.get_previously_linked_vehicles()
+
+		for journey in self.journeys:
+			vehicle = vehicles.get(journey.employee_vehicle)
+			if not vehicle:
+				continue
+
+			if vehicle.employee_name != self.employee_name:
+				frappe.throw(
+					_("Row {0}: {1} does not belong to {2}.").format(
+						journey.idx, vehicle.title, self.employee_name or self.employee
+					),
+					title=_("Wrong Vehicle"),
+				)
+
+			# A vehicle that is retired later must not block trips that already reference it.
+			if vehicle.disabled and vehicle.name not in already_linked:
+				frappe.throw(
+					_("Row {0}: {1} is disabled.").format(journey.idx, vehicle.title),
+					title=_("Disabled Vehicle"),
+				)
+
+			if journey.mode_of_transport == "Car (private)" and vehicle.ownership != PRIVATE:
+				frappe.throw(
+					_("Row {0}: {1} is not a private vehicle, so no mileage allowance can be paid.").format(
+						journey.idx, vehicle.title
+					),
+					title=_("No Mileage Allowance"),
+				)
+
+	def get_previously_linked_vehicles(self) -> set[str]:
+		"""Vehicles that this trip already referenced when it was last saved."""
+		before_save = self.get_doc_before_save()
+		if not before_save:
+			return set()
+
+		return {journey.employee_vehicle for journey in before_save.journeys if journey.employee_vehicle}
 
 	def set_regional_amount(self):
 		if not self.region:
@@ -123,11 +172,20 @@ class BusinessTrip(Document):
 		self.total_allowance = sum(allowance.amount for allowance in self.allowances)
 
 	def calculate_total_mileage_allowance(self):
-		mileage_allowance = frappe.db.get_single_value("Business Trip Settings", "mileage_allowance") or 0
-		self.total_mileage_allowance = (
-			sum(journey.distance for journey in self.journeys if journey.mode_of_transport == "Car (private)")
-			* mileage_allowance
-		)
+		default_rate = frappe.get_cached_doc("Business Trip Settings").mileage_allowance or 0
+		lower_rate = get_lower_mileage_rate()
+		vehicles = get_vehicles(journey.employee_vehicle for journey in self.journeys)
+
+		total = 0.0
+		for journey in self.journeys:
+			if journey.mode_of_transport != "Car (private)":
+				continue
+
+			vehicle = vehicles.get(journey.employee_vehicle)
+			rate = get_mileage_rate(vehicle.vehicle_class if vehicle else None, default_rate, lower_rate)
+			total += journey.distance * rate
+
+		self.total_mileage_allowance = total
 
 	def before_submit(self):
 		self.status = "Submitted"
@@ -169,21 +227,29 @@ class BusinessTrip(Document):
 def get_mileage_allowances(
 	business_trip: BusinessTrip, expense_claim_type: str, mileage_allowance: float
 ) -> list[dict]:
-	"""Return a list of expense claim rows for mileage allowances."""
+	"""Return a list of expense claim rows for mileage allowances.
+
+	`mileage_allowance` is the standard rate. A journey with a motorcycle or another motor
+	vehicle is reimbursed at the lower rate from Business Trip Settings.
+	"""
 	expenses = []
+	vehicles = get_vehicles(journey.employee_vehicle for journey in business_trip.journeys)
+	lower_rate = get_lower_mileage_rate()
+
 	for journey in business_trip.journeys:
 		if journey.mode_of_transport != "Car (private)":
 			continue
 
-		description = (
-			"{distance} * {mileage_allowance} von {from_place} nach {to_place} (Fahrt mit Privatauto)".format(
-				distance=journey.get_formatted("distance"),
-				mileage_allowance=fmt_money(mileage_allowance),
-				from_place=getattr(journey, "from"),
-				to_place=journey.to,
-			)
+		vehicle = vehicles.get(journey.employee_vehicle)
+		rate = get_mileage_rate(vehicle.vehicle_class if vehicle else None, mileage_allowance, lower_rate)
+		description = "{distance} * {mileage_allowance} von {from_place} nach {to_place} ({vehicle})".format(
+			distance=journey.get_formatted("distance"),
+			mileage_allowance=fmt_money(rate),
+			from_place=getattr(journey, "from"),
+			to_place=journey.to,
+			vehicle=f"Fahrt mit {vehicle.title}" if vehicle else "Fahrt mit Privatauto",
 		)
-		mileage_amount = journey.distance * mileage_allowance
+		mileage_amount = journey.distance * rate
 		expenses.append(
 			{
 				"expense_date": journey.date,

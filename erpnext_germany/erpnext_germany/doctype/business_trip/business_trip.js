@@ -9,6 +9,14 @@ frappe.ui.form.on("Business Trip", {
 				filters: [["Business Trip Region Allowance", "valid_from", "<=", doc.from_date]],
 			};
 		});
+		frm.set_query("employee_vehicle", "journeys", (doc) => {
+			return {
+				filters: {
+					employee_name: doc.employee_name,
+					disabled: 0,
+				},
+			};
+		});
 	},
 
 	refresh(frm) {
@@ -44,19 +52,113 @@ frappe.ui.form.on("Business Trip", {
 				minDate: frm.doc.from_date ? new Date(frm.doc.from_date) : null,
 			});
 		}
-	}
+	},
 });
-
 
 frappe.ui.form.on("Business Trip Journey", {
 	journeys_add(frm, cdt, cdn) {
 		frappe.model.set_value(cdt, cdn, "date", frm.doc.from_date);
 	},
 
+	from(frm, cdt, cdn) {
+		suggest_distance(frm, cdt, cdn);
+	},
+
+	to(frm, cdt, cdn) {
+		suggest_distance(frm, cdt, cdn);
+	},
+
+	mode_of_transport(frm, cdt, cdn) {
+		suggest_vehicle(frm, cdt, cdn);
+		suggest_distance(frm, cdt, cdn);
+	},
+
 	create_purchase_invoice(frm, cdt, cdn) {
 		create_purchase_invoice_with_receipt(frm, cdt, cdn);
 	},
 });
+
+/**
+ * Preselect the employee's vehicle, so only someone with several vehicles has to choose.
+ */
+function suggest_vehicle(frm, cdt, cdn) {
+	const row = locals[cdt][cdn];
+
+	if (
+		!row ||
+		!frm.doc.employee ||
+		row.employee_vehicle ||
+		row.mode_of_transport !== "Car (private)"
+	) {
+		return;
+	}
+
+	frappe.call({
+		method: "erpnext_germany.erpnext_germany.doctype.employee_vehicle.employee_vehicle.get_default_vehicle",
+		args: { employee: frm.doc.employee, ownership: "Private" },
+		callback: function (r) {
+			if (r.message && !locals[cdt][cdn]?.employee_vehicle) {
+				frappe.model.set_value(cdt, cdn, "employee_vehicle", r.message);
+			}
+		},
+	});
+}
+
+/**
+ * Fill in the distance of a recurring route from the Business Trip Distance table.
+ *
+ * A distance entered by hand is never overwritten. A distance this function filled in earlier
+ * is replaced when the route changes -- otherwise the kilometers of the previous route would
+ * quietly stay behind and be reimbursed.
+ */
+function suggest_distance(frm, cdt, cdn) {
+	const car_modes = ["Car", "Car (private)", "Car (rental)"];
+	const row = locals[cdt][cdn];
+
+	if (!row || !row.from || !row.to || !car_modes.includes(row.mode_of_transport)) {
+		return;
+	}
+
+	if (row.distance && row.distance !== frm.__suggested_distances?.[cdn]) {
+		return;
+	}
+
+	frappe.call({
+		method: "erpnext_germany.erpnext_germany.doctype.business_trip_distance.business_trip_distance.get_distance",
+		args: {
+			from_location: row.from,
+			to_location: row.to,
+			company: frm.doc.company,
+		},
+		callback: function (r) {
+			const current = locals[cdt][cdn];
+			if (
+				!current ||
+				(current.distance && current.distance !== frm.__suggested_distances?.[cdn])
+			) {
+				return;
+			}
+
+			frm.__suggested_distances = frm.__suggested_distances || {};
+
+			if (!r.message) {
+				// The new route is unknown: drop the distance of the old one instead of keeping it.
+				if (current.distance) {
+					frappe.model.set_value(cdt, cdn, "distance", 0);
+					delete frm.__suggested_distances[cdn];
+				}
+				return;
+			}
+
+			frm.__suggested_distances[cdn] = r.message.distance;
+			frappe.model.set_value(cdt, cdn, "distance", r.message.distance);
+			frappe.show_alert({
+				message: __("Distance filled in from {0}", [__("Business Trip Distance")]),
+				indicator: "green",
+			});
+		},
+	});
+}
 
 frappe.ui.form.on("Business Trip Accommodation", {
 	accommodations_add(frm, cdt, cdn) {
