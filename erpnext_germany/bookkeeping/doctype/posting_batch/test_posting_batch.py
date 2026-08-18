@@ -6,21 +6,63 @@ from frappe.tests.utils import FrappeTestCase
 
 from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 
+test_dependencies = ["Company"]
+
 TEST_COMPANY = "_Test Company"
 OTHER_COMPANY = "_Test Company 2"
-DEBIT_ACCOUNT = "_Test Bank - _TC"
-CREDIT_ACCOUNT = "_Test Cash - _TC"
+FROM_DATE = "2026-06-01"
+TO_DATE = "2026-06-30"
+IN_PERIOD = "2026-06-15"
 
 
-def entry(amount=119.0, direction="Debit", posting_date="2026-06-15", **kwargs):
-	return {
+def posting_account(root_type: str, company: str = TEST_COMPANY) -> str:
+	"""Return a ledger account of the company that can be posted to directly.
+
+	Resolved from the chart of accounts instead of hard-coded, so the tests do
+	not depend on how a particular ERPNext version names its accounts.
+	Receivable and payable accounts are excluded because they would require a
+	party on every entry.
+	"""
+	account = frappe.db.get_value(
+		"Account",
+		{
+			"company": company,
+			"is_group": 0,
+			"disabled": 0,
+			"root_type": root_type,
+			"account_type": ("not in", ("Receivable", "Payable")),
+		},
+		"name",
+		order_by="name asc",
+	)
+	if not account:
+		raise ValueError(f"No postable {root_type} account for {company}")
+
+	return account
+
+
+def fiscal_year_for(day: str) -> str:
+	year = frappe.db.get_value(
+		"Fiscal Year",
+		{"year_start_date": ("<=", day), "year_end_date": (">=", day), "disabled": 0},
+		"name",
+	)
+	if not year:
+		raise ValueError(f"No fiscal year covers {day}")
+
+	return year
+
+
+def entry(amount=119.0, direction="Debit", posting_date=IN_PERIOD, **kwargs):
+	row = {
 		"posting_date": posting_date,
 		"amount": amount,
 		"direction": direction,
-		"account": DEBIT_ACCOUNT,
-		"against_account": CREDIT_ACCOUNT,
-		**kwargs,
+		"account": posting_account("Asset"),
+		"against_account": posting_account("Expense"),
 	}
+	row.update(kwargs)
+	return row
 
 
 def create_batch(entries=None, **kwargs) -> "frappe.Document":
@@ -28,9 +70,9 @@ def create_batch(entries=None, **kwargs) -> "frappe.Document":
 		{
 			"doctype": "Posting Batch",
 			"company": TEST_COMPANY,
-			"fiscal_year": frappe.defaults.get_user_default("fiscal_year"),
-			"from_date": "2026-06-01",
-			"to_date": "2026-06-30",
+			"fiscal_year": fiscal_year_for(FROM_DATE),
+			"from_date": FROM_DATE,
+			"to_date": TO_DATE,
 			"entries": entries if entries is not None else [entry(document_number="RE-2026-0001")],
 			**kwargs,
 		}
@@ -39,7 +81,7 @@ def create_batch(entries=None, **kwargs) -> "frappe.Document":
 	return doc
 
 
-def lock(company=TEST_COMPANY, locked_up_to="2026-06-30"):
+def lock(company=TEST_COMPANY, locked_up_to=TO_DATE):
 	frappe.get_doc({"doctype": "Ledger Lockdown", "company": company, "locked_up_to": locked_up_to}).insert()
 	clear_lockdown_cache()
 
@@ -101,12 +143,19 @@ class TestPostingBatch(FrappeTestCase):
 
 	def test_same_account_on_both_sides_is_rejected(self):
 		self.assertRaises(
-			frappe.ValidationError, create_batch, entries=[entry(against_account=DEBIT_ACCOUNT)]
+			frappe.ValidationError,
+			create_batch,
+			entries=[entry(against_account=posting_account("Asset"))],
 		)
 
 	def test_non_positive_amount_is_rejected(self):
 		"""A correction is a general reversal, not a minus sign."""
 		self.assertRaises(frappe.ValidationError, create_batch, entries=[entry(amount=-10.0)])
+
+	def test_account_of_another_company_is_rejected(self):
+		other_account = posting_account("Asset", OTHER_COMPANY)
+
+		self.assertRaises(frappe.ValidationError, create_batch, entries=[entry(account=other_account)])
 
 	# --- posting ----------------------------------------------------------
 
@@ -126,8 +175,8 @@ class TestPostingBatch(FrappeTestCase):
 		self.assertEqual(journal_entry.bill_no, "RE-2026-0001")
 
 		sides = {row.account: (row.debit, row.credit) for row in journal_entry.accounts}
-		self.assertEqual(sides[DEBIT_ACCOUNT], (119.0, 0.0))
-		self.assertEqual(sides[CREDIT_ACCOUNT], (0.0, 119.0))
+		self.assertEqual(sides[posting_account("Asset")], (119.0, 0.0))
+		self.assertEqual(sides[posting_account("Expense")], (0.0, 119.0))
 
 	def test_credit_direction_flips_both_sides(self):
 		batch = create_batch(entries=[entry(amount=50.0, direction="Credit")])
@@ -137,8 +186,8 @@ class TestPostingBatch(FrappeTestCase):
 
 		journal_entry = frappe.get_doc("Journal Entry", batch.entries[0].journal_entry)
 		sides = {row.account: (row.debit, row.credit) for row in journal_entry.accounts}
-		self.assertEqual(sides[DEBIT_ACCOUNT], (0.0, 50.0))
-		self.assertEqual(sides[CREDIT_ACCOUNT], (50.0, 0.0))
+		self.assertEqual(sides[posting_account("Asset")], (0.0, 50.0))
+		self.assertEqual(sides[posting_account("Expense")], (50.0, 0.0))
 
 	def test_posted_batch_cannot_be_changed(self):
 		batch = create_batch()

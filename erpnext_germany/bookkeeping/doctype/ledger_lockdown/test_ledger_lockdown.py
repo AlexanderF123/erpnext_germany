@@ -6,6 +6,8 @@ from frappe.tests.utils import FrappeTestCase
 
 from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache, get_locked_up_to
 
+test_dependencies = ["Company"]
+
 TEST_COMPANY = "_Test Company"
 
 
