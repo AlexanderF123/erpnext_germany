@@ -13,19 +13,25 @@ from frappe.utils.nestedset import get_descendants_of
 from erpnext_germany.utils.periods import get_month_range, shift_years
 
 DEBIT_ROOT_TYPES = ("Asset", "Expense")
-OPENING_DEBIT_ROOT_TYPES = ("Asset",)
-OPENING_CREDIT_ROOT_TYPES = ("Liability", "Equity")
+BALANCE_SHEET_ROOT_TYPES = ("Asset", "Liability", "Equity")
 
 # Amounts below this are treated as zero when hiding empty rows.
 ROUNDING_TOLERANCE = 0.005
 
-DESCRIPTIVE_FIELDS = (
-	"account",
-	"account_name",
-	"account_number",
-	"account_currency",
-	"period_from_date",
-	"period_to_date",
+# Every column that carries a figure, listed explicitly instead of derived by
+# exclusion, so that adding a descriptive field can never silently make rows
+# count as empty.
+AMOUNT_FIELDS = (
+	"debit_opening_balance",
+	"credit_opening_balance",
+	"debit_until_evaluation_period",
+	"credit_until_evaluation_period",
+	"debit_in_evaluation_period",
+	"credit_in_evaluation_period",
+	"debit_closing_balance",
+	"credit_closing_balance",
+	"previous_year_in_evaluation_period",
+	"previous_year_until_evaluation_period",
 )
 
 
@@ -145,6 +151,30 @@ def get_columns(month_name: str, with_previous_year: bool):
 	return columns
 
 
+def get_periods(
+	fiscal_year_start: date, month_start: date, month_end: date, with_previous_year: bool
+) -> list[tuple]:
+	"""Return the periods the report aggregates, as (key, from, to, skip closing).
+
+	The opening period deliberately includes period closing vouchers: that is
+	how the balance of a closed year is carried forward.
+	"""
+	periods = [
+		("opening", None, add_days(fiscal_year_start, -1), False),
+		("until", fiscal_year_start, add_days(month_start, -1), True),
+		("current", month_start, month_end, True),
+	]
+
+	if with_previous_year:
+		previous_month_end = shift_years(month_end, -1)
+		periods += [
+			("previous_current", shift_years(month_start, -1), previous_month_end, True),
+			("previous_until", shift_years(fiscal_year_start, -1), previous_month_end, True),
+		]
+
+	return periods
+
+
 def get_data(
 	filters: frappe._dict,
 	fiscal_year_start: date,
@@ -153,46 +183,17 @@ def get_data(
 	with_previous_year: bool,
 ):
 	cost_centers = get_cost_centers(filters.cost_center)
-
-	opening = get_totals(filters.company, cost_centers, to_date=add_days(fiscal_year_start, -1))
-	until = get_totals(
-		filters.company,
-		cost_centers,
-		from_date=fiscal_year_start,
-		to_date=add_days(month_start, -1),
-		skip_period_closing=True,
-	)
-	current = get_totals(
-		filters.company,
-		cost_centers,
-		from_date=month_start,
-		to_date=month_end,
-		skip_period_closing=True,
-	)
-
-	previous_current = {}
-	previous_until = {}
-	if with_previous_year:
-		previous_month_end = shift_years(month_end, -1)
-		previous_current = get_totals(
-			filters.company,
-			cost_centers,
-			from_date=shift_years(month_start, -1),
-			to_date=previous_month_end,
-			skip_period_closing=True,
+	totals = {
+		key: get_totals(filters.company, cost_centers, from_date, to_date, skip_closing)
+		for key, from_date, to_date, skip_closing in get_periods(
+			fiscal_year_start, month_start, month_end, with_previous_year
 		)
-		previous_until = get_totals(
-			filters.company,
-			cost_centers,
-			from_date=shift_years(fiscal_year_start, -1),
-			to_date=previous_month_end,
-			skip_period_closing=True,
-		)
+	}
 
 	# An account belongs into the report if it carries an opening balance or was
 	# touched in the current fiscal year, even if there was no movement in the
 	# evaluation month itself.
-	account_names = set(opening) | set(until) | set(current)
+	account_names = set(totals["opening"]) | set(totals["until"]) | set(totals["current"])
 	if not account_names:
 		return []
 
@@ -208,20 +209,14 @@ def get_data(
 
 		row = build_row(
 			account,
-			opening.get(name, {}),
-			until.get(name, {}),
-			current.get(name, {}),
-			previous_current.get(name, {}),
-			previous_until.get(name, {}),
+			{key: period.get(name, {}) for key, period in totals.items()},
+			month_start,
+			month_end,
 			with_previous_year,
 		)
 		if hide_empty_rows and is_empty(row):
 			continue
 
-		# Carried along so that the client can link each account to its ledger
-		# for exactly this period, without recomputing the dates.
-		row.period_from_date = month_start
-		row.period_to_date = month_end
 		rows.append(row)
 
 	return sorted(rows, key=sort_key)
@@ -229,19 +224,24 @@ def get_data(
 
 def build_row(
 	account: frappe._dict,
-	opening: dict,
-	until: dict,
-	current: dict,
-	previous_current: dict,
-	previous_until: dict,
+	totals: dict[str, dict],
+	month_start: date,
+	month_end: date,
 	with_previous_year: bool,
 ) -> frappe._dict:
-	opening_debit, opening_credit = get_opening_balance(account.root_type, opening)
+	root_type = account.root_type
 
-	total_debit = flt(opening.get("debit")) + flt(until.get("debit")) + flt(current.get("debit"))
-	total_credit = flt(opening.get("credit")) + flt(until.get("credit")) + flt(current.get("credit"))
-	closing = total_debit - total_credit
-	is_debit_account = account.root_type in DEBIT_ROOT_TYPES
+	# Income and expense accounts start every fiscal year at zero: last year's
+	# result is closed into equity and must not be carried forward here.
+	carried_forward = net(totals["opening"]) if root_type in BALANCE_SHEET_ROOT_TYPES else 0.0
+	closing = carried_forward + net(totals["until"]) + net(totals["current"])
+
+	opening_debit, opening_credit = (
+		in_natural_direction(root_type, carried_forward)
+		if root_type in BALANCE_SHEET_ROOT_TYPES
+		else (None, None)
+	)
+	closing_debit, closing_credit = in_natural_direction(root_type, closing)
 
 	row = frappe._dict(
 		{
@@ -251,48 +251,44 @@ def build_row(
 			"account_currency": account.account_currency,
 			"debit_opening_balance": opening_debit,
 			"credit_opening_balance": opening_credit,
-			"debit_until_evaluation_period": until.get("debit"),
-			"credit_until_evaluation_period": until.get("credit"),
-			"debit_in_evaluation_period": current.get("debit"),
-			"credit_in_evaluation_period": current.get("credit"),
-			"debit_closing_balance": closing if is_debit_account else None,
-			"credit_closing_balance": None if is_debit_account else -closing,
+			"debit_until_evaluation_period": totals["until"].get("debit"),
+			"credit_until_evaluation_period": totals["until"].get("credit"),
+			"debit_in_evaluation_period": totals["current"].get("debit"),
+			"credit_in_evaluation_period": totals["current"].get("credit"),
+			"debit_closing_balance": closing_debit,
+			"credit_closing_balance": closing_credit,
+			# Carried along so that the client can link the account to its ledger
+			# for exactly this period, without recomputing the dates.
+			"period_from_date": month_start,
+			"period_to_date": month_end,
 		}
 	)
 
 	if with_previous_year:
-		row.previous_year_in_evaluation_period = get_net_amount(account.root_type, previous_current)
-		row.previous_year_until_evaluation_period = get_net_amount(account.root_type, previous_until)
+		row.previous_year_in_evaluation_period = natural_net(root_type, totals["previous_current"])
+		row.previous_year_until_evaluation_period = natural_net(root_type, totals["previous_until"])
 
 	return row
 
 
-def get_opening_balance(root_type: str, totals: dict) -> tuple[float | None, float | None]:
-	"""Return the opening balance in the account's natural direction.
-
-	Income and expense accounts start each fiscal year at zero, so they carry no
-	opening balance.
-	"""
-	if root_type in OPENING_DEBIT_ROOT_TYPES:
-		return flt(totals.get("debit")) - flt(totals.get("credit")), None
-
-	if root_type in OPENING_CREDIT_ROOT_TYPES:
-		return None, flt(totals.get("credit")) - flt(totals.get("debit"))
-
-	return None, None
+def net(totals: dict) -> float:
+	"""Debit minus credit of one period."""
+	return flt(totals.get("debit")) - flt(totals.get("credit"))
 
 
-def get_net_amount(root_type: str, totals: dict) -> float:
-	"""Return the net movement in the account's natural direction."""
-	debit = flt(totals.get("debit"))
-	credit = flt(totals.get("credit"))
-	return debit - credit if root_type in DEBIT_ROOT_TYPES else credit - debit
+def natural_net(root_type: str, totals: dict) -> float:
+	"""Net movement, signed so that a normal balance reads positive."""
+	amount = net(totals)
+	return amount if root_type in DEBIT_ROOT_TYPES else -amount
+
+
+def in_natural_direction(root_type: str, amount: float) -> tuple[float | None, float | None]:
+	"""Put a debit-minus-credit amount on the side the account normally carries."""
+	return (amount, None) if root_type in DEBIT_ROOT_TYPES else (None, -amount)
 
 
 def is_empty(row: frappe._dict) -> bool:
-	return all(
-		abs(flt(value)) < ROUNDING_TOLERANCE for key, value in row.items() if key not in DESCRIPTIVE_FIELDS
-	)
+	return all(abs(flt(row.get(field))) < ROUNDING_TOLERANCE for field in AMOUNT_FIELDS)
 
 
 def sort_key(row: frappe._dict) -> tuple[int, int, str]:

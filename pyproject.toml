@@ -24,7 +24,7 @@ erpnext = ">=15.58.0,<16.0.0"
 # Tests below a doctype directory need a running site and are executed by
 # `bench run-tests`, not by pytest. Everything else must stay import-safe
 # without a bench.
-addopts = "--ignore-glob=*/doctype/*"
+addopts = "--ignore-glob=*/doctype/* --ignore-glob=*/report/*"
 
 [tool.ruff]
 line-length = 110
