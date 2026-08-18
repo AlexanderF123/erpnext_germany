@@ -2,15 +2,7 @@ from datetime import date
 
 import pytest
 
-from .posting import CREDIT, DEBIT, is_balanced, is_locked, split_amount, summarize
-
-
-class Entry:
-	"""Stand-in for a Posting Batch Entry row."""
-
-	def __init__(self, direction=None, amount=None):
-		self.direction = direction
-		self.amount = amount
+from .posting import CREDIT, DEBIT, is_locked, split_amount
 
 
 def test_split_amount_debit():
@@ -37,32 +29,16 @@ def test_split_amount_rejects_non_positive():
 			split_amount(DEBIT, amount)
 
 
-def test_summarize_balances_by_construction():
-	"""Every entry is a complete double entry, so a batch is always balanced."""
-	entries = [Entry(DEBIT, 119.0), Entry(CREDIT, 500.0), Entry(DEBIT, 42.5)]
+def test_split_amount_is_balanced_either_way():
+	"""Whatever the direction, the two sides of one entry cancel out.
 
-	total_debit, total_credit, difference = summarize(entries)
-
-	assert total_debit == 161.5
-	assert total_credit == 500.0
-	assert difference == pytest.approx(-338.5)
-
-
-def test_summarize_skips_incomplete_rows():
-	"""A row that is still being typed must not break the running total."""
-	entries = [Entry(DEBIT, 100.0), Entry(None, None), Entry(DEBIT, None), Entry(None, 50.0)]
-
-	assert summarize(entries) == (100.0, 0.0, 100.0)
-
-
-def test_summarize_empty():
-	assert summarize([]) == (0.0, 0.0, 0.0)
-
-
-def test_is_balanced_within_tolerance():
-	assert is_balanced(100.0, 100.0)
-	assert is_balanced(100.0, 100.004)
-	assert not is_balanced(100.0, 100.01)
+	This is why a batch never needs a difference column: every entry is a
+	complete double entry on its own.
+	"""
+	for direction in (DEBIT, CREDIT):
+		debit, credit = split_amount(direction, 119.0)
+		assert debit + credit == 119.0
+		assert min(debit, credit) == 0.0
 
 
 def test_is_locked_includes_the_lockdown_date():

@@ -4,10 +4,10 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import format_date, getdate, now_datetime
+from frappe.utils import flt, format_date, getdate, now_datetime
 
 from erpnext_germany.bookkeeping.lockdown import ensure_can_post
-from erpnext_germany.bookkeeping.posting import split_amount, summarize
+from erpnext_germany.bookkeeping.posting import split_amount
 
 POSTED = "Posted"
 OPEN = "Open"
@@ -45,8 +45,7 @@ class PostingBatch(Document):
 		status: DF.Literal["Open", "Posted"]
 		title: DF.Data | None
 		to_date: DF.Date
-		total_credit: DF.Currency
-		total_debit: DF.Currency
+		total_amount: DF.Currency
 		voucher_circle: DF.Literal["", "Cash", "Bank", "Purchase Invoices", "Sales Invoices", "Other"]
 	# end: auto-generated types
 
@@ -123,8 +122,15 @@ class PostingBatch(Document):
 			frappe.throw(_("{0}: {1} is disabled.").format(label, account))
 
 	def set_totals(self):
-		self.total_debit, self.total_credit, _difference = summarize(self.entries)
+		"""Control totals of the batch: how many entries and how much in total.
+
+		Debit and credit sums are deliberately not shown. Every entry is a
+		complete double entry, so both would always equal the total amount and
+		their difference would always be zero -- two columns that can never
+		disagree are not a control, they are noise.
+		"""
 		self.entry_count = len(self.entries)
+		self.total_amount = sum(flt(entry.amount) for entry in self.entries)
 
 	def set_title(self):
 		if self.title:

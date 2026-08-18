@@ -1292,3 +1292,9 @@ msgstr ""
 
 msgid "{0} is locked up to {1}. Documents in a closed period cannot be cancelled. Book a general reversal instead."
 msgstr ""
+
+msgid "Booking Entries"
+msgstr ""
+
+msgid "Number of Entries"
+msgstr ""

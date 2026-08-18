@@ -1802,3 +1802,9 @@ msgstr "{0} ist bis {1} festgeschrieben. In einen geschlossenen Zeitraum kann ni
 
 msgid "{0} is locked up to {1}. Documents in a closed period cannot be cancelled. Book a general reversal instead."
 msgstr "{0} ist bis {1} festgeschrieben. Belege in einem geschlossenen Zeitraum können nicht storniert werden. Stattdessen eine Generalumkehr buchen."
+
+msgid "Booking Entries"
+msgstr "Buchungszeilen"
+
+msgid "Number of Entries"
+msgstr "Anzahl Zeilen"
