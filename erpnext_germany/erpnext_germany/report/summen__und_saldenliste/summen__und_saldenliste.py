@@ -31,7 +31,7 @@ DESCRIPTIVE_FIELDS = (
 
 def execute(filters=None):
 	filters = frappe._dict(filters or {})
-	fiscal_year_start = frappe.db.get_value("Fiscal Year", filters.fiscal_year, "year_start_date")
+	fiscal_year_start = frappe.get_cached_value("Fiscal Year", filters.fiscal_year, "year_start_date")
 	if not fiscal_year_start:
 		frappe.throw(_("Fiscal Year {0} not found").format(filters.fiscal_year))
 
