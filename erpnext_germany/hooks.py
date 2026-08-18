@@ -106,6 +106,8 @@ before_uninstall = "erpnext_germany.uninstall.before_uninstall"
 # ---------------
 # Hook on document methods and events
 
+LOCKDOWN = "erpnext_germany.bookkeeping.lockdown"
+
 doc_events = {
 	"Quotation": {
 		"on_trash": "erpnext_germany.custom.sales.on_trash",
@@ -115,6 +117,24 @@ doc_events = {
 	},
 	"Sales Invoice": {
 		"on_trash": "erpnext_germany.custom.sales.on_trash",
+		"before_cancel": f"{LOCKDOWN}.block_cancellation_in_locked_period",
+	},
+	# Hooked on the ledger itself rather than on every voucher type, so that
+	# each route into a closed period is covered, including the reversal
+	# entries a cancellation produces. Inert until a company has a lockdown.
+	"GL Entry": {
+		"before_insert": f"{LOCKDOWN}.block_gl_entry_in_locked_period",
+	},
+	# Cancelling is refused up front, so the user gets a clear message instead
+	# of a failure halfway through the reversal.
+	"Journal Entry": {
+		"before_cancel": f"{LOCKDOWN}.block_cancellation_in_locked_period",
+	},
+	"Payment Entry": {
+		"before_cancel": f"{LOCKDOWN}.block_cancellation_in_locked_period",
+	},
+	"Purchase Invoice": {
+		"before_cancel": f"{LOCKDOWN}.block_cancellation_in_locked_period",
 	},
 }
 

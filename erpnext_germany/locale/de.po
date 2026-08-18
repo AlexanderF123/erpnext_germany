@@ -1673,3 +1673,132 @@ msgstr "Vorjahr bis einschließlich {0}"
 #: erpnext_germany/modules.txt
 msgid "Bookkeeping"
 msgstr "Buchführung"
+
+msgid "Posting Batch"
+msgstr "Buchungsstapel"
+
+msgid "Posting Batch Entry"
+msgstr "Buchungsstapel-Zeile"
+
+msgid "Ledger Lockdown"
+msgstr "Festschreibung"
+
+msgid "Contra Account"
+msgstr "Gegenkonto"
+
+msgid "Direction"
+msgstr "Soll/Haben"
+
+msgid "Document Number"
+msgstr "Belegfeld 1"
+
+msgid "Second Document Number"
+msgstr "Belegfeld 2"
+
+msgid "Document Circle"
+msgstr "Belegkreis"
+
+msgid "Control Totals"
+msgstr "Kontrollsummen"
+
+msgid "Locked Up To"
+msgstr "Festgeschrieben bis"
+
+msgid "Locked On"
+msgstr "Festgeschrieben am"
+
+msgid "Locked By"
+msgstr "Festgeschrieben von"
+
+msgid "Ledger Entries"
+msgstr "Buchungssätze"
+
+msgid "This batch has been posted and cannot be changed."
+msgstr "Dieser Stapel ist gebucht und kann nicht mehr geändert werden."
+
+msgid "Batch Already Posted"
+msgstr "Stapel bereits gebucht"
+
+msgid "From Date must be on or before To Date."
+msgstr "Das Von-Datum muss vor oder auf dem Bis-Datum liegen."
+
+msgid "Row {0}"
+msgstr "Zeile {0}"
+
+msgid "{0}: Amount must be greater than zero. Book a correction as a general reversal."
+msgstr "{0}: Der Betrag muss größer als null sein. Eine Korrektur wird als Generalumkehr gebucht."
+
+msgid "{0}: Posting date {1} is outside the batch period."
+msgstr "{0}: Das Buchungsdatum {1} liegt außerhalb des Stapelzeitraums."
+
+msgid "{0}: Account and contra account must be different."
+msgstr "{0}: Konto und Gegenkonto müssen verschieden sein."
+
+msgid "{0}: {1} does not belong to {2}."
+msgstr "{0}: {1} gehört nicht zu {2}."
+
+msgid "{0}: {1} is a group account and cannot be posted to."
+msgstr "{0}: {1} ist ein Sammelkonto und kann nicht bebucht werden."
+
+msgid "{0}: {1} is disabled."
+msgstr "{0}: {1} ist deaktiviert."
+
+msgid "A posted batch cannot be deleted."
+msgstr "Ein gebuchter Stapel kann nicht gelöscht werden."
+
+msgid "This batch has already been posted."
+msgstr "Dieser Stapel wurde bereits gebucht."
+
+msgid "There is nothing to post."
+msgstr "Es gibt nichts zu buchen."
+
+msgid "{0} entries posted."
+msgstr "{0} Zeilen gebucht."
+
+msgid "Batch Posted"
+msgstr "Stapel gebucht"
+
+msgid "A lockdown cannot be changed. Create a new one to close a later period."
+msgstr "Eine Festschreibung kann nicht geändert werden. Für einen späteren Zeitraum eine neue anlegen."
+
+msgid "Lockdown Is Final"
+msgstr "Festschreibung ist endgültig"
+
+msgid "{0} is already locked up to {1}. A lockdown can only move forward."
+msgstr "{0} ist bereits bis {1} festgeschrieben. Eine Festschreibung kann nur vorwärts laufen."
+
+msgid "Period Already Locked"
+msgstr "Zeitraum bereits festgeschrieben"
+
+msgid "A lockdown cannot be deleted. It is the record that a period was closed."
+msgstr "Eine Festschreibung kann nicht gelöscht werden. Sie ist der Nachweis, dass ein Zeitraum geschlossen wurde."
+
+msgid "Period Is Locked"
+msgstr "Zeitraum ist festgeschrieben"
+
+msgid "This batch has been posted. Corrections are booked as a general reversal."
+msgstr "Dieser Stapel ist gebucht. Korrekturen werden als Generalumkehr gebucht."
+
+msgid "Post {0} entries to the ledger? This cannot be undone."
+msgstr "{0} Zeilen ins Hauptbuch buchen? Das lässt sich nicht rückgängig machen."
+
+msgid "Posting entries…"
+msgstr "Zeilen werden gebucht …"
+
+msgid "Everything posted on or before this date becomes unchangeable. A lockdown cannot be undone."
+msgstr "Alles, was bis einschließlich zu diesem Datum gebucht ist, wird unveränderbar. Eine Festschreibung lässt sich nicht rückgängig machen."
+
+msgid "{0} is locked up to {1}."
+msgstr "{0} ist bis {1} festgeschrieben."
+
+msgid "Lock {0} up to {1}? This cannot be undone."
+msgstr "{0} bis {1} festschreiben? Das lässt sich nicht rückgängig machen."
+
+msgid "Post Batch"
+msgstr "Stapel buchen"
+
+msgid "{0} is locked up to {1}. Nothing can be posted into a closed period."
+msgstr "{0} ist bis {1} festgeschrieben. In einen geschlossenen Zeitraum kann nicht gebucht werden."
+
+msgid "{0} is locked up to {1}. Documents in a closed period cannot be cancelled. Book a general reversal instead."
+msgstr "{0} ist bis {1} festgeschrieben. Belege in einem geschlossenen Zeitraum können nicht storniert werden. Stattdessen eine Generalumkehr buchen."
