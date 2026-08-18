@@ -84,7 +84,12 @@ class LedgerLockdown(Document):
 
 
 def get_ledger_totals(company: str, up_to_date) -> frappe._dict:
-	"""Return entry count and debit/credit totals of the period being closed."""
+	"""Return entry count and debit/credit totals of the period being closed.
+
+	Aggregated in the database on purpose: a closed period can hold hundreds of
+	thousands of ledger entries, and loading them as documents to add up two
+	columns would be the wrong tool. Nothing is written here.
+	"""
 	gl_entry = frappe.qb.DocType("GL Entry")
 
 	rows = (

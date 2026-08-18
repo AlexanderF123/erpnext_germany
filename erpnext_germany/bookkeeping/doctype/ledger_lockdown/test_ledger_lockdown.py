@@ -23,6 +23,8 @@ def create_lockdown(locked_up_to: str, company: str = TEST_COMPANY) -> "frappe.D
 
 class TestLedgerLockdown(FrappeTestCase):
 	def setUp(self):
+		# frappe.db.delete on purpose: a lockdown cannot be removed through the
+		# document lifecycle by design, so test isolation has to go past it.
 		frappe.db.delete("Ledger Lockdown")
 		clear_lockdown_cache()
 

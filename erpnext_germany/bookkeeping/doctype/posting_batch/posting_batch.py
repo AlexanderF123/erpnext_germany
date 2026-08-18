@@ -58,11 +58,17 @@ class PostingBatch(Document):
 		self.set_title()
 
 	def validate_not_posted(self):
-		"""A posted batch is history. Corrections go through a general reversal."""
+		"""A posted batch is history. Corrections go through a general reversal.
+
+		The stored state comes from the document Frappe loaded before this save,
+		so the check sees what is actually in the books rather than what the
+		caller handed in.
+		"""
 		if self.is_new():
 			return
 
-		if frappe.db.get_value("Posting Batch", self.name, "status") == POSTED:
+		previous = self.get_doc_before_save()
+		if previous and previous.status == POSTED:
 			frappe.throw(
 				_("This batch has been posted and cannot be changed."),
 				title=_("Batch Already Posted"),
@@ -101,7 +107,9 @@ class PostingBatch(Document):
 			self.validate_account(label, entry.get(fieldname))
 
 	def validate_account(self, label: str, account: str):
-		details = frappe.db.get_value("Account", account, ["company", "is_group", "disabled"], as_dict=True)
+		details = frappe.get_cached_value(
+			"Account", account, ["company", "is_group", "disabled"], as_dict=True
+		)
 		if not details:
 			return
 
@@ -151,15 +159,15 @@ class PostingBatch(Document):
 			ensure_can_post(self.company, entry.posting_date)
 
 		for entry in self.entries:
-			entry.db_set("journal_entry", self.create_journal_entry(entry).name, update_modified=False)
+			entry.journal_entry = self.create_journal_entry(entry).name
 
-		self.db_set(
-			{
-				"status": POSTED,
-				"posted_on": now_datetime(),
-				"posted_by": frappe.session.user,
-			}
-		)
+		self.status = POSTED
+		self.posted_on = now_datetime()
+		self.posted_by = frappe.session.user
+
+		# Saved through the document, not written past it: validation, hooks and
+		# the version history have to see this change like any other.
+		self.save()
 
 		frappe.msgprint(
 			_("{0} entries posted.").format(len(self.entries)),

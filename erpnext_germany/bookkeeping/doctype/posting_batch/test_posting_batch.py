@@ -41,6 +41,8 @@ def create_batch(entries=None, **kwargs) -> "frappe.Document":
 
 class TestPostingBatch(FrappeTestCase):
 	def setUp(self):
+		# frappe.db.delete on purpose: a lockdown cannot be removed through the
+		# document lifecycle by design, so test isolation has to go past it.
 		frappe.db.delete("Ledger Lockdown")
 		clear_lockdown_cache()
 

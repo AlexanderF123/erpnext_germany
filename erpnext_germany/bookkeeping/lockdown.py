@@ -33,12 +33,17 @@ def get_locked_up_to(company: str) -> date | None:
 	if cached is not None:
 		return getdate(cached) if cached else None
 
-	locked_up_to = frappe.db.get_value(
+	# Deliberately independent of the caller's read rights: a closed period is
+	# closed for everyone, including users who cannot see the lockdown record.
+	rows = frappe.get_all(
 		"Ledger Lockdown",
-		{"company": company},
-		"locked_up_to",
+		filters={"company": company},
+		pluck="locked_up_to",
 		order_by="locked_up_to desc",
+		limit=1,
+		ignore_permissions=True,
 	)
+	locked_up_to = rows[0] if rows else None
 
 	# Store "" rather than None so that "no lockdown" is cached too.
 	cache.hset(CACHE_KEY, company, locked_up_to or "")
