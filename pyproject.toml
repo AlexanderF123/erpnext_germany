@@ -21,7 +21,7 @@ frappe = ">=15.64.0,<16.0.0"
 erpnext = ">=15.58.0,<16.0.0"
 
 [tool.pytest.ini_options]
-# Tests below a doctype directory need a running site and are executed by
+# Tests below a doctype or report directory need a running site and are run by
 # `bench run-tests`, not by pytest. Everything else must stay import-safe
 # without a bench.
 addopts = "--ignore-glob=*/doctype/* --ignore-glob=*/report/*"
