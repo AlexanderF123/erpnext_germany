@@ -1669,3 +1669,7 @@ msgstr "Vorjahr in {0}"
 #: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.py:138
 msgid "Previous year up to and including {0}"
 msgstr "Vorjahr bis einschließlich {0}"
+
+#: erpnext_germany/modules.txt
+msgid "Bookkeeping"
+msgstr "Buchführung"
