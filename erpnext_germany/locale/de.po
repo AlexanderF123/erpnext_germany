@@ -1653,3 +1653,19 @@ msgstr "Wer ist für {0} gereist? Dort gibt es keinen Mitarbeiterdatensatz für 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_allowance/business_trip_allowance.json
 msgid "Only tick what was actually provided. Nothing here is assumed."
 msgstr "Nur ankreuzen, was tatsächlich gestellt wurde. Hier wird nichts unterstellt."
+
+#: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.js:58
+msgid "Compare With Previous Year"
+msgstr "Vorjahresvergleich"
+
+#: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.js:64
+msgid "Hide Accounts Without Balance"
+msgstr "Konten ohne Saldo ausblenden"
+
+#: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.py:131
+msgid "Previous year in {0}"
+msgstr "Vorjahr in {0}"
+
+#: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.py:138
+msgid "Previous year up to and including {0}"
+msgstr "Vorjahr bis einschließlich {0}"

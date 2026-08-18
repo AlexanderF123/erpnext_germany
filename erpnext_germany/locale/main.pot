@@ -1143,3 +1143,19 @@ msgstr ""
 msgid "{} Open"
 msgstr ""
 
+
+#: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.js:58
+msgid "Compare With Previous Year"
+msgstr ""
+
+#: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.js:64
+msgid "Hide Accounts Without Balance"
+msgstr ""
+
+#: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.py:131
+msgid "Previous year in {0}"
+msgstr ""
+
+#: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.py:138
+msgid "Previous year up to and including {0}"
+msgstr ""
