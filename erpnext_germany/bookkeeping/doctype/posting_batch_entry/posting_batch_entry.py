@@ -24,6 +24,7 @@ class PostingBatchEntry(Document):
 		from frappe.types import DF
 
 		account: DF.Link
+		applied_tax_key: DF.Link | None
 		against_account: DF.Link
 		amount: DF.Currency
 		cost_center: DF.Link | None

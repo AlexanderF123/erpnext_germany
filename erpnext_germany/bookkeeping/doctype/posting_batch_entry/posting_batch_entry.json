@@ -16,6 +16,7 @@
   "section_break_tax",
   "net_amount",
   "column_break_tax",
+  "applied_tax_key",
   "tax_account",
   "deductible_tax_account",
   "section_break_details",
@@ -117,6 +118,15 @@
   {
    "fieldname": "column_break_tax",
    "fieldtype": "Column Break"
+  },
+  {
+   "description": "The key that actually applied: the one typed on the line, or the one on the account.",
+   "fieldname": "applied_tax_key",
+   "fieldtype": "Link",
+   "label": "Applied Tax Key",
+   "no_copy": 1,
+   "options": "Tax Key",
+   "read_only": 1
   },
   {
    "description": "Derived from the tax key of this company.",

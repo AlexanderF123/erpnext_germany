@@ -297,7 +297,7 @@ def make_tax_key(name: str, effect: str, rate: float, accounts=None, **kwargs) -
 		{
 			"doctype": "Tax Key",
 			"tax_key_name": name,
-			"key_number": name,
+			"key_number": str(abs(hash(name)) % 10**8),
 			"effect": effect,
 			"rate": rate,
 			"accounts": accounts or [],
@@ -351,7 +351,8 @@ class TestPostingBatchTax(FrappeTestCase):
 		batch = create_batch(entries=[entry(amount=119.0, account=self.expense, against_account=self.asset)])
 
 		line = batch.entries[0]
-		self.assertEqual(line.tax_key, "VSt 19")
+		self.assertEqual(line.applied_tax_key, "VSt 19")
+		self.assertIsNone(line.tax_key)
 		self.assertEqual(line.net_amount, 100.0)
 		self.assertEqual(line.tax_amount, 19.0)
 		self.assertEqual(line.tax_account, self.input_tax)
@@ -369,6 +370,7 @@ class TestPostingBatchTax(FrappeTestCase):
 
 		line = batch.entries[0]
 		self.assertEqual(line.tax_key, "VSt 7")
+		self.assertEqual(line.applied_tax_key, "VSt 7")
 		self.assertEqual(line.net_amount, 100.0)
 		self.assertEqual(line.tax_amount, 7.0)
 
@@ -376,7 +378,7 @@ class TestPostingBatchTax(FrappeTestCase):
 		batch = create_batch(entries=[entry(amount=119.0)])
 
 		line = batch.entries[0]
-		self.assertIsNone(line.tax_key)
+		self.assertIsNone(line.applied_tax_key)
 		self.assertEqual(line.net_amount, 119.0)
 		self.assertEqual(line.tax_amount, 0.0)
 		self.assertIsNone(line.tax_account)

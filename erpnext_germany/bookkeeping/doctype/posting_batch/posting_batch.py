@@ -126,6 +126,10 @@ class PostingBatch(Document):
 			label=label,
 		)
 
+		# The typed key stays as typed -- empty means the account decided, which
+		# is how a DATEV booking line reads. What actually applied is recorded
+		# separately, so an override can be traced afterwards.
+		entry.applied_tax_key = derived.tax_key
 		entry.net_amount = derived.net
 		entry.tax_amount = derived.tax
 		entry.tax_account = derived.tax_account
