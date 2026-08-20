@@ -1981,7 +1981,7 @@ msgid "Account Label"
 msgstr "Kontobeschriftung"
 
 msgid "What this company calls the account. Used for entry and reports; the chart of accounts itself stays as it is."
-msgstr "Wie diese Gesellschaft das Konto nennt. Gilt in Erfassung und Auswertungen; der Kontenrahmen selbst bleibt unveraendert."
+msgstr "Wie diese Gesellschaft das Konto nennt. Gilt in Erfassung und Auswertungen; der Kontenrahmen selbst bleibt unverändert."
 
 msgid "General Reversal"
 msgstr "Generalumkehr"
@@ -2029,7 +2029,7 @@ msgid "This entry was reversed by {0}."
 msgstr "Diese Buchung wurde durch {0} storniert."
 
 msgid "Why this entry is being corrected. Stays with the reversal."
-msgstr "Warum diese Buchung korrigiert wird. Bleibt an der Generalumkehr haengen."
+msgstr "Warum diese Buchung korrigiert wird. Bleibt an der Generalumkehr hängen."
 
 msgctxt "General reversal dialog"
 msgid "Reverse"
@@ -2051,10 +2051,10 @@ msgid "Chart of Accounts"
 msgstr "Kontenrahmen"
 
 msgid "Which chart the account ranges belong to, e.g. SKR03. Ranges are read as numbers, so a form belongs to the chart it was written for."
-msgstr "Zu welchem Kontenrahmen die Kontenbereiche gehoeren, z. B. SKR03. Bereiche werden als Zahlen gelesen, eine Form gehoert also zu dem Rahmen, fuer den sie geschrieben wurde."
+msgstr "Zu welchem Kontenrahmen die Kontenbereiche gehören, z. B. SKR03. Bereiche werden als Zahlen gelesen, eine Form gehört also zu dem Rahmen, für den sie geschrieben wurde."
 
 msgid "Used when no arrangement is chosen in the report."
-msgstr "Wird verwendet, wenn im Bericht keine Form gewaehlt ist."
+msgstr "Wird verwendet, wenn im Bericht keine Form gewählt ist."
 
 msgid "The number the line is referred to by. Result lines point at these."
 msgstr "Die Nummer, unter der die Zeile angesprochen wird. Ergebniszeilen verweisen darauf."
@@ -2063,7 +2063,7 @@ msgid "How the line is printed, e.g. Gesamtleistung."
 msgstr "Wie die Zeile gedruckt wird, z. B. Gesamtleistung."
 
 msgid "Which way is up for this line. On an account line it decides whether the figure reads as revenue or as cost; on a result line it decides whether the total is printed as it stands or the other way round, so that a cost total can be printed positive."
-msgstr "Welche Richtung fuer diese Zeile oben ist. Auf einer Kontenzeile entscheidet sie, ob der Betrag als Erloes oder als Kosten gelesen wird; auf einer Ergebniszeile, ob die Summe so gedruckt wird, wie sie steht, oder umgekehrt, damit eine Kostensumme positiv gedruckt werden kann."
+msgstr "Welche Richtung für diese Zeile oben ist. Auf einer Kontenzeile entscheidet sie, ob der Betrag als Erlös oder als Kosten gelesen wird; auf einer Ergebniszeile, ob die Summe so gedruckt wird, wie sie steht, oder umgekehrt, damit eine Kostensumme positiv gedruckt werden kann."
 
 msgid "One account number or range per line, e.g. 4100-4199. Lines starting with # are notes."
 msgstr "Eine Kontonummer oder ein Bereich je Zeile, z. B. 4100-4199. Zeilen mit # sind Notizen."
@@ -2078,13 +2078,13 @@ msgid "The line this one is expressed as a percentage of."
 msgstr "Die Zeile, von der diese der Prozentsatz ist."
 
 msgid "Choose the arrangement the BWA should be drawn up in."
-msgstr "Form waehlen, in der die BWA aufgestellt werden soll."
+msgstr "Form wählen, in der die BWA aufgestellt werden soll."
 
 msgid "Row {0} appears twice."
 msgstr "Zeile {0} kommt zweimal vor."
 
 msgid "Row {0} comes after row {1}. The rows have to be numbered upwards."
-msgstr "Zeile {0} steht nach Zeile {1}. Die Zeilen muessen aufsteigend nummeriert sein."
+msgstr "Zeile {0} steht nach Zeile {1}. Die Zeilen müssen aufsteigend nummeriert sein."
 
 msgid "Row {0} has an unknown type {1}."
 msgstr "Zeile {0} hat den unbekannten Typ {1}."
@@ -2099,7 +2099,7 @@ msgid "Row {0} starts its total at row {1} and ends it at row {2}."
 msgstr "Zeile {0} beginnt ihre Summe bei Zeile {1} und endet bei Zeile {2}."
 
 msgid "Row {0} would count itself or a line below it."
-msgstr "Zeile {0} wuerde sich selbst oder eine Zeile darunter mitzaehlen."
+msgstr "Zeile {0} würde sich selbst oder eine Zeile darunter mitzählen."
 
 msgid "Result Points Downwards"
 msgstr "Ergebnis verweist nach unten"
@@ -2130,10 +2130,10 @@ msgid "Kontoblatt"
 msgstr "Kontoblatt"
 
 msgid "Choose the account whose sheet you want to see."
-msgstr "Konto waehlen, dessen Kontoblatt angezeigt werden soll."
+msgstr "Konto wählen, dessen Kontoblatt angezeigt werden soll."
 
 msgid "Choose a company."
-msgstr "Gesellschaft waehlen."
+msgstr "Gesellschaft wählen."
 
 msgid "Document Field 1"
 msgstr "Belegfeld 1"
@@ -2157,15 +2157,84 @@ msgid "Show document"
 msgstr "Beleg anzeigen"
 
 msgid "Close Document"
-msgstr "Beleg schliessen"
+msgstr "Beleg schließen"
 
 msgctxt "Document panel"
 msgid "Open"
-msgstr "Oeffnen"
+msgstr "Öffnen"
 
 msgctxt "Document panel"
 msgid "Close"
-msgstr "Schliessen"
+msgstr "Schließen"
 
 msgid "Document"
 msgstr "Beleg"
+
+msgid "Pruefliste Monatsabschluss"
+msgstr "Prüfliste Monatsabschluss"
+
+msgid "Month End Checklist"
+msgstr "Prüfliste Monatsabschluss"
+
+msgid "VAT Verification"
+msgstr "Umsatzsteuer-Verprobung"
+
+msgid "Balances on Clearing Accounts"
+msgstr "Salden auf Verrechnungs- und Interimskonten"
+
+msgid "Postings Without a Cost Center"
+msgstr "Buchungen ohne Kostenstelle"
+
+msgid "Suppliers With a Debit Balance"
+msgstr "Kreditoren mit Sollsaldo"
+
+msgid "Customers With a Credit Balance"
+msgstr "Debitoren mit Habensaldo"
+
+msgid "Postings to Disabled Accounts"
+msgstr "Buchungen auf gesperrten Konten"
+
+msgid "Vouchers Without a Document"
+msgstr "Belege ohne Anhang"
+
+msgid "Expected {0}, booked {1}. From: {2}"
+msgstr "Erwartet {0}, gebucht {1}. Aus: {2}"
+
+msgid "no accounts"
+msgstr "keine Konten"
+
+msgid "{0}: {1} finding(s)"
+msgstr "{0}: {1} Auffälligkeit(en)"
+
+msgid "Nothing to look at."
+msgstr "Nichts zu prüfen."
+
+msgid "This period has not been closed yet. The checklist is filed with the lockdown."
+msgstr "Dieser Zeitraum ist noch nicht festgeschrieben. Die Prüfliste wird zur Festschreibung abgelegt."
+
+msgid "Nothing to File Against"
+msgstr "Keine Festschreibung vorhanden"
+
+msgid "Check"
+msgstr "Prüfung"
+
+msgid "Findings"
+msgstr "Auffälligkeiten"
+
+msgid "Detail"
+msgstr "Detail"
+
+msgid "Only Checks With Findings"
+msgstr "Nur Prüfungen mit Auffälligkeiten"
+
+msgid "Clean"
+msgstr "In Ordnung"
+
+msgid "Attention"
+msgstr "Prüfen"
+
+msgid "File With The Lockdown"
+msgstr "Zur Festschreibung ablegen"
+
+msgid "Filed with the lockdown."
+msgstr "Zur Festschreibung abgelegt."

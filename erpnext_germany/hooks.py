@@ -133,6 +133,12 @@ doc_events = {
 	},
 	# Cancelling is refused up front, so the user gets a clear message instead
 	# of a failure halfway through the reversal.
+	# The checklist is filed as the period stops being changeable: the evidence
+	# is worth having exactly at that moment, and a step somebody has to
+	# remember is one that gets skipped in a busy month.
+	"Ledger Lockdown": {
+		"after_insert": "erpnext_germany.bookkeeping.month_end.archive_on_lockdown",
+	},
 	"Journal Entry": {
 		"before_cancel": f"{LOCKDOWN}.block_cancellation_in_locked_period",
 		"validate": "erpnext_germany.bookkeeping.reversal.set_reversal_reason_mandatory",
@@ -286,7 +292,7 @@ BWA_SCHEMAS = [
 		"chart_of_accounts": "SKR03",
 		"is_default": 1,
 		"description": (
-			"Standardform der BWA fuer SKR03. Die Kontenzuordnung ist vor dem produktiven"
+			"Standardform der BWA für SKR03. Die Kontenzuordnung ist vor dem produktiven"
 			" Einsatz mit dem Steuerberater abzugleichen."
 		),
 		"rows": [

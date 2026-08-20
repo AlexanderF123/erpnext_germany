@@ -93,6 +93,41 @@ def resolve_tax_key(account_key: str | None, line_key: str | None) -> str | None
 	return line_key or account_key
 
 
+class TaxVerification(NamedTuple):
+	"""What a tax account should hold, what it holds, and the difference."""
+
+	expected: float
+	booked: float
+	deviation: float
+
+	def is_clean(self, tolerance: float = 0.0) -> bool:
+		return abs(self.deviation) <= tolerance + 0.005
+
+
+def expected_tax(net: float, rate: float) -> float:
+	"""The tax that a net turnover of this size at this rate should have produced."""
+	if rate < 0:
+		raise ValueError(f"Rate must not be negative, got {rate!r}")
+
+	return _cents(net * rate / 100)
+
+
+def verify_tax(expected: float, booked: float) -> TaxVerification:
+	"""Compare what a tax account holds with what the turnover implies.
+
+	This is the Umsatzsteuer-Verprobung, the check every German practice runs
+	before a return goes out. The deviation is booked minus expected, so a
+	positive figure means too much tax was booked -- which is the direction
+	that gets a practice into trouble, and so the direction worth reading at a
+	glance.
+
+	It will rarely be exactly nought even on clean books: tax is rounded per
+	document and the check computes it on the sum. That is why the caller sets
+	a tolerance instead of this deciding what counts as clean.
+	"""
+	return TaxVerification(expected, booked, _cents(booked - expected))
+
+
 def _decimal(value: float) -> Decimal:
 	return Decimal(str(value))
 
