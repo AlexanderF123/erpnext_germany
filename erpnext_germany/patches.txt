@@ -18,3 +18,4 @@ execute:from erpnext_germany.install import make_custom_fields; make_custom_fiel
 execute:from erpnext_germany.install import insert_custom_records; insert_custom_records() # 2026-08-20 tax keys
 execute:from erpnext_germany.install import make_property_setters; make_property_setters() # 2026-08-20 account search
 execute:from erpnext_germany.install import make_custom_fields; make_custom_fields() # 2026-08-20 account label
+execute:from erpnext_germany.install import make_custom_fields; make_custom_fields() # 2026-08-20 general reversal

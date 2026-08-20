@@ -215,6 +215,49 @@ def get_custom_fields():
 				"translatable": 0,
 			}
 		],
+		# A posted entry is never deleted and never edited, only reversed -- and
+		# the reversal has to say why and stay tied to what it undoes.
+		"Journal Entry": [
+			{
+				"fieldtype": "Section Break",
+				"fieldname": "german_reversal_sb",
+				"label": _("General Reversal"),
+				"insert_after": "user_remark",
+				"collapsible": 1,
+				"collapsible_depends_on": "eval: doc.reversal_of || doc.reversed_by",
+			},
+			{
+				"fieldtype": "Link",
+				"fieldname": "reversal_of",
+				"label": _("Reversal Of"),
+				"options": "Journal Entry",
+				"read_only": 1,
+				"insert_after": "german_reversal_sb",
+				"no_copy": 1,
+			},
+			{
+				"fieldtype": "Small Text",
+				"fieldname": "reversal_reason",
+				"label": _("Reversal Reason"),
+				"depends_on": "reversal_of",
+				"mandatory_depends_on": "reversal_of",
+				"read_only_depends_on": "eval: doc.docstatus > 0",
+				"insert_after": "reversal_of",
+				"no_copy": 1,
+			},
+			{
+				"fieldtype": "Link",
+				"fieldname": "reversed_by",
+				"label": _("Reversed By"),
+				"options": "Journal Entry",
+				"read_only": 1,
+				# Set once the reversal exists, which is after this entry was
+				# posted -- hence editable after submit.
+				"allow_on_submit": 1,
+				"insert_after": "reversal_reason",
+				"no_copy": 1,
+			},
+		],
 		"Account": [
 			{
 				"fieldtype": "Data",

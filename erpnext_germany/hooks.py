@@ -33,7 +33,7 @@ app_include_js = [
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {}
+doctype_js = {"Journal Entry": "public/js/journal_entry.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -135,6 +135,7 @@ doc_events = {
 	# of a failure halfway through the reversal.
 	"Journal Entry": {
 		"before_cancel": f"{LOCKDOWN}.block_cancellation_in_locked_period",
+		"validate": "erpnext_germany.bookkeeping.reversal.set_reversal_reason_mandatory",
 	},
 	"Payment Entry": {
 		"before_cancel": f"{LOCKDOWN}.block_cancellation_in_locked_period",
