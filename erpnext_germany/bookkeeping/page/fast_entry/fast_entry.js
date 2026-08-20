@@ -27,11 +27,21 @@ frappe.provide("erpnext_germany");
 // to relearn anything, which is the whole point of this screen.
 const FIELDS = [
 	{ fieldname: "amount", label: __("Amount"), kind: "amount", width: 120 },
-	{ fieldname: "direction", label: __("D/C"), kind: "direction", width: 60 },
+	{
+		fieldname: "direction",
+		label: __("D/C", null, "Debit or credit column"),
+		kind: "direction",
+		width: 60,
+	},
 	{ fieldname: "tax_key", label: __("Tax Key"), kind: "tax_key", width: 110 },
 	{ fieldname: "against_account", label: __("Contra Account"), kind: "account", width: 190 },
 	{ fieldname: "document_number", label: __("Document Number"), kind: "text", width: 120 },
-	{ fieldname: "document_number_2", label: __("Second Document Number"), kind: "text", width: 120 },
+	{
+		fieldname: "document_number_2",
+		label: __("Second Document Number"),
+		kind: "text",
+		width: 120,
+	},
 	{ fieldname: "posting_date", label: __("Posting Date"), kind: "date", width: 110 },
 	{ fieldname: "account", label: __("Account"), kind: "account", width: 190 },
 	{ fieldname: "cost_center", label: __("Cost Center"), kind: "cost_center", width: 150 },
@@ -98,9 +108,9 @@ erpnext_germany.FastEntry = class FastEntry {
 
 		this.$hint.html(
 			[
-				`<kbd>${__("Enter")}</kbd> ${__("saves the line")}`,
+				`<kbd>Enter</kbd> ${__("saves the line")}`,
 				`<kbd>F2</kbd> ${__("copies the previous line")}`,
-				`<kbd>${__("Esc")}</kbd> ${__("clears the line")}`,
+				`<kbd>Esc</kbd> ${__("clears the line")}`,
 			].join(" &middot; ")
 		);
 
@@ -113,14 +123,16 @@ erpnext_germany.FastEntry = class FastEntry {
 	render_head() {
 		const cells = FIELDS.map(
 			(field) =>
-				`<div class="fe-cell fe-head-cell" style="width:${field.width}px">${frappe.utils.escape_html(
-					field.label
-				)}</div>`
+				`<div class="fe-cell fe-head-cell" style="width:${
+					field.width
+				}px">${frappe.utils.escape_html(field.label)}</div>`
 		).join("");
 
-		$(`<div class="fe-row fe-head">${cells}<div class="fe-cell fe-derived">${__(
-			"Net / Tax"
-		)}</div></div>`).appendTo(this.$table);
+		$(
+			`<div class="fe-row fe-head">${cells}<div class="fe-cell fe-derived">${__(
+				"Net / Tax"
+			)}</div></div>`
+		).appendTo(this.$table);
 	}
 
 	render_line() {
@@ -132,9 +144,7 @@ erpnext_germany.FastEntry = class FastEntry {
 			);
 			const $input = $(
 				`<input type="text" class="fe-input" data-fieldname="${field.fieldname}"
-					autocomplete="off" spellcheck="false" aria-label="${frappe.utils.escape_html(
-						field.label
-					)}">`
+					autocomplete="off" spellcheck="false" aria-label="${frappe.utils.escape_html(field.label)}">`
 			).appendTo($cell);
 
 			if (field.kind === "amount") {
@@ -145,7 +155,9 @@ erpnext_germany.FastEntry = class FastEntry {
 			this.bind_input(field, $input);
 		}
 
-		this.$preview = $('<div class="fe-cell fe-derived fe-preview"></div>').appendTo(this.$line);
+		this.$preview = $('<div class="fe-cell fe-derived fe-preview"></div>').appendTo(
+			this.$line
+		);
 	}
 
 	set_enabled(enabled) {
@@ -220,7 +232,7 @@ erpnext_germany.FastEntry = class FastEntry {
 			// a dropdown would be slower than the paper journal it replaces.
 			const value = normalise_direction($input.val());
 			if (value) {
-				$input.val(value === "Debit" ? __("D") : __("C"));
+				$input.val(value === "Debit" ? debit_letter() : credit_letter());
 				this.focus_next(field.fieldname);
 			}
 			return;
@@ -365,10 +377,10 @@ erpnext_germany.FastEntry = class FastEntry {
 		this.reset_line(this.carry_over(values));
 
 		try {
-			const result = await frappe.xcall(
-				"erpnext_germany.bookkeeping.fast_entry.add_entry",
-				{ batch: this.context.batch.name, row: values }
-			);
+			const result = await frappe.xcall("erpnext_germany.bookkeeping.fast_entry.add_entry", {
+				batch: this.context.batch.name,
+				row: values,
+			});
 			this.confirm_row($row, result.row);
 			this.apply_totals(result.totals);
 		} catch (error) {
@@ -433,9 +445,9 @@ erpnext_germany.FastEntry = class FastEntry {
 		const cells = FIELDS.map((field) => {
 			const value = display_value(field, row[field.fieldname], this);
 			return `<div class="fe-cell${field.kind === "amount" ? " fe-right" : ""}"
-				style="width:${field.width}px" title="${frappe.utils.escape_html(value)}">${frappe.utils.escape_html(
+				style="width:${field.width}px" title="${frappe.utils.escape_html(
 				value
-			)}</div>`;
+			)}">${frappe.utils.escape_html(value)}</div>`;
 		}).join("");
 
 		return `<div class="fe-row ${state}">${cells}<div class="fe-cell fe-derived">${derived_text(
@@ -447,8 +459,12 @@ erpnext_germany.FastEntry = class FastEntry {
 		const format = (value) => format_currency(value, frappe.defaults.get_default("currency"));
 		this.$totals.html(
 			[
-				`<span class="fe-total"><label>${__("Number of Entries")}</label>${totals.entry_count}</span>`,
-				`<span class="fe-total"><label>${__("Total Amount")}</label>${format(totals.total_amount)}</span>`,
+				`<span class="fe-total"><label>${__("Number of Entries")}</label>${
+					totals.entry_count
+				}</span>`,
+				`<span class="fe-total"><label>${__("Total Amount")}</label>${format(
+					totals.total_amount
+				)}</span>`,
 				`<span class="fe-total"><label>${__("Total Net Amount")}</label>${format(
 					totals.total_net_amount
 				)}</span>`,
@@ -470,9 +486,9 @@ erpnext_germany.FastEntry = class FastEntry {
 		const $list = $('<div class="fe-suggestions"></div>');
 		items.forEach((item, position) => {
 			$(
-				`<div class="fe-suggestion${position === 0 ? " fe-active" : ""}">${frappe.utils.escape_html(
-					item.display
-				)}</div>`
+				`<div class="fe-suggestion${
+					position === 0 ? " fe-active" : ""
+				}">${frappe.utils.escape_html(item.display)}</div>`
 			)
 				.data("item", item)
 				// mousedown, not click: blur would close the list first.
@@ -582,12 +598,23 @@ erpnext_germany.FastEntry = class FastEntry {
 
 // --- pure helpers --------------------------------------------------------
 
+function debit_letter() {
+	return __("D", null, "Debit shorthand");
+}
+
+function credit_letter() {
+	return __("C", null, "Credit shorthand");
+}
+
 function normalise_direction(raw) {
 	const value = (raw || "").trim().toUpperCase();
-	if (["S", "D"].includes(value)) {
+	// S/H for Soll and Haben, D/C for debit and credit, plus whatever the
+	// translation made of them: a typist should not have to think about which
+	// language the screen is in.
+	if (["S", "D", debit_letter().toUpperCase()].includes(value)) {
 		return "Debit";
 	}
-	if (["H", "C"].includes(value)) {
+	if (["H", "C", credit_letter().toUpperCase()].includes(value)) {
 		return "Credit";
 	}
 	return null;
@@ -596,7 +623,10 @@ function normalise_direction(raw) {
 function parse_amount(raw) {
 	// German keyboards produce a comma; both separators mean the same thing
 	// here and refusing one would only cost a correction.
-	const cleaned = raw.replace(/\s/g, "").replace(/\.(?=\d{3}\b)/g, "").replace(",", ".");
+	const cleaned = raw
+		.replace(/\s/g, "")
+		.replace(/\.(?=\d{3}\b)/g, "")
+		.replace(",", ".");
 	const value = parseFloat(cleaned);
 	return isNaN(value) ? "" : value;
 }
@@ -665,7 +695,11 @@ function display_value(field, value, screen) {
 
 	switch (field.kind) {
 		case "direction":
-			return value === "Debit" ? __("D") : value === "Credit" ? __("C") : String(value);
+			return value === "Debit"
+				? debit_letter()
+				: value === "Credit"
+				? credit_letter()
+				: String(value);
 		case "amount":
 			return typeof value === "number" ? format_number(value, null, 2) : String(value);
 		case "date":

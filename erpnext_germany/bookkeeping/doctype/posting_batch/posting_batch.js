@@ -23,6 +23,14 @@ frappe.ui.form.on("Posting Batch", {
 			return;
 		}
 
+		if (!frm.is_new()) {
+			// The form is for looking at a batch and correcting single lines;
+			// typing a stack of documents belongs on the fast entry screen.
+			frm.add_custom_button(__("Fast Entry"), () =>
+				frappe.set_route("fast-entry", frm.doc.name)
+			);
+		}
+
 		if (!frm.is_new() && frm.doc.entries?.length) {
 			frm.add_custom_button(__("Post Batch"), () => confirm_posting(frm)).addClass(
 				"btn-primary"

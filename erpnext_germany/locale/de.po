@@ -1913,3 +1913,66 @@ msgstr "Summe der Nettobeträge. Weicht vom Gesamtbetrag ab, sobald Steuer im Sp
 
 msgid "Sum of the derived tax. Under reverse charge this tax is not part of the total amount."
 msgstr "Summe der abgeleiteten Steuer. Bei Reverse Charge ist diese Steuer nicht Teil des Gesamtbetrags."
+
+msgid "Fast Entry"
+msgstr "Schnellerfassung"
+
+msgid "Booking Text Shortcut"
+msgstr "Textkonstante"
+
+msgid "Booking Text"
+msgstr "Buchungstext"
+
+msgid "Shortcut"
+msgstr "Kürzel"
+
+msgid "Net / Tax"
+msgstr "Netto / Steuer"
+
+msgid "Open Batch"
+msgstr "Stapel öffnen"
+
+msgid "saves the line"
+msgstr "bucht die Zeile"
+
+msgid "copies the previous line"
+msgstr "übernimmt die Vorzeile"
+
+msgid "clears the line"
+msgstr "leert die Zeile"
+
+msgid "Enter an amount."
+msgstr "Betrag eingeben."
+
+msgid "Enter D for debit or C for credit."
+msgstr "S für Soll oder H für Haben eingeben."
+
+msgid "Enter an account and a contra account."
+msgstr "Konto und Gegenkonto eingeben."
+
+msgid "Account and contra account must be different."
+msgstr "Konto und Gegenkonto müssen verschieden sein."
+
+msgid "Enter a posting date."
+msgstr "Buchungsdatum eingeben."
+
+msgid "This line is no longer part of the batch."
+msgstr "Diese Zeile gehört nicht mehr zum Stapel."
+
+msgid "A shortcut cannot be empty."
+msgstr "Ein Kürzel darf nicht leer sein."
+
+msgid "Typed into the booking text and expanded on Tab, e.g. MI for Miete."
+msgstr "Wird im Buchungstext getippt und mit Tab ausgeschrieben, z. B. MI für Miete."
+
+msgctxt "Debit or credit column"
+msgid "D/C"
+msgstr "S/H"
+
+msgctxt "Debit shorthand"
+msgid "D"
+msgstr "S"
+
+msgctxt "Credit shorthand"
+msgid "C"
+msgstr "H"
