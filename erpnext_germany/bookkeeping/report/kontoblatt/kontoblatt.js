@@ -66,7 +66,7 @@ frappe.query_reports["Kontoblatt"] = {
 
 	onload(report) {
 		report.page.add_inner_button(__("Close Document"), () =>
-			erpnext_germany.account_sheet.close_document(),
+			erpnext_germany.account_sheet.close_document()
 		);
 
 		// Delegated once for the whole sheet: the rows are redrawn on every
@@ -76,7 +76,7 @@ frappe.query_reports["Kontoblatt"] = {
 			const target = event.currentTarget;
 			erpnext_germany.account_sheet.show_document(
 				target.dataset.egdDocument,
-				target.dataset.egdTitle,
+				target.dataset.egdTitle
 			);
 		});
 	},

@@ -141,5 +141,5 @@ frappe.dom.set_style(
 		object-fit: contain;
 	}
 `,
-	"erpnext-germany-document-panel",
+	"erpnext-germany-document-panel"
 );

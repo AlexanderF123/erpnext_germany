@@ -137,6 +137,6 @@ function get_ledger_link(data) {
 			to_date: data.period_to_date,
 			cost_center: filters.cost_center,
 		},
-		data.label,
+		data.label
 	);
 }
