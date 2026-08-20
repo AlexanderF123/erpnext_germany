@@ -1976,3 +1976,9 @@ msgstr "S"
 msgctxt "Credit shorthand"
 msgid "C"
 msgstr "H"
+
+msgid "Account Label"
+msgstr "Kontobeschriftung"
+
+msgid "What this company calls the account. Used for entry and reports; the chart of accounts itself stays as it is."
+msgstr "Wie diese Gesellschaft das Konto nennt. Gilt in Erfassung und Auswertungen; der Kontenrahmen selbst bleibt unveraendert."
