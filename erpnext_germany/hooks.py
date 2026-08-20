@@ -222,7 +222,54 @@ scheduler_events = {
 
 export_python_type_annotations = True
 
-germany_custom_records = [
+# The standard German tax keys. Rate and effect follow from the law, the
+# numbers from the DATEV chart of accounts (SKR03/SKR04). Shipped without tax
+# accounts on purpose: those depend on the chart of the individual company and
+# are filled in once, per company, by the accountant.
+TAX_KEYS = [
+	{
+		"doctype": "Tax Key",
+		"tax_key_name": "Vorsteuer 19 %",
+		"key_number": "9",
+		"effect": "Input Tax",
+		"rate": 19.0,
+		"description": "Regelsteuersatz, § 12 Abs. 1 UStG.",
+	},
+	{
+		"doctype": "Tax Key",
+		"tax_key_name": "Vorsteuer 7 %",
+		"key_number": "8",
+		"effect": "Input Tax",
+		"rate": 7.0,
+		"description": "Ermäßigter Steuersatz, § 12 Abs. 2 UStG.",
+	},
+	{
+		"doctype": "Tax Key",
+		"tax_key_name": "Umsatzsteuer 19 %",
+		"key_number": "3",
+		"effect": "Output Tax",
+		"rate": 19.0,
+		"description": "Regelsteuersatz, § 12 Abs. 1 UStG.",
+	},
+	{
+		"doctype": "Tax Key",
+		"tax_key_name": "Umsatzsteuer 7 %",
+		"key_number": "2",
+		"effect": "Output Tax",
+		"rate": 7.0,
+		"description": "Ermäßigter Steuersatz, § 12 Abs. 2 UStG.",
+	},
+	{
+		"doctype": "Tax Key",
+		"tax_key_name": "Steuerfrei",
+		"key_number": "0",
+		"effect": "Tax Free",
+		"rate": 0.0,
+		"description": "Steuerfreier Umsatz, z. B. § 4 UStG.",
+	},
+]
+
+germany_custom_records = TAX_KEYS + [
 	{
 		"doctype": "DocType Link",
 		"parent": "Customer",
