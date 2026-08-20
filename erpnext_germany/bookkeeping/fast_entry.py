@@ -19,6 +19,7 @@ a line typed here is validated and taxed exactly like one typed in the form.
 import frappe
 from frappe import _
 
+from erpnext_germany.bookkeeping.account_search import get_accounts
 from erpnext_germany.bookkeeping.doctype.posting_batch.posting_batch import OPEN
 
 ENTRY_FIELDS = (
@@ -66,31 +67,6 @@ def get_context(batch: str) -> dict:
 		"rows": [_row(entry) for entry in doc.entries],
 		"totals": _totals(doc),
 	}
-
-
-def get_accounts(company: str) -> list[dict]:
-	"""The postable chart of accounts, number and name.
-
-	Sent in full rather than searched per keystroke: a chart has a few thousand
-	accounts, which is nothing to hold in a browser and the only way an account
-	can be resolved while the finger is still on the key.
-	"""
-	accounts = frappe.get_all(
-		"Account",
-		filters={"company": company, "is_group": 0, "disabled": 0},
-		fields=["name", "account_number", "account_name", "tax_key"],
-		order_by="account_number asc, account_name asc",
-	)
-
-	return [
-		{
-			"name": account.name,
-			"number": account.account_number or "",
-			"label": account.account_name,
-			"tax_key": account.tax_key,
-		}
-		for account in accounts
-	]
 
 
 def get_tax_keys() -> list[dict]:

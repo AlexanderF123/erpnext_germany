@@ -196,9 +196,12 @@ erpnext_germany.FastEntry = class FastEntry {
 	index_accounts() {
 		// Pre-lowercased once so that filtering on every keystroke stays a
 		// plain string compare over an array.
+		// The order comes from the server: accounts used a lot recently first,
+		// because the account being looked for is usually one of a handful.
 		this.account_index = this.context.accounts.map((account) => ({
 			...account,
 			display: account.number ? `${account.number} ${account.label}` : account.label,
+			hint: account.last_used ? frappe.datetime.str_to_user(account.last_used) : "",
 			haystack: `${account.number} ${account.label}`.toLowerCase(),
 		}));
 
@@ -485,10 +488,15 @@ erpnext_germany.FastEntry = class FastEntry {
 
 		const $list = $('<div class="fe-suggestions"></div>');
 		items.forEach((item, position) => {
+			// The date of last use is the quickest way to tell two similarly
+			// named accounts apart without leaving the keyboard.
+			const hint = item.hint
+				? `<span class="fe-suggestion-hint">${frappe.utils.escape_html(item.hint)}</span>`
+				: "";
 			$(
 				`<div class="fe-suggestion${
 					position === 0 ? " fe-active" : ""
-				}">${frappe.utils.escape_html(item.display)}</div>`
+				}">${frappe.utils.escape_html(item.display)}${hint}</div>`
 			)
 				.data("item", item)
 				// mousedown, not click: blur would close the list first.
@@ -761,7 +769,9 @@ function inject_styles() {
 		.fe-pending { opacity: 0.55; }
 		.fe-failed { background: var(--red-50); color: var(--red-600); cursor: pointer; }
 		.fe-suggestions { position: absolute; z-index: 10; top: 100%; left: 0; min-width: 100%; background: var(--fg-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow-md); max-height: 240px; overflow-y: auto; }
-		.fe-suggestion { padding: 4px 8px; font-size: 12px; white-space: nowrap; cursor: pointer; }
+		.fe-suggestion { padding: 4px 8px; font-size: 12px; white-space: nowrap; cursor: pointer; display: flex; justify-content: space-between; gap: 16px; }
+		.fe-suggestion-hint { color: var(--text-muted); font-size: 11px; }
+		.fe-suggestion.fe-active .fe-suggestion-hint { color: inherit; opacity: 0.8; }
 		.fe-suggestion.fe-active { background: var(--primary); color: white; }
 	</style>`).appendTo(document.head);
 }

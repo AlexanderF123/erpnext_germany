@@ -246,7 +246,9 @@ def build_row(
 	row = frappe._dict(
 		{
 			"account": account.name,
-			"account_name": account.account_name,
+			# The company label wins where there is one, so entry and report call
+			# the account the same thing.
+			"account_name": account.account_label or account.account_name,
 			"account_number": account.account_number,
 			"account_currency": account.account_currency,
 			"debit_opening_balance": opening_debit,
@@ -355,6 +357,13 @@ def get_accounts(account_names: set[str]) -> dict[str, frappe._dict]:
 	accounts = frappe.get_all(
 		"Account",
 		filters={"name": ("in", list(account_names))},
-		fields=["name", "account_name", "account_number", "account_currency", "root_type"],
+		fields=[
+			"name",
+			"account_name",
+			"account_label",
+			"account_number",
+			"account_currency",
+			"root_type",
+		],
 	)
 	return {account.name: account for account in accounts}

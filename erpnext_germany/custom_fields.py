@@ -215,9 +215,20 @@ def get_custom_fields():
 				"translatable": 0,
 			}
 		],
-		# The Automatikkonto principle: the tax hangs on the account, so
-		# booking to it is enough to get rate, tax account and tax amount.
 		"Account": [
+			{
+				"fieldtype": "Data",
+				"fieldname": "account_label",
+				"label": _("Account Label"),
+				"description": _(
+					"What this company calls the account. Used for entry and reports; the chart of"
+					" accounts itself stays as it is."
+				),
+				"insert_after": "account_name",
+				"translatable": 0,
+			},
+			# The Automatikkonto principle: the tax hangs on the account, so
+			# booking to it is enough to get rate, tax account and tax amount.
 			{
 				"fieldtype": "Section Break",
 				"fieldname": "german_tax_sb",
