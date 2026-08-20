@@ -224,6 +224,11 @@ class PostingBatch(Document):
 		journal_entry.user_remark = entry.remark
 		journal_entry.bill_no = entry.document_number
 		journal_entry.cheque_no = entry.document_number_2
+		if entry.document_number_2:
+			# ERPNext refuses a reference number without a date. Belegfeld 2 has no
+			# date of its own in DATEV, so the booking date stands in -- which is
+			# also the only date the line was ever given.
+			journal_entry.cheque_date = entry.posting_date
 
 		for account, debit, credit in self.get_ledger_rows(entry):
 			journal_entry.append(

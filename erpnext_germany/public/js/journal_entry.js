@@ -27,7 +27,7 @@ function show_reversal_state(frm) {
 				frappe.utils.get_form_link("Journal Entry", frm.doc.general_reversal_of, true),
 			]),
 			"blue",
-			true
+			true,
 		);
 	}
 
@@ -37,7 +37,7 @@ function show_reversal_state(frm) {
 				frappe.utils.get_form_link("Journal Entry", frm.doc.general_reversal_by, true),
 			]),
 			"orange",
-			true
+			true,
 		);
 	}
 }
