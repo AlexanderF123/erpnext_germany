@@ -2238,3 +2238,21 @@ msgstr "Zur Festschreibung ablegen"
 
 msgid "Filed with the lockdown."
 msgstr "Zur Festschreibung abgelegt."
+
+msgid "GoBD Export"
+msgstr "GoBD-Export"
+
+msgid "Building the audit data package ..."
+msgstr "Prüfdatenpaket wird erstellt ..."
+
+msgid "Package Ready"
+msgstr "Paket erstellt"
+
+msgid "The package is attached to this company: {0}"
+msgstr "Das Paket hängt an dieser Gesellschaft: {0}"
+
+msgid "Download"
+msgstr "Herunterladen"
+
+msgid "Fiscal year {0}, {1} to {2}"
+msgstr "Wirtschaftsjahr {0}, {1} bis {2}"
