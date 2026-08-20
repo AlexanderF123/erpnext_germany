@@ -124,17 +124,17 @@ def ensure_schema() -> str:
 
 
 class TestBetriebswirtschaftlicheAuswertung(FrappeTestCase):
-	@classmethod
-	def setUpClass(cls):
-		super().setUpClass()
-		cls.revenue = ensure_account(REVENUE_NUMBER, "BWA Test Erloese", "Income")
-		cls.material = ensure_account(MATERIAL_NUMBER, "BWA Test Material", "Expense")
-		cls.loose = ensure_account(LOOSE_NUMBER, "BWA Test Ohne Zeile", "Expense")
-		cls.bank = posting_accounts("Asset", 1)[0]
-		ensure_schema()
-		frappe.db.commit()
-
 	def setUp(self):
+		# Set up per test rather than per class, and idempotent either way.
+		# Posting commits, so what a test books outlives the rollback while the
+		# accounts it was booked to would not -- unless every test makes sure
+		# they are there.
+		self.revenue = ensure_account(REVENUE_NUMBER, "BWA Test Erloese", "Income")
+		self.material = ensure_account(MATERIAL_NUMBER, "BWA Test Material", "Expense")
+		self.loose = ensure_account(LOOSE_NUMBER, "BWA Test Ohne Zeile", "Expense")
+		self.bank = posting_accounts("Asset", 1)[0]
+		ensure_schema()
+
 		# frappe.db.delete on purpose: a lockdown cannot be removed through the
 		# document lifecycle by design, so test isolation has to go past it.
 		frappe.db.delete("Ledger Lockdown")
