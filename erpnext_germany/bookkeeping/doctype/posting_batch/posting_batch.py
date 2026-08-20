@@ -7,7 +7,8 @@ from frappe.model.document import Document
 from frappe.utils import flt, format_date, getdate, now_datetime
 
 from erpnext_germany.bookkeeping.lockdown import ensure_can_post
-from erpnext_germany.bookkeeping.posting import split_amount
+from erpnext_germany.bookkeeping.posting import flip, split_amount
+from erpnext_germany.bookkeeping.tax_derivation import derive_tax
 
 POSTED = "Posted"
 OPEN = "Open"
@@ -46,6 +47,8 @@ class PostingBatch(Document):
 		title: DF.Data | None
 		to_date: DF.Date
 		total_amount: DF.Currency
+		total_net_amount: DF.Currency
+		total_tax_amount: DF.Currency
 		voucher_circle: DF.Literal["", "Cash", "Bank", "Purchase Invoices", "Sales Invoices", "Other"]
 	# end: auto-generated types
 
@@ -105,6 +108,29 @@ class PostingBatch(Document):
 		for fieldname in ("account", "against_account"):
 			self.validate_account(label, entry.get(fieldname))
 
+		self.set_tax(entry, label)
+
+	def set_tax(self, entry, label: str):
+		"""Derive net, tax and tax account from the key of the account or line.
+
+		Written onto the line so the split is visible while typing and stays
+		readable afterwards, instead of being recomputed at posting time out of
+		master data that may have moved on since.
+		"""
+		derived = derive_tax(
+			account=entry.account,
+			tax_key=entry.tax_key,
+			amount=entry.amount,
+			company=self.company,
+			posting_date=entry.posting_date,
+			label=label,
+		)
+
+		entry.net_amount = derived.net
+		entry.tax_amount = derived.tax
+		entry.tax_account = derived.tax_account
+		entry.deductible_tax_account = derived.deductible_tax_account
+
 	def validate_account(self, label: str, account: str):
 		details = frappe.get_cached_value(
 			"Account", account, ["company", "is_group", "disabled"], as_dict=True
@@ -131,6 +157,8 @@ class PostingBatch(Document):
 		"""
 		self.entry_count = len(self.entries)
 		self.total_amount = sum(flt(entry.amount) for entry in self.entries)
+		self.total_net_amount = sum(flt(entry.net_amount) for entry in self.entries)
+		self.total_tax_amount = sum(flt(entry.tax_amount) for entry in self.entries)
 
 	def set_title(self):
 		if self.title:
@@ -185,8 +213,6 @@ class PostingBatch(Document):
 
 	def create_journal_entry(self, entry):
 		"""Create and submit the Journal Entry for a single batch line."""
-		debit, credit = split_amount(entry.direction, entry.amount)
-
 		journal_entry = frappe.new_doc("Journal Entry")
 		journal_entry.voucher_type = "Journal Entry"
 		journal_entry.company = self.company
@@ -195,29 +221,50 @@ class PostingBatch(Document):
 		journal_entry.bill_no = entry.document_number
 		journal_entry.cheque_no = entry.document_number_2
 
-		# The amount applies to the account as entered; the contra account
-		# always takes the opposite side.
-		journal_entry.append(
-			"accounts",
-			{
-				"account": entry.account,
-				"cost_center": entry.cost_center,
-				"debit_in_account_currency": debit,
-				"credit_in_account_currency": credit,
-				"user_remark": entry.remark,
-			},
-		)
-		journal_entry.append(
-			"accounts",
-			{
-				"account": entry.against_account,
-				"cost_center": entry.cost_center,
-				"debit_in_account_currency": credit,
-				"credit_in_account_currency": debit,
-				"user_remark": entry.remark,
-			},
-		)
+		for account, debit, credit in self.get_ledger_rows(entry):
+			journal_entry.append(
+				"accounts",
+				{
+					"account": account,
+					"cost_center": entry.cost_center,
+					"debit_in_account_currency": debit,
+					"credit_in_account_currency": credit,
+					"user_remark": entry.remark,
+				},
+			)
 
 		journal_entry.insert()
 		journal_entry.submit()
 		return journal_entry
+
+	def get_ledger_rows(self, entry) -> list[tuple[str, float, float]]:
+		"""The ledger rows one batch line turns into.
+
+		Without tax this is the plain double entry. With input or output tax the
+		account keeps the net, the tax account takes the tax on the same side and
+		the contra account settles the gross -- exactly how the amount reads on
+		the document. Under reverse charge nothing extra passes between the two
+		accounts; the tax owed and the deductible input tax are added as their
+		own pair, which is what makes the entry balance again.
+		"""
+		net = flt(entry.net_amount)
+		tax = flt(entry.tax_amount)
+
+		# A deductible tax account is set exactly for reverse charge, where the
+		# tax is settled between the two tax accounts instead of riding along
+		# with the amount.
+		reverse_charge = bool(entry.deductible_tax_account)
+		tax_in_amount = tax if tax and entry.tax_account and not reverse_charge else 0.0
+
+		rows = [(entry.account, *split_amount(entry.direction, net))]
+
+		if tax_in_amount:
+			rows.append((entry.tax_account, *split_amount(entry.direction, tax_in_amount)))
+
+		rows.append((entry.against_account, *flip(split_amount(entry.direction, net + tax_in_amount))))
+
+		if tax and reverse_charge:
+			rows.append((entry.tax_account, *flip(split_amount(entry.direction, tax))))
+			rows.append((entry.deductible_tax_account, *split_amount(entry.direction, tax)))
+
+		return rows

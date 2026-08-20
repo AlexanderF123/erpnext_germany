@@ -107,8 +107,14 @@ before_uninstall = "erpnext_germany.uninstall.before_uninstall"
 # Hook on document methods and events
 
 LOCKDOWN = "erpnext_germany.bookkeeping.lockdown"
+TAX_DERIVATION = "erpnext_germany.bookkeeping.tax_derivation"
 
 doc_events = {
+	# The Automatikkonto flag is derived from the tax key, never typed, so the
+	# chart can be filtered for automatic accounts without the two drifting.
+	"Account": {
+		"validate": f"{TAX_DERIVATION}.set_automatic_account_flag",
+	},
 	"Quotation": {
 		"on_trash": "erpnext_germany.custom.sales.on_trash",
 	},

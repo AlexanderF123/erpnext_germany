@@ -20,6 +20,8 @@
   "entries",
   "section_break_totals",
   "total_amount",
+  "total_net_amount",
+  "total_tax_amount",
   "column_break_totals",
   "entry_count",
   "section_break_posted",
@@ -116,6 +118,20 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Total Amount",
+   "read_only": 1
+  },
+  {
+   "description": "Sum of the net amounts. Differs from the total amount wherever tax is involved.",
+   "fieldname": "total_net_amount",
+   "fieldtype": "Currency",
+   "label": "Total Net Amount",
+   "read_only": 1
+  },
+  {
+   "description": "Sum of the derived tax. Under reverse charge this tax is not part of the total amount.",
+   "fieldname": "total_tax_amount",
+   "fieldtype": "Currency",
+   "label": "Total Tax Amount",
    "read_only": 1
   },
   {
