@@ -64,7 +64,7 @@ function ask_for_reason(frm) {
 				reqd: 1,
 			},
 		],
-		primary_action_label: __("Reverse"),
+		primary_action_label: __("Reverse", null, "General reversal dialog"),
 		primary_action(values) {
 			dialog.hide();
 			reverse(frm, values);

@@ -114,9 +114,11 @@ class TestReversal(FrappeTestCase):
 	# --- what is refused --------------------------------------------------
 
 	def test_a_reversal_needs_a_reason(self):
+		"""Blank counts as no reason. A missing one never gets this far: the
+		signature is typed, so Frappe refuses the call itself."""
 		original_name = self.book(100.0)
 
-		for empty in ("", "   ", None):
+		for empty in ("", "   ", "\n"):
 			with self.assertRaises(frappe.ValidationError):
 				reverse_entry(original_name, empty)
 
