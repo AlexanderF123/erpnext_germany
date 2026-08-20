@@ -2037,3 +2037,91 @@ msgstr "Stornieren"
 
 msgid "Reversing ..."
 msgstr "Storniere ..."
+
+msgid "BWA Schema"
+msgstr "BWA-Schema"
+
+msgid "Betriebswirtschaftliche Auswertung"
+msgstr "Betriebswirtschaftliche Auswertung"
+
+msgid "How this arrangement is called, e.g. BWA Standard SKR03."
+msgstr "Wie diese Form heisst, z. B. BWA Standard SKR03."
+
+msgid "Chart of Accounts"
+msgstr "Kontenrahmen"
+
+msgid "Which chart the account ranges belong to, e.g. SKR03. Ranges are read as numbers, so a form belongs to the chart it was written for."
+msgstr "Zu welchem Kontenrahmen die Kontenbereiche gehoeren, z. B. SKR03. Bereiche werden als Zahlen gelesen, eine Form gehoert also zu dem Rahmen, fuer den sie geschrieben wurde."
+
+msgid "Used when no arrangement is chosen in the report."
+msgstr "Wird verwendet, wenn im Bericht keine Form gewaehlt ist."
+
+msgid "The number the line is referred to by. Result lines point at these."
+msgstr "Die Nummer, unter der die Zeile angesprochen wird. Ergebniszeilen verweisen darauf."
+
+msgid "How the line is printed, e.g. Gesamtleistung."
+msgstr "Wie die Zeile gedruckt wird, z. B. Gesamtleistung."
+
+msgid "Which way is up for this line. On an account line it decides whether the figure reads as revenue or as cost; on a result line it decides whether the total is printed as it stands or the other way round, so that a cost total can be printed positive."
+msgstr "Welche Richtung fuer diese Zeile oben ist. Auf einer Kontenzeile entscheidet sie, ob der Betrag als Erloes oder als Kosten gelesen wird; auf einer Ergebniszeile, ob die Summe so gedruckt wird, wie sie steht, oder umgekehrt, damit eine Kostensumme positiv gedruckt werden kann."
+
+msgid "One account number or range per line, e.g. 4100-4199. Lines starting with # are notes."
+msgstr "Eine Kontonummer oder ein Bereich je Zeile, z. B. 4100-4199. Zeilen mit # sind Notizen."
+
+msgid "First account line that counts towards this result."
+msgstr "Erste Kontenzeile, die in dieses Ergebnis eingeht."
+
+msgid "Last account line that counts towards this result."
+msgstr "Letzte Kontenzeile, die in dieses Ergebnis eingeht."
+
+msgid "The line this one is expressed as a percentage of."
+msgstr "Die Zeile, von der diese der Prozentsatz ist."
+
+msgid "Choose the arrangement the BWA should be drawn up in."
+msgstr "Form waehlen, in der die BWA aufgestellt werden soll."
+
+msgid "Row {0} appears twice."
+msgstr "Zeile {0} kommt zweimal vor."
+
+msgid "Row {0} comes after row {1}. The rows have to be numbered upwards."
+msgstr "Zeile {0} steht nach Zeile {1}. Die Zeilen muessen aufsteigend nummeriert sein."
+
+msgid "Row {0} has an unknown type {1}."
+msgstr "Zeile {0} hat den unbekannten Typ {1}."
+
+msgid "Row {0} covers no accounts."
+msgstr "Zeile {0} erfasst keine Konten."
+
+msgid "Row {0}: {1}"
+msgstr "Zeile {0}: {1}"
+
+msgid "Row {0} starts its total at row {1} and ends it at row {2}."
+msgstr "Zeile {0} beginnt ihre Summe bei Zeile {1} und endet bei Zeile {2}."
+
+msgid "Row {0} would count itself or a line below it."
+msgstr "Zeile {0} wuerde sich selbst oder eine Zeile darunter mitzaehlen."
+
+msgid "Result Points Downwards"
+msgstr "Ergebnis verweist nach unten"
+
+msgid "Row {0} refers to row {1}, which does not exist."
+msgstr "Zeile {0} verweist auf Zeile {1}, die es nicht gibt."
+
+msgid "Not covered by the BWA"
+msgstr "Nicht in der BWA erfasst"
+
+msgctxt "BWA column"
+msgid "Item"
+msgstr "Position"
+
+msgid "Cumulative"
+msgstr "Kumuliert"
+
+msgid "{0} previous year"
+msgstr "{0} Vorjahr"
+
+msgid "Deviation"
+msgstr "Abweichung"
+
+msgid "Show Accounts"
+msgstr "Konten anzeigen"

@@ -11,11 +11,9 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 	lock,
 	posting_accounts,
 )
+from erpnext_germany.bookkeeping.ledger import get_totals
 from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 from erpnext_germany.bookkeeping.reversal import REVERSAL_REMARK, reverse_entry
-from erpnext_germany.erpnext_germany.report.summen__und_saldenliste.summen__und_saldenliste import (
-	get_totals,
-)
 
 test_dependencies = ["Company"]
 
