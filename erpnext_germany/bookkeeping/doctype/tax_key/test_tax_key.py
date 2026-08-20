@@ -28,9 +28,32 @@ def group_account(company: str = TEST_COMPANY) -> str:
 	return frappe.db.get_value("Account", {"company": company, "is_group": 1}, "name")
 
 
+def clear_tax_keys():
+	"""Remove every tax key and its traces in the chart of accounts.
+
+	Tax keys outlive a rolled back test because posting a batch commits, so
+	each test has to start from a chart without automatic accounts. Cleared
+	through the document lifecycle, which also resets the derived
+	Automatikkonto flag.
+	"""
+	for account in frappe.get_all("Account", filters={"tax_key": ("is", "set")}, pluck="name"):
+		doc = frappe.get_doc("Account", account)
+		doc.tax_key = None
+		doc.save()
+
+	for key in frappe.get_all("Tax Key", pluck="name"):
+		frappe.delete_doc("Tax Key", key, force=True)
+
+	frappe.clear_cache()
+
+
 class TestTaxKey(FrappeTestCase):
 	def setUp(self):
+		clear_tax_keys()
 		self.first, self.second = ledger_accounts(2)
+
+	def tearDown(self):
+		clear_tax_keys()
 
 	def make(self, **kwargs):
 		defaults = {
@@ -114,6 +137,12 @@ class TestTaxKey(FrappeTestCase):
 
 class TestAutomaticAccountFlag(FrappeTestCase):
 	"""The Automatikkonto flag is derived, never typed."""
+
+	def setUp(self):
+		clear_tax_keys()
+
+	def tearDown(self):
+		clear_tax_keys()
 
 	def test_the_flag_follows_the_tax_key(self):
 		account = ledger_accounts(1)[0]

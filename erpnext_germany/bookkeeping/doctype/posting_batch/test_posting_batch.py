@@ -4,6 +4,7 @@
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
+from erpnext_germany.bookkeeping.doctype.tax_key.test_tax_key import clear_tax_keys
 from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 
 test_dependencies = ["Company"]
@@ -324,6 +325,7 @@ class TestPostingBatchTax(FrappeTestCase):
 	def setUp(self):
 		frappe.db.delete("Ledger Lockdown")
 		clear_lockdown_cache()
+		clear_tax_keys()
 
 		self.expense, self.other_expense = posting_accounts("Expense", 2)
 		self.asset, self.input_tax, self.owed_tax = posting_accounts("Asset", 3)
@@ -332,6 +334,7 @@ class TestPostingBatchTax(FrappeTestCase):
 	def tearDown(self):
 		frappe.db.delete("Ledger Lockdown")
 		clear_lockdown_cache()
+		clear_tax_keys()
 
 	def domestic_key(self, rate=19.0, name="VSt 19") -> str:
 		return make_tax_key(
