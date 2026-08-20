@@ -86,7 +86,7 @@ class TestReversal(FrappeTestCase):
 		reversal = frappe.get_doc("Journal Entry", reverse_entry(original_name, REASON))
 
 		self.assertEqual(reversal.docstatus, 1)
-		self.assertEqual(reversal.reversal_of, original_name)
+		self.assertEqual(reversal.general_reversal_of, original_name)
 		self.assertEqual(reversal.reversal_reason, REASON)
 		self.assertIn(REVERSAL_REMARK, reversal.user_remark)
 		self.assertIn(REASON, reversal.user_remark)
@@ -95,7 +95,8 @@ class TestReversal(FrappeTestCase):
 		original_name = self.book(100.0)
 		reversal_name = reverse_entry(original_name, REASON)
 
-		self.assertEqual(frappe.db.get_value("Journal Entry", original_name, "reversed_by"), reversal_name)
+		original = frappe.get_doc("Journal Entry", original_name)
+		self.assertEqual(original.general_reversal_by, reversal_name)
 
 	def test_reversal_is_dated_today_by_default(self):
 		original_name = self.book(100.0, on=add_days(nowdate(), -40))
@@ -164,7 +165,7 @@ class TestReversal(FrappeTestCase):
 				"doctype": "Journal Entry",
 				"company": TEST_COMPANY,
 				"posting_date": self.day,
-				"reversal_of": original_name,
+				"general_reversal_of": original_name,
 				"accounts": [
 					{"account": self.expense, "credit_in_account_currency": 10},
 					{"account": self.asset, "debit_in_account_currency": 10},

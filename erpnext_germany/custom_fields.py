@@ -217,6 +217,10 @@ def get_custom_fields():
 		],
 		# A posted entry is never deleted and never edited, only reversed -- and
 		# the reversal has to say why and stay tied to what it undoes.
+		#
+		# Prefixed on purpose: ERPNext has a "reversal_of" of its own, which
+		# belongs to the Exchange Rate Revaluation and means something else.
+		# Sharing that field would make our rules fire on its entries.
 		"Journal Entry": [
 			{
 				"fieldtype": "Section Break",
@@ -224,12 +228,12 @@ def get_custom_fields():
 				"label": _("General Reversal"),
 				"insert_after": "user_remark",
 				"collapsible": 1,
-				"collapsible_depends_on": "eval: doc.reversal_of || doc.reversed_by",
+				"collapsible_depends_on": "eval: doc.general_reversal_of || doc.general_reversal_by",
 			},
 			{
 				"fieldtype": "Link",
-				"fieldname": "reversal_of",
-				"label": _("Reversal Of"),
+				"fieldname": "general_reversal_of",
+				"label": _("General Reversal Of"),
 				"options": "Journal Entry",
 				"read_only": 1,
 				"insert_after": "german_reversal_sb",
@@ -239,15 +243,15 @@ def get_custom_fields():
 				"fieldtype": "Small Text",
 				"fieldname": "reversal_reason",
 				"label": _("Reversal Reason"),
-				"depends_on": "reversal_of",
-				"mandatory_depends_on": "reversal_of",
+				"depends_on": "general_reversal_of",
+				"mandatory_depends_on": "general_reversal_of",
 				"read_only_depends_on": "eval: doc.docstatus > 0",
-				"insert_after": "reversal_of",
+				"insert_after": "general_reversal_of",
 				"no_copy": 1,
 			},
 			{
 				"fieldtype": "Link",
-				"fieldname": "reversed_by",
+				"fieldname": "general_reversal_by",
 				"label": _("Reversed By"),
 				"options": "Journal Entry",
 				"read_only": 1,

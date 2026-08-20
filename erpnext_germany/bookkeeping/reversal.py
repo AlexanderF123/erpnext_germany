@@ -58,7 +58,7 @@ def reverse_entry(journal_entry: str, reason: str, posting_date: str | None = No
 
 	# Written through the document so the link is versioned like any other
 	# change; both fields are editable after submit for exactly this purpose.
-	original.reversed_by = reversal.name
+	original.general_reversal_by = reversal.name
 	original.save()
 
 	frappe.msgprint(
@@ -74,13 +74,13 @@ def _validate_can_reverse(original):
 	if original.docstatus != 1:
 		frappe.throw(_("Only a posted entry can be reversed."))
 
-	if original.get("reversed_by"):
+	if original.get("general_reversal_by"):
 		frappe.throw(
-			_("This entry was already reversed by {0}.").format(original.reversed_by),
+			_("This entry was already reversed by {0}.").format(original.general_reversal_by),
 			title=_("Already Reversed"),
 		)
 
-	if original.get("reversal_of"):
+	if original.get("general_reversal_of"):
 		# Reversing a reversal would leave two entries that each claim to undo
 		# the other. A correction of a correction is a new booking.
 		frappe.throw(
@@ -96,7 +96,7 @@ def _build_reversal(original, reason: str, posting_date: str):
 	reversal.posting_date = posting_date
 	reversal.bill_no = original.bill_no
 	reversal.cheque_no = original.cheque_no
-	reversal.reversal_of = original.name
+	reversal.general_reversal_of = original.name
 	reversal.reversal_reason = reason
 	reversal.user_remark = f"{REVERSAL_REMARK}: {reason}"
 
@@ -132,8 +132,8 @@ def reversal_vouchers(company: str):
 		.select(journal_entry.name)
 		.where(journal_entry.company == company)
 		.where(journal_entry.docstatus == 1)
-		.where(journal_entry.reversal_of.notnull())
-		.where(journal_entry.reversal_of != "")
+		.where(journal_entry.general_reversal_of.notnull())
+		.where(journal_entry.general_reversal_of != "")
 	)
 
 
@@ -167,5 +167,5 @@ def net_of_reversals(gl_entry, company: str) -> tuple:
 
 def set_reversal_reason_mandatory(doc, method=None):
 	"""A reversal without a reason is not auditable."""
-	if doc.get("reversal_of") and not (doc.get("reversal_reason") or "").strip():
+	if doc.get("general_reversal_of") and not (doc.get("reversal_reason") or "").strip():
 		frappe.throw(_("A reversal needs a reason."), title=_("Reason Required"))

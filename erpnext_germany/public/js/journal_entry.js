@@ -13,7 +13,7 @@ frappe.ui.form.on("Journal Entry", {
 });
 
 function add_reversal_button(frm) {
-	if (frm.doc.docstatus !== 1 || frm.doc.reversed_by || frm.doc.reversal_of) {
+	if (frm.doc.docstatus !== 1 || frm.doc.general_reversal_by || frm.doc.general_reversal_of) {
 		return;
 	}
 
@@ -21,20 +21,20 @@ function add_reversal_button(frm) {
 }
 
 function show_reversal_state(frm) {
-	if (frm.doc.reversal_of) {
+	if (frm.doc.general_reversal_of) {
 		frm.dashboard.add_comment(
 			__("This entry reverses {0}.", [
-				frappe.utils.get_form_link("Journal Entry", frm.doc.reversal_of, true),
+				frappe.utils.get_form_link("Journal Entry", frm.doc.general_reversal_of, true),
 			]),
 			"blue",
 			true
 		);
 	}
 
-	if (frm.doc.reversed_by) {
+	if (frm.doc.general_reversal_by) {
 		frm.dashboard.add_comment(
 			__("This entry was reversed by {0}.", [
-				frappe.utils.get_form_link("Journal Entry", frm.doc.reversed_by, true),
+				frappe.utils.get_form_link("Journal Entry", frm.doc.general_reversal_by, true),
 			]),
 			"orange",
 			true
