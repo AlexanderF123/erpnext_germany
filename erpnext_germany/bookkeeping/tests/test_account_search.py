@@ -3,7 +3,7 @@
 
 import frappe
 from frappe.tests.utils import FrappeTestCase
-from frappe.utils import nowdate
+from frappe.utils import add_days, nowdate
 
 from erpnext_germany.bookkeeping.account_search import account_label, get_accounts, get_usage
 from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import (
@@ -39,19 +39,24 @@ class TestAccountSearch(FrappeTestCase):
 		frappe.db.delete("Ledger Lockdown")
 		clear_lockdown_cache()
 
-	def book(self, account: str, times: int):
-		"""Put real ledger entries behind an account, on today's books."""
-		today = nowdate()
+	def book(self, account: str, times: int, on: str | None = None):
+		"""Put real ledger entries behind an account.
+
+		Posting commits, so what these tests book outlives the rollback and
+		adds up across the run. Every assertion below therefore measures a
+		difference rather than an absolute count.
+		"""
+		day = on or nowdate()
 		batch = frappe.get_doc(
 			{
 				"doctype": "Posting Batch",
 				"company": TEST_COMPANY,
-				"fiscal_year": fiscal_year_for(today),
-				"from_date": today,
-				"to_date": today,
+				"fiscal_year": fiscal_year_for(day),
+				"from_date": day,
+				"to_date": day,
 				"entries": [
 					{
-						"posting_date": today,
+						"posting_date": day,
 						"amount": 10.0,
 						"direction": "Debit",
 						"account": account,
@@ -62,6 +67,9 @@ class TestAccountSearch(FrappeTestCase):
 			}
 		).insert()
 		batch.post()
+
+	def uses(self, account: str, **kwargs) -> int:
+		return get_usage(TEST_COMPANY, **kwargs).get(account, {}).get("uses", 0)
 
 	def accounts_by_name(self) -> dict:
 		return {row["name"]: row for row in get_accounts(TEST_COMPANY)}
@@ -111,26 +119,26 @@ class TestAccountSearch(FrappeTestCase):
 
 		order = [row["name"] for row in get_accounts(TEST_COMPANY)]
 
-		self.assertEqual(order[0], self.second)
 		self.assertLess(order.index(self.second), order.index(self.first))
 
 	def test_usage_counts_and_dates_the_postings(self):
+		before = self.uses(self.second)
+
 		self.book(self.second, times=2)
 
-		usage = get_usage(TEST_COMPANY)
-
-		self.assertEqual(usage[self.second]["uses"], 2)
-		self.assertEqual(usage[self.second]["last_used"], nowdate())
+		self.assertEqual(self.uses(self.second) - before, 2)
+		self.assertEqual(get_usage(TEST_COMPANY)[self.second]["last_used"], nowdate())
 
 	def test_postings_outside_the_window_do_not_count(self):
 		"""What was booked last year says nothing about what is booked today."""
-		self.book(self.second, times=1)
+		long_ago = add_days(nowdate(), -200)
+		recent_before = self.uses(self.second, days=90)
+		wide_before = self.uses(self.second, days=365)
 
-		usage = get_usage(TEST_COMPANY, days=0)
-		recent = get_usage(TEST_COMPANY, days=90)
+		self.book(self.second, times=1, on=long_ago)
 
-		self.assertNotIn(self.second, usage)
-		self.assertIn(self.second, recent)
+		self.assertEqual(self.uses(self.second, days=90), recent_before)
+		self.assertEqual(self.uses(self.second, days=365) - wide_before, 1)
 
 	def test_an_unused_account_still_appears(self):
 		"""Ordering must never hide an account, only rank it."""
