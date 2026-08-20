@@ -105,7 +105,7 @@
   {
    "fieldname": "section_break_tax",
    "fieldtype": "Section Break",
-   "label": "Tax"
+   "label": "Tax Breakdown"
   },
   {
    "description": "What reaches the revenue or expense account. The gross amount is the amount as entered: the tax either sits inside it or, under reverse charge, does not move between the two accounts at all.",

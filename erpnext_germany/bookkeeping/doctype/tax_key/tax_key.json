@@ -48,7 +48,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Effect",
+   "label": "Tax Effect",
    "options": "Input Tax\nOutput Tax\nReverse Charge\nTax Free",
    "reqd": 1
   },

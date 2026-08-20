@@ -1808,3 +1808,108 @@ msgstr "Buchungszeilen"
 
 msgid "Number of Entries"
 msgstr "Anzahl Zeilen"
+
+msgid "Tax Key"
+msgstr "Steuerschlüssel"
+
+msgid "Tax Key Number"
+msgstr "Steuerschlüssel-Nummer"
+
+msgid "Tax Effect"
+msgstr "Steuerwirkung"
+
+msgid "Tax Accounts"
+msgstr "Steuerkonten"
+
+msgid "Deductible Tax Account"
+msgstr "Abziehbares Steuerkonto"
+
+msgid "Applied Tax Key"
+msgstr "Angewandter Steuerschlüssel"
+
+msgid "Tax Breakdown"
+msgstr "Steueraufteilung"
+
+msgid "Tax Derivation"
+msgstr "Steuerfindung"
+
+msgid "Automatic Account"
+msgstr "Automatikkonto"
+
+msgid "Total Net Amount"
+msgstr "Summe Netto"
+
+msgid "Total Tax Amount"
+msgstr "Summe Steuer"
+
+msgid "Input Tax"
+msgstr "Vorsteuer"
+
+msgid "Output Tax"
+msgstr "Umsatzsteuer"
+
+msgid "Reverse Charge"
+msgstr "Reverse Charge"
+
+msgid "Tax Free"
+msgstr "Steuerfrei"
+
+msgid "{0} is not a known tax effect."
+msgstr "{0} ist keine bekannte Steuerwirkung."
+
+msgid "A tax free key cannot carry a tax rate."
+msgstr "Ein steuerfreier Schlüssel kann keinen Steuersatz tragen."
+
+msgid "The tax rate must be between 0 and 100 percent."
+msgstr "Der Steuersatz muss zwischen 0 und 100 Prozent liegen."
+
+msgid "Row {0}: {1} already has a tax account for this key."
+msgstr "Zeile {0}: {1} hat für diesen Schlüssel bereits ein Steuerkonto."
+
+msgid "Row {0}: Reverse charge needs a deductible tax account as well, otherwise the entry does not balance."
+msgstr "Zeile {0}: Reverse Charge braucht zusätzlich ein abziehbares Steuerkonto, sonst geht die Buchung nicht auf."
+
+msgid "Row {0}: A deductible tax account only applies to reverse charge."
+msgstr "Zeile {0}: Ein abziehbares Steuerkonto gilt nur bei Reverse Charge."
+
+msgid "Row {0}: {1} is a group account and cannot be posted to."
+msgstr "Zeile {0}: {1} ist ein Gruppenkonto und kann nicht bebucht werden."
+
+msgid "{0}Tax key {1} is disabled."
+msgstr "{0}Steuerschlüssel {1} ist deaktiviert."
+
+msgid "{0}Tax key {1} only applies from {2}."
+msgstr "{0}Steuerschlüssel {1} gilt erst ab {2}."
+
+msgid "{0}{1} is a tax account and cannot carry a tax key itself."
+msgstr "{0}{1} ist ein Steuerkonto und kann selbst keinen Steuerschlüssel tragen."
+
+msgid "{0}Tax key {1} has no tax account for {2}."
+msgstr "{0}Steuerschlüssel {1} hat kein Steuerkonto für {2}."
+
+msgid "{0}Tax key {1} has no deductible tax account for {2}."
+msgstr "{0}Steuerschlüssel {1} hat kein abziehbares Steuerkonto für {2}."
+
+msgid "Bookings to this account derive their tax from this key."
+msgstr "Buchungen auf dieses Konto leiten ihre Steuer aus diesem Schlüssel ab."
+
+msgid "Set automatically for every account that has a tax key."
+msgstr "Wird für jedes Konto mit Steuerschlüssel automatisch gesetzt."
+
+msgid "Only needed where the booking deviates from the account, e.g. reverse charge or tax free. Left empty, the key of the account applies."
+msgstr "Nur nötig, wo die Buchung vom Konto abweicht, z. B. Reverse Charge oder steuerfrei. Bleibt das Feld leer, gilt der Schlüssel des Kontos."
+
+msgid "The key that actually applied: the one typed on the line, or the one on the account."
+msgstr "Der Schlüssel, der tatsächlich gegriffen hat: der in der Zeile erfasste oder der des Kontos."
+
+msgid "Reverse charge only: the input tax that offsets the tax owed."
+msgstr "Nur bei Reverse Charge: die Vorsteuer, die die geschuldete Steuer ausgleicht."
+
+msgid "Derived from the tax key of this company."
+msgstr "Abgeleitet aus dem Steuerschlüssel dieser Gesellschaft."
+
+msgid "Sum of the net amounts. Differs from the total amount wherever tax is involved."
+msgstr "Summe der Nettobeträge. Weicht vom Gesamtbetrag ab, sobald Steuer im Spiel ist."
+
+msgid "Sum of the derived tax. Under reverse charge this tax is not part of the total amount."
+msgstr "Summe der abgeleiteten Steuer. Bei Reverse Charge ist diese Steuer nicht Teil des Gesamtbetrags."

@@ -363,9 +363,7 @@ class TestPostingBatchTax(FrappeTestCase):
 		reduced = self.domestic_key(rate=7.0, name="VSt 7")
 
 		batch = create_batch(
-			entries=[
-				entry(amount=107.0, account=self.expense, against_account=self.asset, tax_key=reduced)
-			]
+			entries=[entry(amount=107.0, account=self.expense, against_account=self.asset, tax_key=reduced)]
 		)
 
 		line = batch.entries[0]
@@ -417,9 +415,7 @@ class TestPostingBatchTax(FrappeTestCase):
 		)
 		set_account_tax_key(self.expense, key)
 
-		batch = create_batch(
-			entries=[entry(amount=1000.0, account=self.expense, against_account=self.asset)]
-		)
+		batch = create_batch(entries=[entry(amount=1000.0, account=self.expense, against_account=self.asset)])
 		self.assertEqual(batch.entries[0].net_amount, 1000.0)
 		self.assertEqual(batch.entries[0].tax_amount, 190.0)
 
@@ -499,9 +495,7 @@ class TestPostingBatchTax(FrappeTestCase):
 		self.assertRaises(
 			frappe.ValidationError,
 			create_batch,
-			entries=[
-				entry(amount=119.0, account=self.input_tax, against_account=self.asset, tax_key=key)
-			],
+			entries=[entry(amount=119.0, account=self.input_tax, against_account=self.asset, tax_key=key)],
 		)
 
 	def test_a_tax_free_key_carries_no_tax(self):

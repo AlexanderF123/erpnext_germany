@@ -269,7 +269,8 @@ TAX_KEYS = [
 	},
 ]
 
-germany_custom_records = TAX_KEYS + [
+germany_custom_records = [
+	*TAX_KEYS,
 	{
 		"doctype": "DocType Link",
 		"parent": "Customer",
