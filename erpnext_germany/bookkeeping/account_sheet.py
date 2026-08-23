@@ -26,6 +26,25 @@ DOCUMENT_NUMBER_FIELDS = {
 
 DEBIT_ROOT_TYPES = ("Asset", "Expense")
 
+# What a balance sheet carries from one year into the next. Everything else is
+# a profit and loss account, and those begin every fiscal year at nought.
+BALANCE_SHEET_ROOT_TYPES = ("Asset", "Liability", "Equity")
+
+
+def starts_each_year_at_zero(root_type: str) -> bool:
+	"""Whether an account begins every fiscal year at nought.
+
+	Income and expense do: last year's result is closed into equity, and an
+	account that carried it forward as well would count it twice. A balance
+	sheet account carries everything ever booked to it.
+
+	A fact about what an account is, so it is stated once and read by every
+	evaluation. Kept here rather than in the report that needed it first --
+	an evaluation that does not know this rule shows a balance that does not
+	tie to the one next to it.
+	"""
+	return root_type not in BALANCE_SHEET_ROOT_TYPES
+
 
 class Movement(NamedTuple):
 	"""One line of the sheet, before the balance is put behind it."""

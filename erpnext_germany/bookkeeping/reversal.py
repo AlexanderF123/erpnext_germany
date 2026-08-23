@@ -173,6 +173,26 @@ def reversal_sides(gl_entry, company: str) -> tuple:
 	return debit, credit
 
 
+def reversal_links(names: list[str]) -> dict[str, str]:
+	"""Which of these Journal Entries reverse another one, and which.
+
+	Asked here rather than alongside the document numbers, because a reversal
+	link is not something written on a document -- it is what this module
+	knows and nothing else does.
+	"""
+	if not names:
+		return {}
+
+	return {
+		row.name: row.general_reversal_of
+		for row in frappe.get_all(
+			"Journal Entry",
+			filters={"name": ("in", sorted(names)), "general_reversal_of": ("is", "set")},
+			fields=["name", "general_reversal_of"],
+		)
+	}
+
+
 def net_of_reversals(gl_entry, company: str) -> tuple:
 	"""The same reading, summed over an aggregate."""
 	debit, credit = reversal_sides(gl_entry, company)

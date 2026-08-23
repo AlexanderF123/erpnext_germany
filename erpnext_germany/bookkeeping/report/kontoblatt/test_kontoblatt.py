@@ -3,14 +3,14 @@
 
 import frappe
 from frappe.tests.utils import FrappeTestCase
-from frappe.utils import add_days, nowdate
+from frappe.utils import add_days, getdate, nowdate
 
 from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import (
 	TEST_COMPANY,
 	fiscal_year_for,
 	posting_accounts,
 )
-from erpnext_germany.bookkeeping.ledger import get_totals
+from erpnext_germany.bookkeeping.ledger import LedgerScope, get_totals
 from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 from erpnext_germany.bookkeeping.report.kontoblatt import kontoblatt
 from erpnext_germany.bookkeeping.reversal import reverse_entry
@@ -246,11 +246,34 @@ class TestKontoblatt(FrappeTestCase):
 		reverse_entry(self.book(100.0, on=day), "Betrag falsch erfasst", day)
 
 		lines = self.movements(from_date=day, to_date=day)
-		totals = get_totals(TEST_COMPANY, from_date=day, to_date=day, accounts=[self.account])
+		totals = get_totals(
+			LedgerScope(
+				company=TEST_COMPANY,
+				from_date=day,
+				to_date=day,
+				accounts=[self.account],
+				skip_period_closing=True,
+			)
+		)
 		figure = totals[self.account]
 
 		self.assertAlmostEqual(sum(row["debit"] for row in lines), figure.debit, places=2)
 		self.assertAlmostEqual(sum(row["credit"] for row in lines), figure.credit, places=2)
+
+	def test_an_expense_account_starts_the_fiscal_year_at_nought(self):
+		"""Otherwise every balance on the sheet is a year of costs too high.
+
+		The account here is an Expense account, and the Summen- und
+		Saldenliste shows it starting each year at nought. A sheet opened
+		from that row has to start there too, whether or not the year was
+		ever closed with a period closing voucher.
+		"""
+		year_start = kontoblatt.year_start(TEST_COMPANY, getdate(self.today))
+		self.book(40.0, on=add_days(year_start, -1))
+
+		sheet = self.sheet(from_date=year_start, to_date=self.today)
+
+		self.assertEqual(sheet[0]["balance"], 0.0)
 
 	def test_the_sheet_covers_only_the_period_it_was_opened_for(self):
 		self.book(100.0, on=add_days(self.today, -10))

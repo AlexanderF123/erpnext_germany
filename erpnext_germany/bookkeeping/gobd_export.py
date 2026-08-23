@@ -32,6 +32,7 @@ from erpnext_germany.bookkeeping.gobd import (
 	build_index,
 	to_csv,
 )
+from erpnext_germany.bookkeeping.reversal import reversal_links
 from erpnext_germany.bookkeeping.vouchers import attachments as voucher_attachments
 from erpnext_germany.bookkeeping.vouchers import document_fields
 
@@ -258,7 +259,10 @@ def get_journal(company: str, from_date: date, to_date: date) -> list[dict]:
 		)
 	}
 	lockdowns = get_lockdown_dates(company)
-	documents = get_document_numbers(entries)
+	documents = document_fields({(entry.voucher_type, entry.voucher_no) for entry in entries})
+	reversals = reversal_links(
+		[entry.voucher_no for entry in entries if entry.voucher_type == "Journal Entry"]
+	)
 	rows = []
 
 	rows = []
@@ -289,7 +293,7 @@ def get_journal(company: str, from_date: date, to_date: date) -> list[dict]:
 				"entered_on": entry.creation,
 				"locked_on": locked_on,
 				"locked_by": locked_by,
-				"reversal_of": document.get("general_reversal_of"),
+				"reversal_of": reversals.get(entry.voucher_no),
 			}
 		)
 
@@ -434,12 +438,6 @@ def get_changes(vouchers: set[tuple[str, str]]) -> list[dict]:
 
 
 # --- what the journal is built from -----------------------------------------
-
-
-def get_document_numbers(entries: list[frappe._dict]) -> dict[tuple[str, str], frappe._dict]:
-	"""Document fields and reversal link of the vouchers in the year."""
-	vouchers = {(entry.voucher_type, entry.voucher_no) for entry in entries}
-	return document_fields(vouchers, extra_fields={"Journal Entry": ("general_reversal_of",)})
 
 
 def get_lockdown_dates(company: str) -> list[tuple]:

@@ -22,31 +22,18 @@ from erpnext_germany.bookkeeping.account_sheet import DOCUMENT_NUMBER_FIELDS
 Voucher = tuple[str, str]
 
 
-def document_fields(
-	vouchers: set[Voucher], extra_fields: dict[str, tuple[str, ...]] | None = None
-) -> dict[Voucher, frappe._dict]:
-	"""The document-number fields of these vouchers, one query per doctype.
-
-	``extra_fields`` adds fields a caller needs alongside them, per doctype,
-	so that a caller who wants more than the numbers does not have to read the
-	same documents twice.
-	"""
-	extra_fields = extra_fields or {}
-	wanted = set(DOCUMENT_NUMBER_FIELDS) | set(extra_fields)
-
+def document_fields(vouchers: set[Voucher]) -> dict[Voucher, frappe._dict]:
+	"""The document-number fields of these vouchers, one query per doctype."""
 	names_by_type: dict[str, set[str]] = {}
 	for voucher_type, voucher_no in vouchers:
-		if voucher_type in wanted:
+		if voucher_type in DOCUMENT_NUMBER_FIELDS:
 			names_by_type.setdefault(voucher_type, set()).add(voucher_no)
 
 	fields: dict[Voucher, frappe._dict] = {}
 	for voucher_type, names in names_by_type.items():
-		fieldnames = [field for field in DOCUMENT_NUMBER_FIELDS.get(voucher_type, ()) if field]
-		fieldnames += list(extra_fields.get(voucher_type, ()))
+		fieldnames = [field for field in DOCUMENT_NUMBER_FIELDS[voucher_type] if field]
 		for row in frappe.get_all(
-			voucher_type,
-			filters={"name": ("in", sorted(names))},
-			fields=["name", *dict.fromkeys(fieldnames)],
+			voucher_type, filters={"name": ("in", sorted(names))}, fields=["name", *fieldnames]
 		):
 			fields[(voucher_type, row.name)] = row
 

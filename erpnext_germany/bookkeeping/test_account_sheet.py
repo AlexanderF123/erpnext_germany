@@ -7,6 +7,7 @@ from erpnext_germany.bookkeeping.account_sheet import (
 	document_number,
 	in_natural_direction,
 	running_balances,
+	starts_each_year_at_zero,
 )
 
 # --- the running balance ----------------------------------------------------
@@ -89,3 +90,22 @@ def test_a_line_booked_against_several_names_the_first_and_counts_the_rest():
 def test_a_line_booked_against_nothing_leaves_the_column_empty():
 	assert contra_accounts(None) == ""
 	assert contra_accounts(" , ") == ""
+
+
+# --- what an account carries from one year into the next --------------------
+
+
+def test_a_balance_sheet_account_carries_its_balance_forward():
+	for root_type in ("Asset", "Liability", "Equity"):
+		assert not starts_each_year_at_zero(root_type)
+
+
+def test_profit_and_loss_starts_every_year_at_nought():
+	"""Last year's result was closed into equity.
+
+	An evaluation that carried it forward here as well would count it twice,
+	and a Kontoblatt that did would disagree with the Summen- und Saldenliste
+	it was opened from.
+	"""
+	for root_type in ("Income", "Expense"):
+		assert starts_each_year_at_zero(root_type)
