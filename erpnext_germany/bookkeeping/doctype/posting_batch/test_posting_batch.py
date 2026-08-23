@@ -93,7 +93,7 @@ def lock(company=TEST_COMPANY, locked_up_to=TO_DATE):
 
 
 class HookedIn:
-	"""Stand-in for an app that hooks into the batch to fill in dimensions.
+	"""Stand-in for an app that hooks into the batch to fill in cost centers.
 
 	Registered the way Frappe registers a real one, so the test proves the
 	extension point works rather than that a method can be called.
@@ -149,7 +149,7 @@ class TestPostingBatch(FrappeTestCase):
 		if not centers:
 			self.skipTest("No cost center on this site")
 
-		with HookedIn("derive_dimensions", set_cost_centers):
+		with HookedIn("enrich_entries", set_cost_centers):
 			batch = frappe.get_doc(
 				{
 					"doctype": "Posting Batch",
@@ -169,7 +169,7 @@ class TestPostingBatch(FrappeTestCase):
 	def test_what_an_app_fills_in_faces_the_same_checks_as_what_was_typed(self):
 		"""Otherwise a derived value would be the one thing in the batch that
 		nobody looked at."""
-		with HookedIn("derive_dimensions", set_a_cost_center_that_is_not_there):
+		with HookedIn("enrich_entries", set_a_cost_center_that_is_not_there):
 			with self.assertRaises(frappe.exceptions.LinkValidationError):
 				create_batch()
 

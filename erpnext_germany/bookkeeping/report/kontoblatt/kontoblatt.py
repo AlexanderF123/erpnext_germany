@@ -15,19 +15,20 @@ behind a figure is one click away rather than a search in a folder.
 
 import frappe
 from frappe import _
-from frappe.utils import flt, getdate
+from frappe.utils import add_days, flt, getdate
 
 from erpnext_germany.bookkeeping.account_search import account_label
 from erpnext_germany.bookkeeping.account_sheet import (
-	DOCUMENT_NUMBER_FIELDS,
 	Movement,
 	contra_accounts,
 	document_number,
 	in_natural_direction,
 	running_balances,
 )
-from erpnext_germany.bookkeeping.ledger import get_cost_centers
-from erpnext_germany.bookkeeping.reversal import net_of_reversals
+from erpnext_germany.bookkeeping.ledger import get_cost_centers, get_totals
+from erpnext_germany.bookkeeping.reversal import reversal_sides
+from erpnext_germany.bookkeeping.vouchers import attachments as voucher_attachments
+from erpnext_germany.bookkeeping.vouchers import document_fields
 
 
 def execute(filters=None):
@@ -115,18 +116,21 @@ def get_data(filters: frappe._dict) -> list[dict]:
 	opening = get_opening(filters, cost_centers)
 
 	balances = running_balances(opening, [Movement(flt(entry.debit), flt(entry.credit)) for entry in entries])
-	documents = get_document_fields(entries)
-	attachments = get_attachments(entries)
+	vouchers = {(entry.voucher_type, entry.voucher_no) for entry in entries}
+	documents = document_fields(vouchers)
+	attachments = voucher_attachments(vouchers)
 
 	rows = [opening_row(filters, root_type, opening)]
 	for entry, balance in zip(entries, balances, strict=True):
-		first, second = document_number(
-			entry.voucher_type, entry.voucher_no, documents.get(entry.voucher_no, {})
-		)
+		voucher = (entry.voucher_type, entry.voucher_no)
+		first, second = document_number(entry.voucher_type, documents.get(voucher, {}))
 		rows.append(
 			{
 				"posting_date": entry.posting_date,
-				"document_number": first,
+				# The voucher's own name stands in where there is no number on
+				# the paper: a line of a sheet nobody can follow up is a line
+				# nobody can use.
+				"document_number": first or entry.voucher_no,
 				"document_number_2": second,
 				"against_account": contra_accounts(entry.against),
 				"remark": entry.remarks,
@@ -136,7 +140,9 @@ def get_data(filters: frappe._dict) -> list[dict]:
 				"voucher_type": entry.voucher_type,
 				"voucher_no": entry.voucher_no,
 				# What the paperclip in the sheet opens.
-				"attachments": attachments.get((entry.voucher_type, entry.voucher_no), []),
+				"attachments": [
+					{"name": file.file_name, "url": file.file_url} for file in attachments.get(voucher, [])
+				],
 			}
 		)
 
@@ -165,12 +171,13 @@ def get_entries(filters: frappe._dict, cost_centers: list[str] | None) -> list[f
 	them would show a balance the account never had.
 	"""
 	gl_entry = frappe.qb.DocType("GL Entry")
+	debit, credit = reversal_sides(gl_entry, filters.company)
 	query = (
 		frappe.qb.from_(gl_entry)
 		.select(
 			gl_entry.posting_date,
-			gl_entry.debit_in_account_currency.as_("debit"),
-			gl_entry.credit_in_account_currency.as_("credit"),
+			debit.as_("debit"),
+			credit.as_("credit"),
 			gl_entry.against,
 			gl_entry.remarks,
 			gl_entry.voucher_type,
@@ -179,6 +186,10 @@ def get_entries(filters: frappe._dict, cost_centers: list[str] | None) -> list[f
 		.where(gl_entry.company == filters.company)
 		.where(gl_entry.account == filters.account)
 		.where(gl_entry.is_cancelled == 0)
+		# Left out for the same reason the Summen- und Saldenliste leaves them
+		# out of a period: the carry forward of a closed year belongs in the
+		# opening balance, not among the movements of a month.
+		.where(gl_entry.voucher_type != "Period Closing Voucher")
 		.orderby(gl_entry.posting_date)
 		.orderby(gl_entry.creation)
 	)
@@ -198,78 +209,22 @@ def get_entries(filters: frappe._dict, cost_centers: list[str] | None) -> list[f
 def get_opening(filters: frappe._dict, cost_centers: list[str] | None) -> float:
 	"""Everything booked before the period, as one figure.
 
-	Read the same way the Summen- und Saldenliste reads it, general reversals
-	included, so the sheet ties to the evaluation it was opened from.
+	Asked of the shared reading of the ledger rather than of a query of its
+	own, so the sheet starts from the balance the Summen- und Saldenliste
+	shows for this account -- period closing vouchers included, because that
+	is how the balance of a closed year is carried forward.
 	"""
 	if not filters.from_date:
 		return 0.0
 
-	gl_entry = frappe.qb.DocType("GL Entry")
-	debit, credit = net_of_reversals(gl_entry, filters.company)
-	query = (
-		frappe.qb.from_(gl_entry)
-		.select(debit.as_("debit"), credit.as_("credit"))
-		.where(gl_entry.company == filters.company)
-		.where(gl_entry.account == filters.account)
-		.where(gl_entry.is_cancelled == 0)
-		.where(gl_entry.posting_date < filters.from_date)
+	totals = get_totals(
+		filters.company,
+		cost_centers,
+		to_date=add_days(getdate(filters.from_date), -1),
+		accounts=[filters.account],
 	)
-
-	if cost_centers is not None:
-		query = query.where(gl_entry.cost_center.isin(cost_centers))
-
-	rows = query.run(as_dict=True)
-	return flt(rows[0].debit) - flt(rows[0].credit) if rows else 0.0
-
-
-def get_document_fields(entries: list[frappe._dict]) -> dict[str, dict]:
-	"""The document numbers of the vouchers on this sheet, in one query per type.
-
-	Fetched in a batch rather than per line: a sheet is hundreds of lines and
-	a query per line is what makes a report feel slow enough to be avoided.
-	"""
-	fields_by_type = {}
-	for entry in entries:
-		if entry.voucher_type in DOCUMENT_NUMBER_FIELDS:
-			fields_by_type.setdefault(entry.voucher_type, set()).add(entry.voucher_no)
-
-	documents = {}
-	for voucher_type, names in fields_by_type.items():
-		fields = [field for field in DOCUMENT_NUMBER_FIELDS[voucher_type] if field]
-		for row in frappe.get_all(
-			voucher_type, filters={"name": ("in", list(names))}, fields=["name", *fields]
-		):
-			documents[row.name] = row
-
-	return documents
-
-
-def get_attachments(entries: list[frappe._dict]) -> dict[tuple[str, str], list[dict]]:
-	"""Which vouchers have a document filed with them, and where it is.
-
-	One query for the whole sheet. The sheet only shows that there is
-	something; opening it is the reader's next click.
-	"""
-	names = {entry.voucher_no for entry in entries}
-	if not names:
-		return {}
-
-	files = frappe.get_all(
-		"File",
-		filters={
-			"attached_to_doctype": ("in", list({entry.voucher_type for entry in entries})),
-			"attached_to_name": ("in", list(names)),
-		},
-		fields=["file_name", "file_url", "attached_to_doctype", "attached_to_name"],
-		order_by="creation asc",
-	)
-
-	attachments = {}
-	for file in files:
-		key = (file.attached_to_doctype, file.attached_to_name)
-		attachments.setdefault(key, []).append({"name": file.file_name, "url": file.file_url})
-
-	return attachments
+	row = totals.get(filters.account)
+	return flt(row.debit) - flt(row.credit) if row else 0.0
 
 
 @frappe.whitelist()

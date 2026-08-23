@@ -59,19 +59,20 @@ def in_natural_direction(root_type: str, amount: float) -> float:
 	return amount if root_type in DEBIT_ROOT_TYPES else -amount
 
 
-def document_number(voucher_type: str, voucher_no: str, fields: dict) -> tuple[str, str]:
+def document_number(voucher_type: str, fields: dict) -> tuple[str, str]:
 	"""The two document fields of a voucher, as DATEV knows them.
 
 	Belegfeld 1 is the number on the paper -- an incoming invoice keeps the
-	supplier's number, not ours. Where a voucher carries nothing of the sort,
-	its own name stands in, because a line of a Kontoblatt without any
-	reference cannot be followed up.
+	supplier's number, not ours. Empty stays empty here: a voucher that
+	carries no such number has none, and saying otherwise would put a figure
+	in an audit package that no document supports. A reader who needs
+	something to follow puts its own name in, where that reason is visible.
 	"""
 	first_field, second_field = DOCUMENT_NUMBER_FIELDS.get(voucher_type, (None, None))
 	first = (fields.get(first_field) or "").strip() if first_field else ""
 	second = (fields.get(second_field) or "").strip() if second_field else ""
 
-	return (first or voucher_no, second)
+	return (first, second)
 
 
 def contra_accounts(against: str | None) -> str:

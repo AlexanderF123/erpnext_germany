@@ -55,7 +55,7 @@ class PostingBatch(Document):
 	def validate(self):
 		self.validate_not_posted()
 		self.validate_period()
-		self.run_method("derive_dimensions")
+		self.run_method("enrich_entries")
 		# Frappe checks link fields before it runs validate, so anything filled
 		# in above would otherwise never be checked against what it points at.
 		# Checked with Frappe's own machinery rather than by hand, so a derived
@@ -65,7 +65,7 @@ class PostingBatch(Document):
 		self.set_totals()
 		self.set_title()
 
-	def derive_dimensions(self):
+	def enrich_entries(self):
 		"""Where another app fills in what only it can know.
 
 		This module knows what a booking is. It does not know that account
@@ -76,7 +76,9 @@ class PostingBatch(Document):
 
 		So the line has a hook rather than an answer. An app hooks
 		``doc_events`` on "Posting Batch" for this method and fills whatever
-		it can on ``self.entries``; anything it leaves alone stays as typed.
+		it can on ``self.entries`` -- in practice the cost center, which is
+		how an object is told apart in the ledger; anything it leaves alone
+		stays as typed.
 
 		Deliberately before the entries are validated: a cost center derived
 		here has to face the same checks as one typed by hand, or a derived

@@ -22,7 +22,7 @@ import frappe
 from frappe import _
 from frappe.utils import flt, getdate
 
-from erpnext_germany.bookkeeping.account_sheet import contra_accounts
+from erpnext_germany.bookkeeping.account_sheet import contra_accounts, document_number
 from erpnext_germany.bookkeeping.gobd import (
 	ALPHANUMERIC,
 	DATE,
@@ -32,6 +32,8 @@ from erpnext_germany.bookkeeping.gobd import (
 	build_index,
 	to_csv,
 )
+from erpnext_germany.bookkeeping.vouchers import attachments as voucher_attachments
+from erpnext_germany.bookkeeping.vouchers import document_fields
 
 INDEX_FILE = "index.xml"
 
@@ -257,19 +259,23 @@ def get_journal(company: str, from_date: date, to_date: date) -> list[dict]:
 	}
 	lockdowns = get_lockdown_dates(company)
 	documents = get_document_numbers(entries)
+	rows = []
 
 	rows = []
 	for entry in entries:
 		account = accounts.get(entry.account) or frappe._dict()
 		locked_on, locked_by = lockdown_for(lockdowns, entry.posting_date)
-		document = documents.get(entry.voucher_no) or frappe._dict()
+		document = documents.get((entry.voucher_type, entry.voucher_no)) or frappe._dict()
+		# Read through the same rule the Kontoblatt reads it through, so an
+		# incoming invoice carries the supplier's number here as well.
+		first, second = document_number(entry.voucher_type, document)
 		rows.append(
 			{
 				"voucher_no": entry.voucher_no,
 				"voucher_type": entry.voucher_type,
 				"posting_date": entry.posting_date,
-				"document_number": document.get("bill_no"),
-				"document_number_2": document.get("cheque_no"),
+				"document_number": first,
+				"document_number_2": second,
 				"account_number": account.get("account_number"),
 				"account": account.get("account_name") or entry.account,
 				"against": contra_accounts(entry.against),
@@ -371,27 +377,15 @@ def get_attachments(vouchers: set[tuple[str, str]]) -> list[dict]:
 	The file's own name is the identifier: it is unique, it is stable, and it
 	is what the file is called in the archive an auditor gets alongside this.
 	"""
-	if not vouchers:
-		return []
-
-	types = sorted({voucher_type for voucher_type, _name in vouchers})
-	names = sorted({name for _type, name in vouchers})
-	files = frappe.get_all(
-		"File",
-		filters={"attached_to_doctype": ("in", types), "attached_to_name": ("in", names)},
-		fields=["name", "file_name", "attached_to_doctype", "attached_to_name"],
-		order_by="attached_to_name asc, name asc",
-	)
-
 	return [
 		{
-			"voucher_type": file.attached_to_doctype,
-			"voucher_no": file.attached_to_name,
+			"voucher_type": voucher_type,
+			"voucher_no": voucher_no,
 			"file_name": file.file_name,
 			"file_id": file.name,
 		}
+		for (voucher_type, voucher_no), files in sorted(voucher_attachments(vouchers).items())
 		for file in files
-		if (file.attached_to_doctype, file.attached_to_name) in vouchers
 	]
 
 
@@ -442,20 +436,10 @@ def get_changes(vouchers: set[tuple[str, str]]) -> list[dict]:
 # --- what the journal is built from -----------------------------------------
 
 
-def get_document_numbers(entries: list[frappe._dict]) -> dict[str, frappe._dict]:
-	"""Document fields and reversal link of the Journal Entries in the year."""
-	names = sorted({entry.voucher_no for entry in entries if entry.voucher_type == "Journal Entry"})
-	if not names:
-		return {}
-
-	return {
-		row.name: row
-		for row in frappe.get_all(
-			"Journal Entry",
-			filters={"name": ("in", names)},
-			fields=["name", "bill_no", "cheque_no", "general_reversal_of"],
-		)
-	}
+def get_document_numbers(entries: list[frappe._dict]) -> dict[tuple[str, str], frappe._dict]:
+	"""Document fields and reversal link of the vouchers in the year."""
+	vouchers = {(entry.voucher_type, entry.voucher_no) for entry in entries}
+	return document_fields(vouchers, extra_fields={"Journal Entry": ("general_reversal_of",)})
 
 
 def get_lockdown_dates(company: str) -> list[tuple]:

@@ -10,6 +10,7 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 	fiscal_year_for,
 	posting_accounts,
 )
+from erpnext_germany.bookkeeping.ledger import get_totals
 from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 from erpnext_germany.bookkeeping.report.kontoblatt import kontoblatt
 from erpnext_germany.bookkeeping.reversal import reverse_entry
@@ -222,6 +223,34 @@ class TestKontoblatt(FrappeTestCase):
 		reverse_entry(self.book(100.0, on=day), "Betrag falsch erfasst", day)
 
 		self.assertEqual(self.sheet()[0]["balance"], before)
+
+	def test_a_general_reversal_is_read_out_of_the_turnover_of_the_sheet(self):
+		"""The balance was never the hard part. The turnover is.
+
+		A reversal shown as a credit and counted as a negative debit agrees
+		with the Summen- und Saldenliste on the balance and disagrees on
+		Soll and Haben -- and those are the figures a tax advisor compares.
+		"""
+		day = add_days(self.today, 4)
+		before = self.movements(from_date=day, to_date=day)
+		reverse_entry(self.book(100.0, on=day), "Betrag falsch erfasst", day)
+
+		added = self.movements(from_date=day, to_date=day)[len(before) :]
+		self.assertEqual(sum(row["debit"] for row in added), 0.0)
+		self.assertEqual(sum(row["credit"] for row in added), 0.0)
+
+	def test_the_turnover_of_the_sheet_is_the_turnover_of_the_evaluation(self):
+		"""One reading of the ledger, or the proof behind a BWA proves nothing."""
+		day = add_days(self.today, 5)
+		self.book(70.0, on=day)
+		reverse_entry(self.book(100.0, on=day), "Betrag falsch erfasst", day)
+
+		lines = self.movements(from_date=day, to_date=day)
+		totals = get_totals(TEST_COMPANY, from_date=day, to_date=day, accounts=[self.account])
+		figure = totals[self.account]
+
+		self.assertAlmostEqual(sum(row["debit"] for row in lines), figure.debit, places=2)
+		self.assertAlmostEqual(sum(row["credit"] for row in lines), figure.credit, places=2)
 
 	def test_the_sheet_covers_only_the_period_it_was_opened_for(self):
 		self.book(100.0, on=add_days(self.today, -10))

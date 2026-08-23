@@ -138,13 +138,20 @@ def reversal_vouchers(company: str):
 	)
 
 
-def net_of_reversals(gl_entry, company: str) -> tuple:
-	"""Debit and credit of a ledger aggregate, read the German way.
+def reversal_sides(gl_entry, company: str) -> tuple:
+	"""Debit and credit of a single ledger row, read the German way.
 
 	An ordinary entry counts on the side it was booked on. A reversal counts
 	as a minus on the opposite side -- the side the mistake was booked on --
 	so correcting a booking of 100 leaves the account at nil turnover instead
 	of 100 debit and 100 credit.
+
+	Per row rather than per total, because a Kontoblatt shows the rows and an
+	evaluation shows the totals, and the two are only the same books if they
+	are the same reading. A sheet that shows a reversal as a credit while the
+	Summen- und Saldenliste counts it as a negative debit agrees on the
+	balance and disagrees on the turnover -- and the turnover is the figure a
+	tax advisor compares.
 	"""
 	# The voucher type is part of the test as well: a name only identifies a
 	# document together with its doctype.
@@ -152,18 +159,24 @@ def net_of_reversals(gl_entry, company: str) -> tuple:
 		reversal_vouchers(company)
 	)
 
-	debit = Sum(
+	debit = (
 		Case()
 		.when(is_reversal, 0 - gl_entry.credit_in_account_currency)
 		.else_(gl_entry.debit_in_account_currency)
 	)
-	credit = Sum(
+	credit = (
 		Case()
 		.when(is_reversal, 0 - gl_entry.debit_in_account_currency)
 		.else_(gl_entry.credit_in_account_currency)
 	)
 
 	return debit, credit
+
+
+def net_of_reversals(gl_entry, company: str) -> tuple:
+	"""The same reading, summed over an aggregate."""
+	debit, credit = reversal_sides(gl_entry, company)
+	return Sum(debit), Sum(credit)
 
 
 def set_reversal_reason_mandatory(doc, method=None):
