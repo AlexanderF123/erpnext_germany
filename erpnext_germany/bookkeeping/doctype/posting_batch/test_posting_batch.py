@@ -4,6 +4,7 @@
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
+from erpnext_germany.bookkeeping.doctype.tax_key.test_tax_key import clear_tax_keys
 from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 
 test_dependencies = ["Company"]
@@ -15,30 +16,35 @@ TO_DATE = "2026-06-30"
 IN_PERIOD = "2026-06-15"
 
 
-def posting_account(root_type: str, company: str = TEST_COMPANY) -> str:
-	"""Return a ledger account of the company that can be posted to directly.
+def posting_accounts(root_type: str, count: int = 1, company: str = TEST_COMPANY) -> list[str]:
+	"""Return ledger accounts of the company that can be posted to directly.
 
 	Resolved from the chart of accounts instead of hard-coded, so the tests do
 	not depend on how a particular ERPNext version names its accounts.
 	Receivable and payable accounts are excluded because they would require a
 	party on every entry.
 	"""
-	account = frappe.db.get_value(
+	accounts = frappe.get_all(
 		"Account",
-		{
+		filters={
 			"company": company,
 			"is_group": 0,
 			"disabled": 0,
 			"root_type": root_type,
 			"account_type": ("not in", ("Receivable", "Payable")),
 		},
-		"name",
+		pluck="name",
 		order_by="name asc",
+		limit=count,
 	)
-	if not account:
-		raise ValueError(f"No postable {root_type} account for {company}")
+	if len(accounts) < count:
+		raise ValueError(f"Need {count} postable {root_type} accounts for {company}")
 
-	return account
+	return accounts
+
+
+def posting_account(root_type: str, company: str = TEST_COMPANY) -> str:
+	return posting_accounts(root_type, company=company)[0]
 
 
 def fiscal_year_for(day: str) -> str:
@@ -281,3 +287,224 @@ class TestPostingBatch(FrappeTestCase):
 		batch.reload()
 
 		self.assertEqual(batch.status, "Posted")
+
+
+# --- tax derivation ------------------------------------------------------
+
+
+def make_tax_key(name: str, effect: str, rate: float, accounts=None, **kwargs) -> str:
+	doc = frappe.get_doc(
+		{
+			"doctype": "Tax Key",
+			"tax_key_name": name,
+			"key_number": str(abs(hash(name)) % 10**8),
+			"effect": effect,
+			"rate": rate,
+			"accounts": accounts or [],
+			**kwargs,
+		}
+	)
+	doc.insert()
+	return doc.name
+
+
+def set_account_tax_key(account: str, key: str | None):
+	doc = frappe.get_doc("Account", account)
+	doc.tax_key = key
+	doc.save()
+	frappe.clear_document_cache("Account", account)
+
+
+def sides_of(journal_entry) -> dict:
+	return {row.account: (row.debit, row.credit) for row in journal_entry.accounts}
+
+
+class TestPostingBatchTax(FrappeTestCase):
+	"""The Automatikkonto principle: the tax follows from the account."""
+
+	def setUp(self):
+		frappe.db.delete("Ledger Lockdown")
+		clear_lockdown_cache()
+		clear_tax_keys()
+
+		self.expense, self.other_expense = posting_accounts("Expense", 2)
+		self.asset, self.input_tax, self.owed_tax = posting_accounts("Asset", 3)
+		self.liability = posting_accounts("Liability", 1)[0]
+
+	def tearDown(self):
+		frappe.db.delete("Ledger Lockdown")
+		clear_lockdown_cache()
+		clear_tax_keys()
+
+	def domestic_key(self, rate=19.0, name="VSt 19") -> str:
+		return make_tax_key(
+			name,
+			"Input Tax",
+			rate,
+			accounts=[{"company": TEST_COMPANY, "tax_account": self.input_tax}],
+		)
+
+	def test_the_account_alone_derives_the_tax(self):
+		"""Nobody types a tax amount. Booking to the account is enough."""
+		set_account_tax_key(self.expense, self.domestic_key())
+
+		batch = create_batch(entries=[entry(amount=119.0, account=self.expense, against_account=self.asset)])
+
+		line = batch.entries[0]
+		self.assertEqual(line.applied_tax_key, "VSt 19")
+		self.assertIsNone(line.tax_key)
+		self.assertEqual(line.net_amount, 100.0)
+		self.assertEqual(line.tax_amount, 19.0)
+		self.assertEqual(line.tax_account, self.input_tax)
+
+	def test_a_key_on_the_line_overrides_the_account(self):
+		"""The exception is typed on the line and stays visible afterwards."""
+		set_account_tax_key(self.expense, self.domestic_key())
+		reduced = self.domestic_key(rate=7.0, name="VSt 7")
+
+		batch = create_batch(
+			entries=[entry(amount=107.0, account=self.expense, against_account=self.asset, tax_key=reduced)]
+		)
+
+		line = batch.entries[0]
+		self.assertEqual(line.tax_key, "VSt 7")
+		self.assertEqual(line.applied_tax_key, "VSt 7")
+		self.assertEqual(line.net_amount, 100.0)
+		self.assertEqual(line.tax_amount, 7.0)
+
+	def test_an_account_without_a_key_stays_untaxed(self):
+		batch = create_batch(entries=[entry(amount=119.0)])
+
+		line = batch.entries[0]
+		self.assertIsNone(line.applied_tax_key)
+		self.assertEqual(line.net_amount, 119.0)
+		self.assertEqual(line.tax_amount, 0.0)
+		self.assertIsNone(line.tax_account)
+
+	def test_posting_books_net_tax_and_gross_to_three_accounts(self):
+		"""The account keeps the net, the tax account takes the tax, the contra
+		account settles the gross -- exactly how the invoice reads."""
+		set_account_tax_key(self.expense, self.domestic_key())
+
+		batch = create_batch(entries=[entry(amount=119.0, account=self.expense, against_account=self.asset)])
+		batch.post()
+		batch.reload()
+
+		journal_entry = frappe.get_doc("Journal Entry", batch.entries[0].journal_entry)
+		sides = sides_of(journal_entry)
+
+		self.assertEqual(sides[self.expense], (100.0, 0.0))
+		self.assertEqual(sides[self.input_tax], (19.0, 0.0))
+		self.assertEqual(sides[self.asset], (0.0, 119.0))
+		self.assertEqual(journal_entry.total_debit, journal_entry.total_credit)
+
+	def test_reverse_charge_adds_an_offsetting_pair(self):
+		"""§ 13b: the supplier bills net, so nothing extra passes to the contra
+		account. The tax owed and the deductible input tax cancel each other."""
+		key = make_tax_key(
+			"RC 19",
+			"Reverse Charge",
+			19.0,
+			accounts=[
+				{
+					"company": TEST_COMPANY,
+					"tax_account": self.owed_tax,
+					"deductible_tax_account": self.input_tax,
+				}
+			],
+		)
+		set_account_tax_key(self.expense, key)
+
+		batch = create_batch(entries=[entry(amount=1000.0, account=self.expense, against_account=self.asset)])
+		self.assertEqual(batch.entries[0].net_amount, 1000.0)
+		self.assertEqual(batch.entries[0].tax_amount, 190.0)
+
+		batch.post()
+		batch.reload()
+
+		journal_entry = frappe.get_doc("Journal Entry", batch.entries[0].journal_entry)
+		sides = sides_of(journal_entry)
+
+		self.assertEqual(sides[self.expense], (1000.0, 0.0))
+		self.assertEqual(sides[self.asset], (0.0, 1000.0))
+		self.assertEqual(sides[self.owed_tax], (0.0, 190.0))
+		self.assertEqual(sides[self.input_tax], (190.0, 0.0))
+		self.assertEqual(journal_entry.total_debit, journal_entry.total_credit)
+
+	def test_control_totals_separate_net_and_tax(self):
+		set_account_tax_key(self.expense, self.domestic_key())
+
+		batch = create_batch(
+			entries=[
+				entry(amount=119.0, account=self.expense, against_account=self.asset),
+				entry(amount=238.0, account=self.expense, against_account=self.asset),
+			]
+		)
+
+		self.assertEqual(batch.total_amount, 357.0)
+		self.assertEqual(batch.total_net_amount, 300.0)
+		self.assertEqual(batch.total_tax_amount, 57.0)
+
+	# --- contradictions ---------------------------------------------------
+
+	def test_a_key_that_does_not_apply_yet_is_refused(self):
+		key = make_tax_key(
+			"VSt 19 neu",
+			"Input Tax",
+			19.0,
+			valid_from="2026-07-01",
+			accounts=[{"company": TEST_COMPANY, "tax_account": self.input_tax}],
+		)
+		set_account_tax_key(self.expense, key)
+
+		self.assertRaises(
+			frappe.ValidationError,
+			create_batch,
+			entries=[entry(amount=119.0, account=self.expense, against_account=self.asset)],
+		)
+
+	def test_a_disabled_key_is_refused(self):
+		key = make_tax_key(
+			"VSt alt",
+			"Input Tax",
+			19.0,
+			disabled=1,
+			accounts=[{"company": TEST_COMPANY, "tax_account": self.input_tax}],
+		)
+
+		self.assertRaises(
+			frappe.ValidationError,
+			create_batch,
+			entries=[entry(amount=119.0, account=self.expense, against_account=self.asset, tax_key=key)],
+		)
+
+	def test_a_key_without_an_account_for_this_company_is_refused(self):
+		"""Deriving a tax with nowhere to book it would silently lose it."""
+		key = make_tax_key("VSt ohne Konto", "Input Tax", 19.0)
+
+		self.assertRaises(
+			frappe.ValidationError,
+			create_batch,
+			entries=[entry(amount=119.0, account=self.expense, against_account=self.asset, tax_key=key)],
+		)
+
+	def test_a_tax_account_cannot_carry_a_key_itself(self):
+		"""That would report the same tax twice."""
+		key = self.domestic_key()
+
+		self.assertRaises(
+			frappe.ValidationError,
+			create_batch,
+			entries=[entry(amount=119.0, account=self.input_tax, against_account=self.asset, tax_key=key)],
+		)
+
+	def test_a_tax_free_key_carries_no_tax(self):
+		key = make_tax_key("Steuerfrei", "Tax Free", 0.0)
+		set_account_tax_key(self.expense, key)
+
+		batch = create_batch(entries=[entry(amount=500.0, account=self.expense, against_account=self.asset)])
+
+		line = batch.entries[0]
+		self.assertEqual(line.net_amount, 500.0)
+		self.assertEqual(line.tax_amount, 0.0)
+		self.assertIsNone(line.tax_account)

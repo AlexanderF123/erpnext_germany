@@ -1,0 +1,148 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "field:tax_key_name",
+ "creation": "2026-08-20 09:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "tax_key_name",
+  "key_number",
+  "effect",
+  "column_break_head",
+  "rate",
+  "valid_from",
+  "disabled",
+  "section_break_accounts",
+  "accounts",
+  "section_break_description",
+  "description"
+ ],
+ "fields": [
+  {
+   "description": "How this key is called in the booking line, e.g. Vorsteuer 19 %.",
+   "fieldname": "tax_key_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "description": "The DATEV tax key (BU-Schlüssel) this entry is exported with. Reconcile it with the chart of accounts of your tax advisor before the first export.",
+   "fieldname": "key_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Tax Key Number",
+   "length": 10,
+   "reqd": 1,
+   "translatable": 0,
+   "unique": 1
+  },
+  {
+   "description": "Determines how the amount is read: input and output tax are taken out of the amount, reverse charge is added on top of it.",
+   "fieldname": "effect",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Tax Effect",
+   "options": "Input Tax\nOutput Tax\nReverse Charge\nTax Free",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_head",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "rate",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Tax Rate"
+  },
+  {
+   "description": "Bookings before this date do not use this key.",
+   "fieldname": "valid_from",
+   "fieldtype": "Date",
+   "label": "Valid From"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
+  },
+  {
+   "fieldname": "section_break_accounts",
+   "fieldtype": "Section Break",
+   "label": "Tax Accounts"
+  },
+  {
+   "description": "The tax account per company. Rate and effect are the same everywhere; only the account depends on the chart of accounts.",
+   "fieldname": "accounts",
+   "fieldtype": "Table",
+   "label": "Tax Accounts",
+   "options": "Tax Key Account"
+  },
+  {
+   "fieldname": "section_break_description",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-20 09:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Bookkeeping",
+ "name": "Tax Key",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "key_number",
+ "sort_order": "ASC",
+ "states": []
+}

@@ -10,6 +10,9 @@ class PostingBatchEntry(Document):
 	The amount is entered once, together with the side it applies to the
 	account. The contra account always receives the opposite side, so a line is
 	balanced by construction and can be typed without leaving the keyboard.
+
+	Net, tax and tax account are never typed. They follow from the tax key of
+	the account, or from the key on the line where the booking deviates from it.
 	"""
 
 	# begin: auto-generated types
@@ -21,18 +24,24 @@ class PostingBatchEntry(Document):
 		from frappe.types import DF
 
 		account: DF.Link
+		applied_tax_key: DF.Link | None
 		against_account: DF.Link
 		amount: DF.Currency
 		cost_center: DF.Link | None
+		deductible_tax_account: DF.Link | None
 		direction: DF.Literal["Debit", "Credit"]
 		document_number: DF.Data | None
 		document_number_2: DF.Data | None
 		journal_entry: DF.Link | None
+		net_amount: DF.Currency
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
 		posting_date: DF.Date
 		remark: DF.Data | None
+		tax_account: DF.Link | None
+		tax_amount: DF.Currency
+		tax_key: DF.Link | None
 	# end: auto-generated types
 
 	pass

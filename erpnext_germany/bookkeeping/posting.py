@@ -27,6 +27,15 @@ def split_amount(direction: str, amount: float) -> tuple[float, float]:
 	return (amount, 0.0) if direction == DEBIT else (0.0, amount)
 
 
+def flip(sides: tuple[float, float]) -> tuple[float, float]:
+	"""Swap debit and credit.
+
+	Every posting has a counter posting; this is that counter posting.
+	"""
+	debit, credit = sides
+	return credit, debit
+
+
 def is_locked(posting_date: date, locked_up_to: date | None) -> bool:
 	"""Return True if the date falls into a period that has been locked down.
 

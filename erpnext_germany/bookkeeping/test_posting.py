@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 
-from .posting import CREDIT, DEBIT, is_locked, split_amount
+from .posting import CREDIT, DEBIT, flip, is_locked, split_amount
 
 
 def test_split_amount_debit():
@@ -53,3 +53,9 @@ def test_is_locked_includes_the_lockdown_date():
 def test_is_locked_without_lockdown():
 	"""Without a lockdown nothing is closed."""
 	assert not is_locked(date(2020, 1, 1), None)
+
+
+def test_flip_swaps_the_two_sides():
+	"""Every posting has a counter posting."""
+	assert flip(split_amount(DEBIT, 119.0)) == split_amount(CREDIT, 119.0)
+	assert flip(split_amount(CREDIT, 119.0)) == split_amount(DEBIT, 119.0)

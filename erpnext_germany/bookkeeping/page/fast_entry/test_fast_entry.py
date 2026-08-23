@@ -1,0 +1,178 @@
+# Copyright (c) 2026, ALYF GmbH and Contributors
+# See license.txt
+
+import frappe
+from frappe.tests.utils import FrappeTestCase
+
+from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import (
+	FROM_DATE,
+	IN_PERIOD,
+	TEST_COMPANY,
+	TO_DATE,
+	create_batch,
+	entry,
+	make_tax_key,
+	posting_accounts,
+	set_account_tax_key,
+)
+from erpnext_germany.bookkeeping.doctype.tax_key.test_tax_key import clear_tax_keys
+from erpnext_germany.bookkeeping.fast_entry import (
+	add_entry,
+	get_context,
+	remove_entry,
+	update_entry,
+)
+from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
+
+test_dependencies = ["Company"]
+
+
+class TestFastEntry(FrappeTestCase):
+	def setUp(self):
+		frappe.db.delete("Ledger Lockdown")
+		clear_lockdown_cache()
+		clear_tax_keys()
+
+		self.asset, self.tax_account = posting_accounts("Asset", 2)
+		self.expense = posting_accounts("Expense", 1)[0]
+		self.batch = create_batch(entries=[])
+
+	def tearDown(self):
+		frappe.db.delete("Ledger Lockdown")
+		clear_lockdown_cache()
+		clear_tax_keys()
+
+	def line(self, **kwargs) -> dict:
+		values = {
+			"posting_date": IN_PERIOD,
+			"amount": 119.0,
+			"direction": "Debit",
+			"account": self.expense,
+			"against_account": self.asset,
+		}
+		values.update(kwargs)
+		return values
+
+	def input_tax_key(self) -> str:
+		return make_tax_key(
+			"VSt 19",
+			"Input Tax",
+			19.0,
+			accounts=[{"company": TEST_COMPANY, "tax_account": self.tax_account}],
+		)
+
+	# --- context ----------------------------------------------------------
+
+	def test_the_screen_gets_everything_it_needs_in_one_call(self):
+		"""Nothing may have to be fetched again while typing."""
+		context = get_context(self.batch.name)
+
+		self.assertEqual(context["batch"]["name"], self.batch.name)
+		self.assertEqual(context["batch"]["from_date"], FROM_DATE)
+		self.assertEqual(context["batch"]["to_date"], TO_DATE)
+		self.assertTrue(context["accounts"])
+		self.assertIn("totals", context)
+		self.assertEqual(context["totals"]["entry_count"], 0)
+
+	def test_accounts_carry_number_and_name(self):
+		"""An account has to be reachable by number as well as by name."""
+		context = get_context(self.batch.name)
+		account = next(a for a in context["accounts"] if a["name"] == self.expense)
+
+		self.assertIn("number", account)
+		self.assertIn("label", account)
+
+	def test_group_accounts_are_not_offered(self):
+		context = get_context(self.batch.name)
+		offered = {account["name"] for account in context["accounts"]}
+		groups = set(
+			frappe.get_all("Account", filters={"company": TEST_COMPANY, "is_group": 1}, pluck="name")
+		)
+
+		self.assertFalse(offered & groups)
+
+	def test_text_shortcuts_are_keyed_upper_case(self):
+		frappe.get_doc({"doctype": "Booking Text Shortcut", "shortcut": "mi", "text": "Miete"}).insert()
+
+		self.assertEqual(get_context(self.batch.name)["text_shortcuts"]["MI"], "Miete")
+
+	# --- writing ----------------------------------------------------------
+
+	def test_a_typed_line_reaches_the_batch(self):
+		result = add_entry(self.batch.name, self.line(document_number="RE-1"))
+
+		self.assertEqual(result["row"]["amount"], 119.0)
+		self.assertEqual(result["row"]["document_number"], "RE-1")
+		self.assertEqual(result["totals"]["entry_count"], 1)
+
+		self.batch.reload()
+		self.assertEqual(len(self.batch.entries), 1)
+
+	def test_the_tax_comes_back_with_the_line(self):
+		"""The typist sees the split without asking for it."""
+		set_account_tax_key(self.expense, self.input_tax_key())
+
+		result = add_entry(self.batch.name, self.line())
+
+		self.assertEqual(result["row"]["net_amount"], 100.0)
+		self.assertEqual(result["row"]["tax_amount"], 19.0)
+		self.assertEqual(result["row"]["applied_tax_key"], "VSt 19")
+		self.assertEqual(result["totals"]["total_tax_amount"], 19.0)
+
+	def test_the_browser_cannot_dictate_the_tax(self):
+		"""Derived amounts are recomputed, never taken from the client.
+
+		Otherwise the ledger would depend on what some browser believed.
+		"""
+		set_account_tax_key(self.expense, self.input_tax_key())
+
+		result = add_entry(
+			self.batch.name,
+			self.line(net_amount=1.0, tax_amount=999.0, tax_account=self.asset),
+		)
+
+		self.assertEqual(result["row"]["net_amount"], 100.0)
+		self.assertEqual(result["row"]["tax_amount"], 19.0)
+		self.assertEqual(result["row"]["tax_account"], self.tax_account)
+
+	def test_a_line_is_validated_like_any_other(self):
+		"""The fast screen is a faster way in, not a way around the rules."""
+		self.assertRaises(
+			frappe.ValidationError,
+			add_entry,
+			self.batch.name,
+			self.line(posting_date="2026-07-01"),
+		)
+
+	def test_a_line_can_be_corrected(self):
+		created = add_entry(self.batch.name, self.line())["row"]
+
+		result = update_entry(self.batch.name, created["name"], self.line(amount=200.0))
+
+		self.assertEqual(result["row"]["amount"], 200.0)
+		self.assertEqual(result["totals"]["total_amount"], 200.0)
+
+	def test_a_line_can_be_removed(self):
+		created = add_entry(self.batch.name, self.line())["row"]
+
+		result = remove_entry(self.batch.name, created["name"])
+
+		self.assertEqual(result["totals"]["entry_count"], 0)
+
+	def test_a_line_that_is_gone_cannot_be_corrected(self):
+		self.assertRaises(
+			frappe.ValidationError, update_entry, self.batch.name, "does-not-exist", self.line()
+		)
+
+	def test_a_posted_batch_takes_no_more_lines(self):
+		"""A posted batch is history, whichever screen asks."""
+		batch = create_batch(entries=[entry()])
+		batch.post()
+
+		self.assertRaises(frappe.ValidationError, add_entry, batch.name, self.line())
+
+	def test_the_json_a_browser_sends_is_accepted(self):
+		"""frappe.xcall hands dictionaries over as JSON strings."""
+		result = add_entry(self.batch.name, frappe.as_json(self.line()))
+
+		self.assertEqual(result["row"]["amount"], 119.0)

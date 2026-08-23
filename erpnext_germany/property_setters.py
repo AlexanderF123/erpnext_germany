@@ -35,4 +35,11 @@ def get_property_setters():
 		PROTECTED_FILE_DOCTYPES: [
 			(None, "protect_attached_files", 1),
 		],
+		# So that typing a number or a word out of the label finds the account
+		# in every link field, not just in the fast entry screen. Extending the
+		# search fields leaves ERPNext's own filtering untouched, which
+		# replacing the link query would not.
+		"Account": [
+			(None, "search_fields", "account_number,account_label"),
+		],
 	}
