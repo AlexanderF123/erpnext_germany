@@ -24,7 +24,7 @@ from frappe import _
 from frappe.utils import cint, flt
 
 from erpnext_germany.bookkeeping.bwa import ACCOUNTS, RATIO, covered_by, deviation, evaluate, row_amount
-from erpnext_germany.bookkeeping.ledger import get_cost_centers, get_totals
+from erpnext_germany.bookkeeping.ledger import LedgerScope, get_cost_centers, get_totals
 from erpnext_germany.utils.periods import get_month_range, shift_years
 
 PROFIT_AND_LOSS_ROOT_TYPES = ("Income", "Expense")
@@ -112,7 +112,15 @@ def get_data(
 	cost_centers = get_cost_centers(filters.cost_center)
 	periods = get_periods(fiscal_year_start, month_start, month_end)
 	totals = {
-		key: get_totals(filters.company, cost_centers, from_date, to_date, skip_period_closing=True)
+		key: get_totals(
+			LedgerScope(
+				company=filters.company,
+				from_date=from_date,
+				to_date=to_date,
+				cost_centers=cost_centers,
+				skip_period_closing=True,
+			)
+		)
 		for key, (from_date, to_date) in periods.items()
 	}
 

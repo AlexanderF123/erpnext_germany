@@ -139,6 +139,24 @@ class TestGoBDExport(FrappeTestCase):
 		self.assertIn(voucher, links)
 		self.assertIn(file.name, links)
 
+	def test_a_voucher_without_a_number_on_the_paper_reports_none(self):
+		"""Belegfeld 1 says what stood on the document.
+
+		Repeating the voucher's own name there would assert a paper number to
+		a Betriebspruefer that no document supports. The Belegnummer column
+		already carries what we called it.
+		"""
+		voucher = self.book()
+		row = next(row for row in self.journal_rows() if voucher in row)
+
+		self.assertEqual(row.count(voucher), 1)
+
+	def test_a_voucher_reports_the_number_it_was_booked_with(self):
+		voucher = self.book(document_number="RE 4711")
+		row = next(row for row in self.journal_rows() if voucher in row)
+
+		self.assertIn("RE 4711", row)
+
 	def test_the_lockdown_protocol_is_part_of_the_package(self):
 		lockdown = frappe.get_doc(
 			{"doctype": "Ledger Lockdown", "company": TEST_COMPANY, "locked_up_to": self.today}

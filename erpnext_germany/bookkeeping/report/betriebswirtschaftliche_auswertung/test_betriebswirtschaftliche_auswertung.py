@@ -10,7 +10,7 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 	fiscal_year_for,
 	posting_accounts,
 )
-from erpnext_germany.bookkeeping.ledger import get_totals
+from erpnext_germany.bookkeeping.ledger import LedgerScope, get_totals
 from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 from erpnext_germany.bookkeeping.report.betriebswirtschaftliche_auswertung import (
 	betriebswirtschaftliche_auswertung as report,
@@ -277,7 +277,14 @@ class TestBetriebswirtschaftlicheAuswertung(FrappeTestCase):
 		self.book(self.revenue, 1000.0, "Credit")
 		self.book(self.material, 400.0, "Debit")
 		data = self.run_report()
-		totals = get_totals(TEST_COMPANY, None, "2026-06-01", "2026-06-30", skip_period_closing=True)
+		totals = get_totals(
+			LedgerScope(
+				company=TEST_COMPANY,
+				from_date="2026-06-01",
+				to_date="2026-06-30",
+				skip_period_closing=True,
+			)
+		)
 
 		revenue = totals.get(self.revenue, {})
 		self.assertEqual(

@@ -11,7 +11,7 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 	lock,
 	posting_accounts,
 )
-from erpnext_germany.bookkeeping.ledger import get_totals
+from erpnext_germany.bookkeeping.ledger import LedgerScope, get_totals
 from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 from erpnext_germany.bookkeeping.reversal import REVERSAL_REMARK, reverse_entry
 
@@ -63,7 +63,7 @@ class TestReversal(FrappeTestCase):
 
 	def turnover(self, account: str | None = None) -> tuple[float, float]:
 		"""Debit and credit turnover of the account, as the evaluation reads it."""
-		totals = get_totals(TEST_COMPANY, None, self.day, self.day)
+		totals = get_totals(LedgerScope(company=TEST_COMPANY, from_date=self.day, to_date=self.day))
 		row = totals.get(account or self.expense) or {}
 		return (float(row.get("debit") or 0), float(row.get("credit") or 0))
 
@@ -246,6 +246,6 @@ class TestReversal(FrappeTestCase):
 			self.skipTest("No second company on this site")
 
 		reverse_entry(self.book(100.0), REASON)
-		totals = get_totals(other[0], None, self.day, self.day)
+		totals = get_totals(LedgerScope(company=other[0], from_date=self.day, to_date=self.day))
 
 		self.assertNotIn(self.expense, totals)

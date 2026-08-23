@@ -8,11 +8,11 @@ from babel.dates import format_date
 from frappe import _
 from frappe.utils import add_days, cint, flt
 
-from erpnext_germany.bookkeeping.ledger import get_cost_centers, get_totals
+from erpnext_germany.bookkeeping.account_sheet import BALANCE_SHEET_ROOT_TYPES
+from erpnext_germany.bookkeeping.ledger import LedgerScope, get_cost_centers, get_totals
 from erpnext_germany.utils.periods import get_month_range, shift_years
 
 DEBIT_ROOT_TYPES = ("Asset", "Expense")
-BALANCE_SHEET_ROOT_TYPES = ("Asset", "Liability", "Equity")
 
 # Amounts below this are treated as zero when hiding empty rows.
 ROUNDING_TOLERANCE = 0.005
@@ -183,7 +183,15 @@ def get_data(
 ):
 	cost_centers = get_cost_centers(filters.cost_center)
 	totals = {
-		key: get_totals(filters.company, cost_centers, from_date, to_date, skip_closing)
+		key: get_totals(
+			LedgerScope(
+				company=filters.company,
+				from_date=from_date,
+				to_date=to_date,
+				cost_centers=cost_centers,
+				skip_period_closing=skip_closing,
+			)
+		)
 		for key, from_date, to_date, skip_closing in get_periods(
 			fiscal_year_start, month_start, month_end, with_previous_year
 		)

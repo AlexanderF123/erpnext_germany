@@ -26,7 +26,7 @@ from frappe.utils import flt, getdate
 
 from erpnext_germany.bookkeeping.account_search import account_label
 from erpnext_germany.bookkeeping.document_ranges import describe_gap, find_gaps
-from erpnext_germany.bookkeeping.ledger import get_totals
+from erpnext_germany.bookkeeping.ledger import LedgerScope, get_totals
 from erpnext_germany.bookkeeping.tax import OUTPUT_TAX, expected_tax, verify_tax
 
 # Tax is rounded per document and the check adds the documents up, so a clean
@@ -91,7 +91,9 @@ def check_tax_verification(company: str, from_date: date, to_date: date) -> list
 	finding, because "1576 is 240 EUR out" is not something anyone can act on
 	without knowing which accounts fed it.
 	"""
-	totals = get_totals(company, from_date=from_date, to_date=to_date, skip_period_closing=True)
+	totals = get_totals(
+		LedgerScope(company=company, from_date=from_date, to_date=to_date, skip_period_closing=True)
+	)
 	findings = []
 
 	for tax_account, keys in tax_accounts(company).items():
@@ -135,7 +137,7 @@ def check_clearing_accounts(company: str, from_date: date, to_date: date) -> lis
 
 	# Up to the end of the period, not within it: what matters is what is still
 	# sitting there, not what moved through.
-	totals = get_totals(company, to_date=to_date)
+	totals = get_totals(LedgerScope(company=company, to_date=to_date))
 	findings = []
 	for account in accounts:
 		row = totals.get(account) or {}

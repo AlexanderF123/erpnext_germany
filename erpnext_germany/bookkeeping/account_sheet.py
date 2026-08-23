@@ -26,6 +26,25 @@ DOCUMENT_NUMBER_FIELDS = {
 
 DEBIT_ROOT_TYPES = ("Asset", "Expense")
 
+# What a balance sheet carries from one year into the next. Everything else is
+# a profit and loss account, and those begin every fiscal year at nought.
+BALANCE_SHEET_ROOT_TYPES = ("Asset", "Liability", "Equity")
+
+
+def starts_each_year_at_zero(root_type: str) -> bool:
+	"""Whether an account begins every fiscal year at nought.
+
+	Income and expense do: last year's result is closed into equity, and an
+	account that carried it forward as well would count it twice. A balance
+	sheet account carries everything ever booked to it.
+
+	A fact about what an account is, so it is stated once and read by every
+	evaluation. Kept here rather than in the report that needed it first --
+	an evaluation that does not know this rule shows a balance that does not
+	tie to the one next to it.
+	"""
+	return root_type not in BALANCE_SHEET_ROOT_TYPES
+
 
 class Movement(NamedTuple):
 	"""One line of the sheet, before the balance is put behind it."""
@@ -59,19 +78,20 @@ def in_natural_direction(root_type: str, amount: float) -> float:
 	return amount if root_type in DEBIT_ROOT_TYPES else -amount
 
 
-def document_number(voucher_type: str, voucher_no: str, fields: dict) -> tuple[str, str]:
+def document_number(voucher_type: str, fields: dict) -> tuple[str, str]:
 	"""The two document fields of a voucher, as DATEV knows them.
 
 	Belegfeld 1 is the number on the paper -- an incoming invoice keeps the
-	supplier's number, not ours. Where a voucher carries nothing of the sort,
-	its own name stands in, because a line of a Kontoblatt without any
-	reference cannot be followed up.
+	supplier's number, not ours. Empty stays empty here: a voucher that
+	carries no such number has none, and saying otherwise would put a figure
+	in an audit package that no document supports. A reader who needs
+	something to follow puts its own name in, where that reason is visible.
 	"""
 	first_field, second_field = DOCUMENT_NUMBER_FIELDS.get(voucher_type, (None, None))
 	first = (fields.get(first_field) or "").strip() if first_field else ""
 	second = (fields.get(second_field) or "").strip() if second_field else ""
 
-	return (first or voucher_no, second)
+	return (first, second)
 
 
 def contra_accounts(against: str | None) -> str:
