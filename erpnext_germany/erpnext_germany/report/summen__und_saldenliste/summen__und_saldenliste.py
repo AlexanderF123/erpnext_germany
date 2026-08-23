@@ -6,10 +6,10 @@ from datetime import date
 import frappe
 from babel.dates import format_date
 from frappe import _
-from frappe.query_builder.functions import Sum
 from frappe.utils import add_days, cint, flt
 from frappe.utils.nestedset import get_descendants_of
 
+from erpnext_germany.bookkeeping.reversal import net_of_reversals
 from erpnext_germany.utils.periods import get_month_range, shift_years
 
 DEBIT_ROOT_TYPES = ("Asset", "Expense")
@@ -321,19 +321,18 @@ def get_totals(
 	to_date: date | None = None,
 	skip_period_closing: bool = False,
 ) -> dict[str, frappe._dict]:
-	"""Return gross debit and credit totals per account for the given period.
+	"""Return debit and credit totals per account for the given period.
 
-	Both bounds are inclusive.
+	Both bounds are inclusive. A general reversal is read as a minus on the
+	side of the entry it undoes, so a corrected mistake leaves the turnover
+	figures where they were instead of inflating both sides.
 	"""
 	gl_entry = frappe.qb.DocType("GL Entry")
+	debit, credit = net_of_reversals(gl_entry, company)
 
 	query = (
 		frappe.qb.from_(gl_entry)
-		.select(
-			gl_entry.account,
-			Sum(gl_entry.debit_in_account_currency).as_("debit"),
-			Sum(gl_entry.credit_in_account_currency).as_("credit"),
-		)
+		.select(gl_entry.account, debit.as_("debit"), credit.as_("credit"))
 		.where((gl_entry.company == company) & (gl_entry.is_cancelled == 0))
 		.groupby(gl_entry.account)
 	)

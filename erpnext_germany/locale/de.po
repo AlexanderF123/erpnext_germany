@@ -1982,3 +1982,58 @@ msgstr "Kontobeschriftung"
 
 msgid "What this company calls the account. Used for entry and reports; the chart of accounts itself stays as it is."
 msgstr "Wie diese Gesellschaft das Konto nennt. Gilt in Erfassung und Auswertungen; der Kontenrahmen selbst bleibt unveraendert."
+
+msgid "General Reversal"
+msgstr "Generalumkehr"
+
+msgid "General Reversal Of"
+msgstr "Generalumkehr von"
+
+msgid "Reversal Reason"
+msgstr "Stornogrund"
+
+msgid "Reversed By"
+msgstr "Storniert durch"
+
+msgid "A reversal needs a reason."
+msgstr "Eine Generalumkehr braucht einen Grund."
+
+msgid "Reason Required"
+msgstr "Grund erforderlich"
+
+msgid "Only a posted entry can be reversed."
+msgstr "Nur eine gebuchte Buchung kann storniert werden."
+
+msgid "This entry was already reversed by {0}."
+msgstr "Diese Buchung wurde bereits durch {0} storniert."
+
+msgid "Already Reversed"
+msgstr "Bereits storniert"
+
+msgid "A reversal cannot itself be reversed. Book the correction as a new entry."
+msgstr "Eine Generalumkehr kann nicht selbst storniert werden. Die Korrektur ist eine neue Buchung."
+
+msgid "Already A Reversal"
+msgstr "Ist bereits eine Generalumkehr"
+
+msgid "Reversed by {0}."
+msgstr "Storniert durch {0}."
+
+msgid "Entry Reversed"
+msgstr "Buchung storniert"
+
+msgid "This entry reverses {0}."
+msgstr "Diese Buchung storniert {0}."
+
+msgid "This entry was reversed by {0}."
+msgstr "Diese Buchung wurde durch {0} storniert."
+
+msgid "Why this entry is being corrected. Stays with the reversal."
+msgstr "Warum diese Buchung korrigiert wird. Bleibt an der Generalumkehr haengen."
+
+msgctxt "General reversal dialog"
+msgid "Reverse"
+msgstr "Stornieren"
+
+msgid "Reversing ..."
+msgstr "Storniere ..."
