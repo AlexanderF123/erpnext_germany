@@ -184,6 +184,22 @@ class TestPostingBatch(FrappeTestCase):
 		self.assertEqual(sides[posting_account("Asset")], (119.0, 0.0))
 		self.assertEqual(sides[posting_account("Expense")], (0.0, 119.0))
 
+	def test_a_line_with_a_second_document_field_can_be_posted(self):
+		"""Belegfeld 2 has no date of its own, and ERPNext insists on one.
+
+		A line that carried a second document number used to fail on posting
+		with "Please enter Reference date", which is not a sentence that means
+		anything to whoever typed it.
+		"""
+		batch = create_batch(entries=[entry(document_number="RE-2026-0002", document_number_2="K-22")])
+
+		batch.post()
+		batch.reload()
+
+		journal_entry = frappe.get_doc("Journal Entry", batch.entries[0].journal_entry)
+		self.assertEqual(journal_entry.cheque_no, "K-22")
+		self.assertEqual(str(journal_entry.cheque_date), IN_PERIOD)
+
 	def test_credit_direction_flips_both_sides(self):
 		batch = create_batch(entries=[entry(amount=50.0, direction="Credit")])
 

@@ -96,6 +96,7 @@ def _build_reversal(original, reason: str, posting_date: str):
 	reversal.posting_date = posting_date
 	reversal.bill_no = original.bill_no
 	reversal.cheque_no = original.cheque_no
+	reversal.cheque_date = original.cheque_date
 	reversal.general_reversal_of = original.name
 	reversal.reversal_reason = reason
 	reversal.user_remark = f"{REVERSAL_REMARK}: {reason}"

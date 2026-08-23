@@ -2125,3 +2125,47 @@ msgstr "Abweichung"
 
 msgid "Show Accounts"
 msgstr "Konten anzeigen"
+
+msgid "Kontoblatt"
+msgstr "Kontoblatt"
+
+msgid "Choose the account whose sheet you want to see."
+msgstr "Konto waehlen, dessen Kontoblatt angezeigt werden soll."
+
+msgid "Choose a company."
+msgstr "Gesellschaft waehlen."
+
+msgid "Document Field 1"
+msgstr "Belegfeld 1"
+
+msgid "Document Field 2"
+msgstr "Belegfeld 2"
+
+msgid "Balance"
+msgstr "Saldo"
+
+msgid "Balance carried forward"
+msgstr "Saldovortrag"
+
+msgid "Voucher"
+msgstr "Beleg"
+
+msgid "Voucher Type"
+msgstr "Belegart"
+
+msgid "Show document"
+msgstr "Beleg anzeigen"
+
+msgid "Close Document"
+msgstr "Beleg schliessen"
+
+msgctxt "Document panel"
+msgid "Open"
+msgstr "Oeffnen"
+
+msgctxt "Document panel"
+msgid "Close"
+msgstr "Schliessen"
+
+msgid "Document"
+msgstr "Beleg"

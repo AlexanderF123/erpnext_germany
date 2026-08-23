@@ -122,28 +122,21 @@ function get_previous_month() {
 }
 
 function get_ledger_link(data) {
-	/* Link an account to its ledger for the evaluated period.
+	/* Link an account to its Kontoblatt for the evaluated period.
 
 	The period boundaries are supplied by the report itself, so the dates always
-	match the figures in the row. */
+	match the figures in the row, and the link itself is built in one place for
+	every evaluation in this app. */
 	const filters = frappe.query_report.get_filter_values();
-	const params = {
-		company: filters.company,
-		account: data.account,
-		from_date: data.period_from_date,
-		to_date: data.period_to_date,
-		group_by: "Group by Voucher (Consolidated)",
-	};
-	if (filters.cost_center) {
-		params.cost_center = filters.cost_center;
-	}
 
-	const query = Object.entries(params)
-		.filter(([, val]) => val)
-		.map(([key, val]) => `${key}=${encodeURIComponent(val)}`)
-		.join("&");
-
-	return `<a href="/app/query-report/General%20Ledger?${query}">${frappe.utils.escape_html(
+	return erpnext_germany.account_sheet.link(
+		{
+			company: filters.company,
+			account: data.account,
+			from_date: data.period_from_date,
+			to_date: data.period_to_date,
+			cost_center: filters.cost_center,
+		},
 		data.label
-	)}</a>`;
+	);
 }
