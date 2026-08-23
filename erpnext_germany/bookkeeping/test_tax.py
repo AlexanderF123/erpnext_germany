@@ -5,8 +5,10 @@ from .tax import (
 	OUTPUT_TAX,
 	REVERSE_CHARGE,
 	TAX_FREE,
+	expected_tax,
 	resolve_tax_key,
 	split_tax,
+	verify_tax,
 )
 
 
@@ -95,3 +97,44 @@ def test_the_account_key_applies_when_the_line_has_none():
 
 def test_no_key_at_all_stays_empty():
 	assert resolve_tax_key(None, None) is None
+
+
+# --- the tax verification ---------------------------------------------------
+
+
+def test_expected_tax_is_the_rate_on_the_net_turnover():
+	assert expected_tax(1000.0, 19.0) == 190.0
+	assert expected_tax(1000.0, 7.0) == 70.0
+
+
+def test_expected_tax_is_rounded_to_the_cent_the_german_way():
+	assert expected_tax(58.05, 19.0) == 11.03
+
+
+def test_a_negative_rate_is_refused():
+	with pytest.raises(ValueError):
+		expected_tax(1000.0, -19.0)
+
+
+def test_clean_books_show_no_deviation():
+	assert verify_tax(190.0, 190.0).deviation == 0.0
+
+
+def test_too_much_tax_booked_reads_positive():
+	"""The direction that gets a practice into trouble, so the one worth reading."""
+	assert verify_tax(190.0, 200.0).deviation == 10.0
+
+
+def test_too_little_tax_booked_reads_negative():
+	assert verify_tax(190.0, 180.0).deviation == -10.0
+
+
+def test_a_deviation_within_the_tolerance_still_counts_as_clean():
+	"""Tax is rounded per document; the check adds the documents up."""
+	assert verify_tax(190.0, 190.02).is_clean(tolerance=0.05)
+	assert not verify_tax(190.0, 190.5).is_clean(tolerance=0.05)
+
+
+def test_without_a_tolerance_only_the_cent_itself_is_forgiven():
+	assert verify_tax(190.0, 190.0).is_clean()
+	assert not verify_tax(190.0, 190.01).is_clean()
