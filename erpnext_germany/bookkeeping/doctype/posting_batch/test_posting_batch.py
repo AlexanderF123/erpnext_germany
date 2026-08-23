@@ -92,6 +92,41 @@ def lock(company=TEST_COMPANY, locked_up_to=TO_DATE):
 	clear_lockdown_cache()
 
 
+class HookedIn:
+	"""Stand-in for an app that hooks into the batch to fill in dimensions.
+
+	Registered the way Frappe registers a real one, so the test proves the
+	extension point works rather than that a method can be called.
+	"""
+
+	def __init__(self, method: str, handler):
+		self.method = method
+		self.handler = handler
+		self.path = f"{__name__}.{handler.__name__}"
+
+	def __enter__(self):
+		frappe.get_doc_hooks()
+		self.before = frappe.local.doc_events_hooks
+		hooks = {doctype: dict(events) for doctype, events in self.before.items()}
+		hooks.setdefault("Posting Batch", {}).setdefault(self.method, []).append(self.path)
+		frappe.local.doc_events_hooks = hooks
+		return self
+
+	def __exit__(self, *_args):
+		frappe.local.doc_events_hooks = self.before
+
+
+def set_cost_centers(doc, method=None):
+	"""What an app that knows about properties would do to the lines."""
+	for entry in doc.entries:
+		entry.cost_center = doc.flags.derived_cost_center
+
+
+def set_a_cost_center_that_is_not_there(doc, method=None):
+	for entry in doc.entries:
+		entry.cost_center = "No Such Cost Center"
+
+
 class TestPostingBatch(FrappeTestCase):
 	def setUp(self):
 		# frappe.db.delete on purpose: a lockdown cannot be removed through the
@@ -102,6 +137,46 @@ class TestPostingBatch(FrappeTestCase):
 	def tearDown(self):
 		frappe.db.delete("Ledger Lockdown")
 		clear_lockdown_cache()
+
+	# --- what another app may fill in --------------------------------------
+
+	def test_an_app_can_fill_in_what_only_it_knows(self):
+		"""The batch knows what a booking is. It does not know which building
+		an account belongs to, and that knowledge does not belong here."""
+		centers = frappe.get_all(
+			"Cost Center", filters={"company": TEST_COMPANY, "is_group": 0}, pluck="name", limit=1
+		)
+		if not centers:
+			self.skipTest("No cost center on this site")
+
+		with HookedIn("derive_dimensions", set_cost_centers):
+			batch = frappe.get_doc(
+				{
+					"doctype": "Posting Batch",
+					"company": TEST_COMPANY,
+					"fiscal_year": fiscal_year_for(FROM_DATE),
+					"from_date": FROM_DATE,
+					"to_date": TO_DATE,
+					"entries": [entry()],
+					"flags": {},
+				}
+			)
+			batch.flags.derived_cost_center = centers[0]
+			batch.insert()
+
+		self.assertEqual(batch.entries[0].cost_center, centers[0])
+
+	def test_what_an_app_fills_in_faces_the_same_checks_as_what_was_typed(self):
+		"""Otherwise a derived value would be the one thing in the batch that
+		nobody looked at."""
+		with HookedIn("derive_dimensions", set_a_cost_center_that_is_not_there):
+			with self.assertRaises(frappe.exceptions.LinkValidationError):
+				create_batch()
+
+	def test_nothing_is_filled_in_where_no_app_asks_to(self):
+		batch = create_batch(entries=[entry()])
+
+		self.assertIsNone(batch.entries[0].cost_center)
 
 	# --- control totals ---------------------------------------------------
 
