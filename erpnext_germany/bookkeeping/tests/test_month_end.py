@@ -227,6 +227,28 @@ class TestMonthEndChecks(FrappeTestCase):
 		account.save()
 		frappe.clear_document_cache("Account", self.taxed)
 
+	def test_a_gap_in_a_document_range_is_part_of_the_checklist(self):
+		"""The other half of the missing-document question: not whether there
+		is a document for a payment, but whether there is one for a number."""
+		year = fiscal_year_for(self.today)
+		if not frappe.db.exists("Document Range", "Monatsabschluss Belegkreis"):
+			frappe.get_doc(
+				{
+					"doctype": "Document Range",
+					"title": "Monatsabschluss Belegkreis",
+					"company": TEST_COMPANY,
+					"fiscal_year": year,
+					"kind": "Other",
+					"prefix": "ME-",
+				}
+			).insert()
+
+		self.book(self.expense, 100.0, document_number="ME-100")
+		self.book(self.expense, 100.0, document_number="ME-102")
+
+		gaps = [finding.label for finding in self.findings_of("document_number_gaps")]
+		self.assertTrue(any("ME-101" in gap for gap in gaps))
+
 	# --- keeping the result -----------------------------------------------
 
 	def test_the_result_is_filed_with_the_lockdown_that_closes_the_period(self):

@@ -2256,3 +2256,81 @@ msgstr "Herunterladen"
 
 msgid "Fiscal year {0}, {1} to {2}"
 msgstr "Wirtschaftsjahr {0}, {1} bis {2}"
+
+msgid "Document Range"
+msgstr "Belegkreis"
+
+msgid "Belegnummernkreise"
+msgstr "Belegnummernkreise"
+
+msgid "How this range is called, e.g. Ausgangsrechnungen 2026."
+msgstr "Wie dieser Belegkreis heisst, z. B. Ausgangsrechnungen 2026."
+
+msgid "A number belongs to a year. One dated outside it is either misfiled or backdated."
+msgstr "Eine Nummer gehört zu einem Jahr. Ein Beleg mit Datum ausserhalb ist entweder falsch abgelegt oder rückdatiert."
+
+msgid "Where the numbers of this range come from."
+msgstr "Woher die Nummern dieses Belegkreises stammen."
+
+msgid "What every number of this range starts with, e.g. RE-2026-. Leave empty where the numbers carry none."
+msgstr "Womit jede Nummer dieses Belegkreises beginnt, z. B. RE-2026-. Leer lassen, wenn die Nummern keinen Vorsatz tragen."
+
+msgid "{0} is not a kind of document range."
+msgstr "{0} ist keine Art von Belegkreis."
+
+msgid "{0} already reads the same documents. Give both a prefix to tell them apart."
+msgstr "{0} liest bereits dieselben Belege. Beide brauchen einen Vorsatz, der sie unterscheidet."
+
+msgid "{0} already counts the numbers starting with {1}."
+msgstr "{0} zählt bereits die Nummern, die mit {1} beginnen."
+
+msgid "Ranges Overlap"
+msgstr "Belegkreise überschneiden sich"
+
+msgid "Choose a fiscal year."
+msgstr "Wirtschaftsjahr wählen."
+
+msgid "Finding"
+msgstr "Befund"
+
+msgid "Numbers"
+msgstr "Nummern"
+
+msgid "Count"
+msgstr "Anzahl"
+
+msgid "Document Type"
+msgstr "Belegart"
+
+msgid "Range"
+msgstr "Belegkreis"
+
+msgid "Gap"
+msgstr "Lücke"
+
+msgid "Duplicate"
+msgstr "Doppelt"
+
+msgid "Outside the period"
+msgstr "Ausserhalb des Zeitraums"
+
+msgid "Not countable"
+msgstr "Nicht zählbar"
+
+msgid "Nothing was written under this."
+msgstr "Darunter wurde nichts geschrieben."
+
+msgid "Used by {0} documents."
+msgstr "Von {0} Belegen benutzt."
+
+msgid "Dated {0}."
+msgstr "Datiert auf {0}."
+
+msgid "This number has no counting part, so it is not part of the sequence."
+msgstr "Diese Nummer hat keinen zählenden Teil und gehört damit nicht zur Nummernfolge."
+
+msgid "Gaps in the Document Numbering"
+msgstr "Lücken in der Belegnummerierung"
+
+msgid "{0}, {1}"
+msgstr "{0}, {1}"

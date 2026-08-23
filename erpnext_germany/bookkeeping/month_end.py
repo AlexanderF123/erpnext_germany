@@ -22,9 +22,10 @@ from datetime import date
 import frappe
 from frappe import _
 from frappe.query_builder.functions import Sum
-from frappe.utils import flt
+from frappe.utils import flt, getdate
 
 from erpnext_germany.bookkeeping.account_search import account_label
+from erpnext_germany.bookkeeping.document_ranges import describe_gap, find_gaps
 from erpnext_germany.bookkeeping.ledger import get_totals
 from erpnext_germany.bookkeeping.tax import OUTPUT_TAX, expected_tax, verify_tax
 
@@ -56,6 +57,7 @@ def get_checks() -> dict[str, Callable]:
 		"debtors_with_credit_balance": check_debtors_with_credit_balance,
 		"disabled_accounts": check_disabled_accounts,
 		"vouchers_without_document": check_vouchers_without_document,
+		"document_number_gaps": check_document_number_gaps,
 	}
 
 
@@ -68,6 +70,7 @@ def get_titles() -> dict[str, str]:
 		"debtors_with_credit_balance": _("Customers With a Credit Balance"),
 		"disabled_accounts": _("Postings to Disabled Accounts"),
 		"vouchers_without_document": _("Vouchers Without a Document"),
+		"document_number_gaps": _("Gaps in the Document Numbering"),
 	}
 
 
@@ -248,6 +251,56 @@ def check_vouchers_without_document(company: str, from_date: date, to_date: date
 		for entry in entries
 		if entry.name not in attached
 	]
+
+
+def check_document_number_gaps(company: str, from_date: date, to_date: date) -> list[Finding]:
+	"""Numbers nothing was written under, in the ranges covering this period.
+
+	The other half of the question the missing-document check asks. That one
+	asks whether there is a document for a payment; this one asks whether
+	there is a document for a number -- and a gap in the numbering is what an
+	auditor takes as evidence that one was written and made to disappear.
+
+	Checked over the whole range rather than only the month: a sequence is
+	unbroken or it is not, and a gap in March is still a gap in April.
+	"""
+	findings = []
+	for name in frappe.get_all(
+		"Document Range",
+		filters={"company": company, "disabled": 0},
+		pluck="name",
+		order_by="title asc",
+	):
+		document_range = frappe.get_doc("Document Range", name)
+		if not covers(document_range, to_date):
+			continue
+
+		prefix = document_range.prefix or ""
+		numbers = [document.number for document in document_range.documents() if document.number is not None]
+		findings.extend(
+			Finding(
+				label=f"{document_range.name}: {describe_gap(gap, prefix)}",
+				amount=gap.size,
+				detail=_("Nothing was written under this."),
+			)
+			for gap in find_gaps(numbers)
+		)
+
+	return findings
+
+
+def covers(document_range, to_date: date) -> bool:
+	"""Whether this range belongs to the year the period ends in."""
+	year = frappe.get_cached_value(
+		"Fiscal Year",
+		document_range.fiscal_year,
+		["year_start_date", "year_end_date"],
+		as_dict=True,
+	)
+	if not year:
+		return False
+
+	return getdate(year.year_start_date) <= getdate(to_date) <= getdate(year.year_end_date)
 
 
 # --- what the checks are built from -----------------------------------------
