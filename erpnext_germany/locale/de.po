@@ -1200,17 +1200,20 @@ msgstr "Beide Richtungen"
 msgid "Also use this distance for the opposite direction."
 msgstr "Diese Strecke auch für die Gegenrichtung verwenden."
 
-#. Description of the 'Company' (Link) field in DocType 'Business Trip
+#. Label of a Link field in DocType 'Business Trip Distance'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
+msgid "Only for Company"
+msgstr "Nur für Gesellschaft"
+
+#. Description of the 'Only for Company' (Link) field in DocType 'Business Trip
 #. Distance'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
 msgid ""
-"Leave empty to make this distance available to all companies. Careful: "
-"Frappe prefills this with your default company, so clear it for a route that "
-"everyone should use."
+"Leave empty and the distance counts for every company. Fill it in only to "
+"give one company a different distance for the same route."
 msgstr ""
-"Leer lassen, damit die Strecke für alle Gesellschaften gilt. Achtung: Frappe "
-"trägt hier die Standardgesellschaft des Benutzers vor -- für eine allgemein "
-"gültige Strecke das Feld leeren."
+"Leer lassen, dann gilt die Entfernung für alle Gesellschaften. Nur ausfüllen, "
+"wenn eine Gesellschaft für dieselbe Strecke eine andere Entfernung führt."
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.py
 msgid "Distance must be greater than zero."

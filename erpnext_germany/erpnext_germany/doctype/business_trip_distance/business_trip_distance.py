@@ -21,9 +21,9 @@ class BusinessTripDistance(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		company: DF.Link | None
 		disabled: DF.Check
 		distance: DF.Int
+		for_company: DF.Link | None
 		from_location: DF.Data
 		is_bidirectional: DF.Check
 		notes: DF.SmallText | None
@@ -51,8 +51,8 @@ class BusinessTripDistance(Document):
 	def validate_duplicate(self):
 		"""Prevent two rows that would match the same journey, so the proposal stays predictable.
 
-		Only routes of the same company are compared: a company specific distance is meant to
-		override a shared one, not to collide with it.
+		Only routes with the same scope are compared: a distance meant for one company is
+		meant to override the general one, not to collide with it.
 		"""
 		if self.disabled:
 			return
@@ -60,7 +60,7 @@ class BusinessTripDistance(Document):
 		candidates = get_candidates(self.from_location, self.to_location, all_companies=True)
 
 		for existing in candidates:
-			if existing.name == self.name or (existing.company or "") != (self.company or ""):
+			if existing.name == self.name or (existing.for_company or "") != (self.for_company or ""):
 				continue
 
 			if routes_overlap(existing, self):
@@ -135,20 +135,23 @@ def get_candidates(
 			["from_location", "in", places],
 			["to_location", "in", places],
 		],
-		fields=["name", "from_location", "to_location", "distance", "is_bidirectional", "company"],
+		fields=["name", "from_location", "to_location", "distance", "is_bidirectional", "for_company"],
 	)
 
 	if all_companies:
 		return rows
 
-	return [row for row in rows if not row.company or row.company == company]
+	# A row without a company counts for everyone. The field is called for_company rather
+	# than company on purpose: Frappe fills any Link field named company from the session
+	# default, so a route meant for all companies would silently be bound to one.
+	return [row for row in rows if not row.for_company or row.for_company == company]
 
 
 @frappe.whitelist()
 def get_distance(from_location: str, to_location: str, company: str | None = None) -> dict | None:
 	"""Return the stored distance for a route, or None if it is unknown.
 
-	A distance of the given company wins over one that is shared by all companies.
+	A distance entered for the given company wins over the one that counts for all of them.
 	"""
 	frappe.has_permission("Business Trip Distance", throw=True)
 
@@ -160,8 +163,8 @@ def get_distance(from_location: str, to_location: str, company: str | None = Non
 		if not matches(candidate, from_location, to_location):
 			continue
 
-		# A company specific route beats the shared one.
-		if best is None or (candidate.company and not best.company):
+		# A route entered for one company beats the general one.
+		if best is None or (candidate.for_company and not best.for_company):
 			best = candidate
 
 	if not best:
