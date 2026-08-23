@@ -1163,3 +1163,138 @@ msgstr ""
 #: erpnext_germany/modules.txt
 msgid "Bookkeeping"
 msgstr ""
+
+msgid "Posting Batch"
+msgstr ""
+
+msgid "Posting Batch Entry"
+msgstr ""
+
+msgid "Ledger Lockdown"
+msgstr ""
+
+msgid "Contra Account"
+msgstr ""
+
+msgid "Direction"
+msgstr ""
+
+msgid "Document Number"
+msgstr ""
+
+msgid "Second Document Number"
+msgstr ""
+
+msgid "Document Circle"
+msgstr ""
+
+msgid "Control Totals"
+msgstr ""
+
+msgid "Locked Up To"
+msgstr ""
+
+msgid "Locked On"
+msgstr ""
+
+msgid "Locked By"
+msgstr ""
+
+msgid "Ledger Entries"
+msgstr ""
+
+msgid "This batch has been posted and cannot be changed."
+msgstr ""
+
+msgid "Batch Already Posted"
+msgstr ""
+
+msgid "From Date must be on or before To Date."
+msgstr ""
+
+msgid "Row {0}"
+msgstr ""
+
+msgid "{0}: Amount must be greater than zero. Book a correction as a general reversal."
+msgstr ""
+
+msgid "{0}: Posting date {1} is outside the batch period."
+msgstr ""
+
+msgid "{0}: Account and contra account must be different."
+msgstr ""
+
+msgid "{0}: {1} does not belong to {2}."
+msgstr ""
+
+msgid "{0}: {1} is a group account and cannot be posted to."
+msgstr ""
+
+msgid "{0}: {1} is disabled."
+msgstr ""
+
+msgid "A posted batch cannot be deleted."
+msgstr ""
+
+msgid "This batch has already been posted."
+msgstr ""
+
+msgid "There is nothing to post."
+msgstr ""
+
+msgid "{0} entries posted."
+msgstr ""
+
+msgid "Batch Posted"
+msgstr ""
+
+msgid "A lockdown cannot be changed. Create a new one to close a later period."
+msgstr ""
+
+msgid "Lockdown Is Final"
+msgstr ""
+
+msgid "{0} is already locked up to {1}. A lockdown can only move forward."
+msgstr ""
+
+msgid "Period Already Locked"
+msgstr ""
+
+msgid "A lockdown cannot be deleted. It is the record that a period was closed."
+msgstr ""
+
+msgid "Period Is Locked"
+msgstr ""
+
+msgid "This batch has been posted. Corrections are booked as a general reversal."
+msgstr ""
+
+msgid "Post {0} entries to the ledger? This cannot be undone."
+msgstr ""
+
+msgid "Posting entries…"
+msgstr ""
+
+msgid "Everything posted on or before this date becomes unchangeable. A lockdown cannot be undone."
+msgstr ""
+
+msgid "{0} is locked up to {1}."
+msgstr ""
+
+msgid "Lock {0} up to {1}? This cannot be undone."
+msgstr ""
+
+msgid "Post Batch"
+msgstr ""
+
+msgid "{0} is locked up to {1}. Nothing can be posted into a closed period."
+msgstr ""
+
+msgid "{0} is locked up to {1}. Documents in a closed period cannot be cancelled. Book a general reversal instead."
+msgstr ""
+
+msgid "Booking Entries"
+msgstr ""
+
+msgid "Number of Entries"
+msgstr ""

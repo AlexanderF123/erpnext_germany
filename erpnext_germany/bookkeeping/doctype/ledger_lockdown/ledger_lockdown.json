@@ -1,0 +1,158 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-08-18 17:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "company",
+  "locked_up_to",
+  "column_break_lock",
+  "locked_on",
+  "locked_by",
+  "section_break_totals",
+  "entry_count",
+  "total_debit",
+  "column_break_totals",
+  "total_credit",
+  "remarks"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Title",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "description": "Everything posted on or before this date becomes unchangeable. Corrections are booked as a general reversal from here on.",
+   "fieldname": "locked_up_to",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Locked Up To",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_lock",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "locked_on",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Locked On",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "locked_by",
+   "fieldtype": "Link",
+   "label": "Locked By",
+   "no_copy": 1,
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_totals",
+   "fieldtype": "Section Break",
+   "label": "Control Totals"
+  },
+  {
+   "description": "Number of ledger entries covered by this lockdown, recorded at the time of locking.",
+   "fieldname": "entry_count",
+   "fieldtype": "Int",
+   "label": "Ledger Entries",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_debit",
+   "fieldtype": "Currency",
+   "label": "Total Debit",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_totals",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_credit",
+   "fieldtype": "Currency",
+   "label": "Total Credit",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-18 17:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Bookkeeping",
+ "name": "Ledger Lockdown",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Auditor"
+  }
+ ],
+ "row_format": "Dynamic",
+ "show_title_field_in_link": 1,
+ "sort_field": "locked_up_to",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title"
+}
