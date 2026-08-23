@@ -14,7 +14,7 @@
   "is_bidirectional",
   "disabled",
   "section_break_scop",
-  "company",
+  "for_company",
   "column_break_note",
   "notes"
  ],
@@ -75,10 +75,10 @@
    "fieldtype": "Section Break"
   },
   {
-   "description": "Leave empty to make this distance available to all companies. Careful: Frappe prefills this with your default company, so clear it for a route that everyone should use.",
-   "fieldname": "company",
+   "description": "Leave empty and the distance counts for every company. Fill it in only to give one company a different distance for the same route.",
+   "fieldname": "for_company",
    "fieldtype": "Link",
-   "label": "Company",
+   "label": "Only for Company",
    "options": "Company"
   },
   {

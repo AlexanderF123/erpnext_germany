@@ -69,10 +69,30 @@ class TestBusinessTripDistance(FrappeTestCase):
 			self.skipTest("No Company in the test site")
 
 		create_distance(distance=90)
-		create_distance(distance=95, company=company)
+		create_distance(distance=95, for_company=company)
 
 		self.assertEqual(get_distance("Heidelberg, Büro", "Baden-Baden", company)["distance"], 95)
 		self.assertEqual(get_distance("Heidelberg, Büro", "Baden-Baden")["distance"], 90)
+
+	def test_a_route_without_a_company_stays_without_one(self):
+		"""The field must not be filled in behind the user's back.
+
+		Frappe fills any Link field named `company` from the session default, so a field of
+		that name would quietly bind every new route to whoever entered it -- and the route
+		would then stop answering for anybody else.
+		"""
+		company = frappe.db.get_value("Company", {}, "name")
+		if not company:
+			self.skipTest("No Company in the test site")
+
+		frappe.defaults.set_user_default("Company", company)
+		self.addCleanup(frappe.defaults.clear_user_default, "Company")
+
+		route = create_distance()
+
+		self.assertFalse(route.for_company)
+		self.assertEqual(get_distance("Heidelberg, Büro", "Baden-Baden")["distance"], 90)
+		self.assertEqual(get_distance("Heidelberg, Büro", "Baden-Baden", company)["distance"], 90)
 
 	def test_duplicate_route_is_rejected(self):
 		create_distance()
