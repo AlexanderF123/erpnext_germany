@@ -1681,7 +1681,7 @@ msgid "Posting Batch"
 msgstr "Buchungsstapel"
 
 msgid "Posting Batch Entry"
-msgstr "Buchungsstapel-Zeile"
+msgstr "Buchungssatz"
 
 msgid "Ledger Lockdown"
 msgstr "Festschreibung"
@@ -1798,7 +1798,7 @@ msgid "Lock {0} up to {1}? This cannot be undone."
 msgstr "{0} bis {1} festschreiben? Das lässt sich nicht rückgängig machen."
 
 msgid "Post Batch"
-msgstr "Stapel buchen"
+msgstr "Stapel verarbeiten"
 
 msgid "{0} is locked up to {1}. Nothing can be posted into a closed period."
 msgstr "{0} ist bis {1} festgeschrieben. In einen geschlossenen Zeitraum kann nicht gebucht werden."
@@ -1810,7 +1810,7 @@ msgid "Booking Entries"
 msgstr "Buchungszeilen"
 
 msgid "Number of Entries"
-msgstr "Anzahl Zeilen"
+msgstr "Anzahl Buchungssätze"
 
 msgid "Tax Key"
 msgstr "Steuerschlüssel"
@@ -1918,10 +1918,10 @@ msgid "Sum of the derived tax. Under reverse charge this tax is not part of the 
 msgstr "Summe der abgeleiteten Steuer. Bei Reverse Charge ist diese Steuer nicht Teil des Gesamtbetrags."
 
 msgid "Fast Entry"
-msgstr "Schnellerfassung"
+msgstr "Buchungsmaske"
 
 msgid "Booking Text Shortcut"
-msgstr "Textkonstante"
+msgstr "Buchungstextkonstante"
 
 msgid "Booking Text"
 msgstr "Buchungstext"
@@ -1981,7 +1981,7 @@ msgid "C"
 msgstr "H"
 
 msgid "Account Label"
-msgstr "Kontobeschriftung"
+msgstr "Kontenbeschriftung"
 
 msgid "What this company calls the account. Used for entry and reports; the chart of accounts itself stays as it is."
 msgstr "Wie diese Gesellschaft das Konto nennt. Gilt in Erfassung und Auswertungen; der Kontenrahmen selbst bleibt unverändert."
@@ -2337,3 +2337,33 @@ msgstr "Lücken in der Belegnummerierung"
 
 msgid "{0}, {1}"
 msgstr "{0}, {1}"
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Amount"
+msgstr "Umsatz"
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Tax Key"
+msgstr "BU-Schlüssel"
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Posting Date"
+msgstr "Datum"
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Cost Center"
+msgstr "Kost 1"
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Remark"
+msgstr "Buchungstext"
