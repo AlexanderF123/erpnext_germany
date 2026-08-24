@@ -62,7 +62,7 @@
    "fieldname": "accounts",
    "fieldtype": "Small Text",
    "in_list_view": 1,
-   "label": "Accounts"
+   "label": "Account Ranges"
   },
   {
    "fieldname": "column_break_span",

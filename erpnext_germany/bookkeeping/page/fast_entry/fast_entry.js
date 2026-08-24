@@ -25,15 +25,21 @@ frappe.provide("erpnext_germany");
 
 // The tab order of the DATEV entry mask. Fingers that know it should not have
 // to relearn anything, which is the whole point of this screen.
+// Several columns carry the word the entry mask uses rather than the word the
+// rest of the system uses -- "Umsatz" for an amount, "BU-Schluessel" for a tax
+// key. The context keeps those apart from the same English word elsewhere, so
+// renaming a column here cannot rename a field somewhere else.
+const COLUMN = "Entry mask column";
+
 const FIELDS = [
-	{ fieldname: "amount", label: __("Amount"), kind: "amount", width: 120 },
+	{ fieldname: "amount", label: __("Amount", null, COLUMN), kind: "amount", width: 120 },
 	{
 		fieldname: "direction",
 		label: __("D/C", null, "Debit or credit column"),
 		kind: "direction",
 		width: 60,
 	},
-	{ fieldname: "tax_key", label: __("Tax Key"), kind: "tax_key", width: 110 },
+	{ fieldname: "tax_key", label: __("Tax Key", null, COLUMN), kind: "tax_key", width: 110 },
 	{ fieldname: "against_account", label: __("Contra Account"), kind: "account", width: 190 },
 	{ fieldname: "document_number", label: __("Document Number"), kind: "text", width: 120 },
 	{
@@ -42,10 +48,20 @@ const FIELDS = [
 		kind: "text",
 		width: 120,
 	},
-	{ fieldname: "posting_date", label: __("Posting Date"), kind: "date", width: 110 },
+	{
+		fieldname: "posting_date",
+		label: __("Posting Date", null, COLUMN),
+		kind: "date",
+		width: 110,
+	},
 	{ fieldname: "account", label: __("Account"), kind: "account", width: 190 },
-	{ fieldname: "cost_center", label: __("Cost Center"), kind: "cost_center", width: 150 },
-	{ fieldname: "remark", label: __("Remark"), kind: "remark", width: 200 },
+	{
+		fieldname: "cost_center",
+		label: __("Cost Center", null, COLUMN),
+		kind: "cost_center",
+		width: 150,
+	},
+	{ fieldname: "remark", label: __("Remark", null, COLUMN), kind: "remark", width: 200 },
 ];
 
 const CARRIED_OVER = ["posting_date", "account", "against_account", "cost_center"];
