@@ -18,6 +18,7 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 from erpnext_germany.bookkeeping.doctype.tax_key.test_tax_key import clear_tax_keys
 from erpnext_germany.bookkeeping.fast_entry import (
 	add_entry,
+	get_balances,
 	get_context,
 	remove_entry,
 	update_entry,
@@ -176,3 +177,78 @@ class TestFastEntry(FrappeTestCase):
 		result = add_entry(self.batch.name, frappe.as_json(self.line()))
 
 		self.assertEqual(result["row"]["amount"], 119.0)
+
+
+class TestAccountBalances(FrappeTestCase):
+	"""The balance is what tells a typist the account number was the right one.
+
+	Measured as a change rather than as an absolute: the test site shares its
+	accounts between tests, so what this endpoint owes anybody is that a
+	posting moves the figure by what was posted -- not that any account starts
+	the day at nought.
+	"""
+
+	def setUp(self):
+		frappe.db.delete("Ledger Lockdown")
+		clear_lockdown_cache()
+		clear_tax_keys()
+
+		self.asset, self.other = posting_accounts("Asset", 2)
+		self.batch = create_batch(entries=[])
+
+	def balance(self, account) -> float:
+		return get_balances(self.batch.name, [account])[account]
+
+	def test_every_account_asked_about_gets_a_figure(self):
+		"""Nought rather than nothing, so the caller never has to tell
+		"no movement" from "not asked for"."""
+		balances = get_balances(self.batch.name, [self.asset, self.other])
+
+		self.assertEqual(sorted(balances), sorted([self.asset, self.other]))
+		for figure in balances.values():
+			self.assertIsInstance(figure, float)
+
+	def test_a_posted_batch_moves_the_balance(self):
+		before_asset = self.balance(self.asset)
+		before_other = self.balance(self.other)
+
+		batch = create_batch(
+			entries=[entry(amount=400.0, direction="Debit", account=self.asset, against_account=self.other)]
+		)
+		batch.post()
+
+		self.assertEqual(self.balance(self.asset) - before_asset, 400.0)
+		self.assertEqual(self.balance(self.other) - before_other, -400.0)
+
+	def test_a_credit_posting_moves_the_balance_the_other_way(self):
+		"""The screen turns the sign into Soll or Haben. The server stays with
+		debit minus credit, which is the one reading every evaluation uses."""
+		before = self.balance(self.asset)
+
+		batch = create_batch(
+			entries=[entry(amount=250.0, direction="Credit", account=self.asset, against_account=self.other)]
+		)
+		batch.post()
+
+		self.assertEqual(self.balance(self.asset) - before, -250.0)
+
+	def test_an_unposted_batch_is_not_in_the_balance(self):
+		"""What is being typed is not yet in the books, and the balance being
+		added to is the one without it."""
+		before = self.balance(self.asset)
+
+		create_batch(
+			entries=[entry(amount=900.0, direction="Debit", account=self.asset, against_account=self.other)]
+		)
+
+		self.assertEqual(self.balance(self.asset), before)
+
+	def test_asking_for_nothing_returns_nothing(self):
+		self.assertEqual(get_balances(self.batch.name, []), {})
+		self.assertEqual(get_balances(self.batch.name, [""]), {})
+
+	def test_accounts_arrive_as_json_from_the_browser(self):
+		self.assertEqual(
+			sorted(get_balances(self.batch.name, frappe.as_json([self.asset]))),
+			[self.asset],
+		)

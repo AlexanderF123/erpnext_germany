@@ -2429,3 +2429,7 @@ msgstr "Worauf dieser Stapel hinauslaufen soll, z. B. die Summe eines Kontoauszu
 msgid "Target amount minus total amount. Zero means the batch is reconciled."
 msgstr "Sollwert minus Summe der Umsätze. Null heißt: der Stapel stimmt."
 
+msgctxt "Entry number column"
+msgid "No."
+msgstr "Nr."
+

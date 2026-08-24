@@ -65,6 +65,7 @@ const FIELDS = [
 ];
 
 const CARRIED_OVER = ["posting_date", "account", "against_account", "cost_center"];
+const ACCOUNT_FIELDS = ["account", "against_account"];
 const DRAFT_KEY = "erpnext_germany:fast_entry:line";
 const MAX_SUGGESTIONS = 8;
 
@@ -84,6 +85,9 @@ erpnext_germany.FastEntry = class FastEntry {
 		this.context = null;
 		this.inputs = {};
 		this.suggestions = null;
+		// Balances are asked for once per account and then kept: nothing is
+		// posted while this screen is open, so the figure cannot go stale.
+		this.balances = {};
 
 		inject_styles();
 		this.make_batch_field();
@@ -132,11 +136,17 @@ erpnext_germany.FastEntry = class FastEntry {
 
 		this.render_head();
 		this.render_line();
+		this.render_balances_row();
 		this.$rows = $('<div class="fe-rows"></div>').appendTo(this.$table);
 		this.set_enabled(false);
 	}
 
 	render_head() {
+		const number = `<div class="fe-cell fe-head-cell fe-number">${__(
+			"No.",
+			null,
+			"Entry number column"
+		)}</div>`;
 		const cells = FIELDS.map(
 			(field) =>
 				`<div class="fe-cell fe-head-cell" style="width:${
@@ -145,7 +155,7 @@ erpnext_germany.FastEntry = class FastEntry {
 		).join("");
 
 		$(
-			`<div class="fe-row fe-head">${cells}<div class="fe-cell fe-derived">${__(
+			`<div class="fe-row fe-head">${number}${cells}<div class="fe-cell fe-derived">${__(
 				"Net / Tax"
 			)}</div></div>`
 		).appendTo(this.$table);
@@ -153,6 +163,9 @@ erpnext_germany.FastEntry = class FastEntry {
 
 	render_line() {
 		this.$line = $('<div class="fe-row fe-line"></div>').appendTo(this.$table);
+		// Held open but left empty: the line being typed has no number yet, and
+		// guessing the next one would be a promise the server has not made.
+		$('<div class="fe-cell fe-number"></div>').appendTo(this.$line);
 
 		for (const field of FIELDS) {
 			const $cell = $(`<div class="fe-cell" style="width:${field.width}px"></div>`).appendTo(
@@ -174,6 +187,10 @@ erpnext_germany.FastEntry = class FastEntry {
 		this.$preview = $('<div class="fe-cell fe-derived fe-preview"></div>').appendTo(
 			this.$line
 		);
+	}
+
+	render_balances_row() {
+		this.$balances = $('<div class="fe-balances"></div>').appendTo(this.$table);
 	}
 
 	set_enabled(enabled) {
@@ -246,6 +263,10 @@ erpnext_germany.FastEntry = class FastEntry {
 	}
 
 	on_input(field, $input) {
+		if (field.kind === "account") {
+			this.refresh_balances();
+		}
+
 		if (field.kind === "direction") {
 			// A single keystroke decides the side; typing "S" and waiting for
 			// a dropdown would be slower than the paper journal it replaces.
@@ -311,6 +332,68 @@ erpnext_germany.FastEntry = class FastEntry {
 		}
 	}
 
+	// --- balances --------------------------------------------------------
+
+	async refresh_balances() {
+		if (!this.context) {
+			return;
+		}
+
+		const wanted = ACCOUNT_FIELDS.map((fieldname) =>
+			this.read_field(FIELDS.find((field) => field.fieldname === fieldname))
+		).filter(Boolean);
+
+		// Marked as asked for before the call goes out, so two keystrokes in a
+		// row cannot send the same question twice.
+		const missing = wanted.filter((account) => this.balances[account] === undefined);
+		missing.forEach((account) => {
+			this.balances[account] = null;
+		});
+
+		this.render_balances(wanted);
+
+		if (!missing.length) {
+			return;
+		}
+
+		try {
+			const found = await frappe.xcall(
+				"erpnext_germany.bookkeeping.fast_entry.get_balances",
+				{ batch: this.context.batch.name, accounts: missing }
+			);
+			Object.assign(this.balances, found);
+		} catch (error) {
+			// A balance is a convenience. Losing it must not cost the line
+			// being typed, so the question is simply asked again next time.
+			missing.forEach((account) => delete this.balances[account]);
+		}
+
+		this.render_balances(wanted);
+	}
+
+	render_balances(accounts) {
+		if (!this.$balances) {
+			return;
+		}
+
+		const shown = accounts.filter((account) => this.balances[account] != null);
+		this.$balances.html(
+			shown
+				.map((account) => {
+					const label = this.account_label(account);
+					return `<span class="fe-balance"><label>${frappe.utils.escape_html(
+						label
+					)}</label>${balance_text(this.balances[account])}</span>`;
+				})
+				.join("")
+		);
+	}
+
+	account_label(account) {
+		const found = this.account_index.find((entry) => entry.name === account);
+		return found ? found.display : account;
+	}
+
 	focus_next(fieldname) {
 		const position = FIELDS.findIndex((field) => field.fieldname === fieldname);
 		const next = FIELDS[position + 1];
@@ -362,6 +445,9 @@ erpnext_germany.FastEntry = class FastEntry {
 		this.write_line(values || {});
 		this.$preview.text("");
 		this.clear_draft();
+		// The accounts carry over, so their balances belong on screen before
+		// the first keystroke of the next document rather than after it.
+		this.refresh_balances();
 		if (!this.$line.hasClass("fe-disabled")) {
 			this.inputs[FIELDS[0].fieldname].focus().select();
 		}
@@ -461,6 +547,9 @@ erpnext_germany.FastEntry = class FastEntry {
 	}
 
 	row_html(row, state) {
+		const number = `<div class="fe-cell fe-number">${
+			row.idx ? frappe.utils.escape_html(String(row.idx)) : ""
+		}</div>`;
 		const cells = FIELDS.map((field) => {
 			const value = display_value(field, row[field.fieldname], this);
 			return `<div class="fe-cell${field.kind === "amount" ? " fe-right" : ""}"
@@ -469,7 +558,7 @@ erpnext_germany.FastEntry = class FastEntry {
 			)}">${frappe.utils.escape_html(value)}</div>`;
 		}).join("");
 
-		return `<div class="fe-row ${state}">${cells}<div class="fe-cell fe-derived">${derived_text(
+		return `<div class="fe-row ${state}">${number}${cells}<div class="fe-cell fe-derived">${derived_text(
 			row
 		)}</div></div>`;
 	}
@@ -760,6 +849,14 @@ function display_of(index, value) {
 	return item ? item.display : String(value);
 }
 
+function balance_text(balance) {
+	// Read the German way: a balance sits on one side, it is not a signed
+	// number. 1.200 im Soll and -1.200 are the same thing, and only one of
+	// them is what a bookkeeper says out loud.
+	const side = balance < 0 ? credit_letter() : debit_letter();
+	return `${format_number(Math.abs(balance), null, 2)}&nbsp;${frappe.utils.escape_html(side)}`;
+}
+
 function derived_text(row) {
 	if (!row.tax_amount) {
 		return "";
@@ -781,6 +878,11 @@ function inject_styles() {
 		.fast-entry { font-variant-numeric: tabular-nums; }
 		.fe-totals { display: flex; gap: 24px; padding: 8px 0 12px; flex-wrap: wrap; }
 		.fe-difference { font-weight: 600; }
+		.fe-number { width: 44px; text-align: right; padding-right: 8px;
+			color: var(--text-muted); flex: 0 0 44px; }
+		.fe-balances { display: flex; gap: 20px; padding: 4px 0 10px; flex-wrap: wrap;
+			min-height: 22px; font-size: var(--text-sm); color: var(--text-muted); }
+		.fe-balance label { margin: 0 6px 0 0; font-weight: 500; }
 		.fe-reconciled { color: var(--green-600); }
 		.fe-off { color: var(--red-600); }
 		.fe-total label { display: block; font-size: 11px; color: var(--text-muted); margin: 0; }

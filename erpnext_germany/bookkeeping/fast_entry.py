@@ -18,9 +18,11 @@ a line typed here is validated and taxed exactly like one typed in the form.
 
 import frappe
 from frappe import _
+from frappe.utils import flt
 
 from erpnext_germany.bookkeeping.account_search import get_accounts
 from erpnext_germany.bookkeeping.doctype.posting_batch.posting_batch import OPEN
+from erpnext_germany.bookkeeping.ledger import LedgerScope, get_totals
 
 ENTRY_FIELDS = (
 	"posting_date",
@@ -66,6 +68,41 @@ def get_context(batch: str) -> dict:
 		"cost_centers": get_cost_centers(doc.company),
 		"rows": [_row(entry) for entry in doc.entries],
 		"totals": _totals(doc),
+	}
+
+
+@frappe.whitelist()
+def get_balances(batch: str, accounts: list[str] | str) -> dict[str, float]:
+	"""What the ledger says these accounts stand at.
+
+	The one number a typist misses when the screen replaces a paper journal:
+	whether the account being posted to holds what it should. Wrong account
+	numbers are caught by the balance long before they are caught by a report.
+
+	Read as at the end of the batch period rather than today, so the figure
+	means the same thing for every line of the batch and does not move while
+	somebody types. The batch itself is not in it -- nothing is posted yet,
+	which is exactly the balance the entry is being added to.
+
+	Goes through the same reading of the ledger as every evaluation in this
+	app, so the figure here and the figure in the Kontoblatt cannot disagree.
+	"""
+	doc = _get_batch(batch, "read")
+
+	if isinstance(accounts, str):
+		accounts = frappe.parse_json(accounts)
+
+	accounts = [account for account in (accounts or []) if account]
+	if not accounts:
+		return {}
+
+	totals = get_totals(LedgerScope(company=doc.company, to_date=doc.to_date, accounts=accounts))
+
+	# An account nothing was ever posted to stands at nought, and saying so
+	# beats leaving the caller to tell "no movement" from "not asked for".
+	return {
+		account: flt(totals.get(account, {}).get("debit")) - flt(totals.get(account, {}).get("credit"))
+		for account in accounts
 	}
 
 
