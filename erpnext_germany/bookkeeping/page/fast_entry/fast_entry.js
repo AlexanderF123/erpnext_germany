@@ -476,22 +476,38 @@ erpnext_germany.FastEntry = class FastEntry {
 
 	apply_totals(totals) {
 		const format = (value) => format_currency(value, frappe.defaults.get_default("currency"));
-		this.$totals.html(
-			[
-				`<span class="fe-total"><label>${__("Number of Entries")}</label>${
-					totals.entry_count
-				}</span>`,
-				`<span class="fe-total"><label>${__("Total Amount")}</label>${format(
-					totals.total_amount
+		const parts = [
+			`<span class="fe-total"><label>${__("Number of Entries")}</label>${
+				totals.entry_count
+			}</span>`,
+			`<span class="fe-total"><label>${__("Total Amount")}</label>${format(
+				totals.total_amount
+			)}</span>`,
+			`<span class="fe-total"><label>${__("Total Net Amount")}</label>${format(
+				totals.total_net_amount
+			)}</span>`,
+			`<span class="fe-total"><label>${__("Total Tax Amount")}</label>${format(
+				totals.total_tax_amount
+			)}</span>`,
+		];
+
+		// The target and what is still missing from it, but only where somebody
+		// wrote a target down. Shown last because it is what the eye goes back to
+		// between two documents, and coloured because "is it nought yet" is the
+		// only question being asked of it.
+		if (totals.target_amount) {
+			const reconciled = Math.abs(totals.difference) < 0.005;
+			parts.push(
+				`<span class="fe-total"><label>${__("Target Amount")}</label>${format(
+					totals.target_amount
 				)}</span>`,
-				`<span class="fe-total"><label>${__("Total Net Amount")}</label>${format(
-					totals.total_net_amount
-				)}</span>`,
-				`<span class="fe-total"><label>${__("Total Tax Amount")}</label>${format(
-					totals.total_tax_amount
-				)}</span>`,
-			].join("")
-		);
+				`<span class="fe-total fe-difference ${
+					reconciled ? "fe-reconciled" : "fe-off"
+				}"><label>${__("Difference")}</label>${format(totals.difference)}</span>`
+			);
+		}
+
+		this.$totals.html(parts.join(""));
 	}
 
 	// --- suggestions -----------------------------------------------------
@@ -764,6 +780,9 @@ function inject_styles() {
 	$(`<style id="fast-entry-styles">
 		.fast-entry { font-variant-numeric: tabular-nums; }
 		.fe-totals { display: flex; gap: 24px; padding: 8px 0 12px; flex-wrap: wrap; }
+		.fe-difference { font-weight: 600; }
+		.fe-reconciled { color: var(--green-600); }
+		.fe-off { color: var(--red-600); }
 		.fe-total label { display: block; font-size: 11px; color: var(--text-muted); margin: 0; }
 		.fe-total { font-size: 15px; font-weight: 600; }
 		.fe-hint { font-size: 11px; color: var(--text-muted); padding-bottom: 8px; }

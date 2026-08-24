@@ -2417,3 +2417,15 @@ msgstr "Reiseverlauf"
 msgid "Posted On"
 msgstr "Gebucht am"
 
+msgid "Target Amount"
+msgstr "Sollwert"
+
+msgid "Difference"
+msgstr "Differenz"
+
+msgid "What this batch is supposed to add up to, e.g. the total of a bank statement. Leave empty where there is nothing to reconcile against."
+msgstr "Worauf dieser Stapel hinauslaufen soll, z. B. die Summe eines Kontoauszugs. Leer lassen, wo es nichts abzustimmen gibt."
+
+msgid "Target amount minus total amount. Zero means the batch is reconciled."
+msgstr "Sollwert minus Summe der Umsätze. Null heißt: der Stapel stimmt."
+

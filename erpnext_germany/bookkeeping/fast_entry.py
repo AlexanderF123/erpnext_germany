@@ -173,4 +173,6 @@ def _totals(doc) -> dict:
 		"total_amount": doc.total_amount,
 		"total_net_amount": doc.total_net_amount,
 		"total_tax_amount": doc.total_tax_amount,
+		"target_amount": doc.target_amount,
+		"difference": doc.difference,
 	}

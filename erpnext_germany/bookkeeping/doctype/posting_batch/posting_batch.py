@@ -35,6 +35,7 @@ class PostingBatch(Document):
 		)
 
 		company: DF.Link
+		difference: DF.Currency
 		entries: DF.Table[PostingBatchEntry]
 		entry_count: DF.Int
 		fiscal_year: DF.Link
@@ -44,6 +45,7 @@ class PostingBatch(Document):
 		posted_on: DF.Datetime | None
 		remarks: DF.SmallText | None
 		status: DF.Literal["Open", "Posted"]
+		target_amount: DF.Currency
 		title: DF.Data | None
 		to_date: DF.Date
 		total_amount: DF.Currency
@@ -184,11 +186,15 @@ class PostingBatch(Document):
 		complete double entry, so both would always equal the total amount and
 		their difference would always be zero -- two columns that can never
 		disagree are not a control, they are noise.
+
+		The one figure that can disagree is the difference to a target somebody
+		wrote down beforehand, so that is the one worth showing.
 		"""
 		self.entry_count = len(self.entries)
 		self.total_amount = sum(flt(entry.amount) for entry in self.entries)
 		self.total_net_amount = sum(flt(entry.net_amount) for entry in self.entries)
 		self.total_tax_amount = sum(flt(entry.tax_amount) for entry in self.entries)
+		self.difference = difference(self.target_amount, self.total_amount)
 
 	def set_title(self):
 		if self.title:
@@ -303,3 +309,15 @@ class PostingBatch(Document):
 			rows.append((entry.deductible_tax_account, *split_amount(entry.direction, tax)))
 
 		return rows
+
+
+def difference(target: float, total: float) -> float:
+	"""How far a batch is from what it was supposed to add up to.
+
+	Without a target there is nothing to be off by, and a difference equal to
+	the whole batch would read as an error where none was claimed.
+	"""
+	if not flt(target):
+		return 0.0
+
+	return flt(target) - flt(total)
