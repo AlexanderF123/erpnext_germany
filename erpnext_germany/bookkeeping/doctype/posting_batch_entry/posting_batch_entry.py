@@ -37,7 +37,12 @@ class PostingBatchEntry(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
+		party: DF.DynamicLink | None
+		party_account: DF.Link | None
+		party_type: DF.Link | None
 		posting_date: DF.Date
+		reference_name: DF.DynamicLink | None
+		reference_type: DF.Link | None
 		remark: DF.Data | None
 		tax_account: DF.Link | None
 		tax_amount: DF.Currency

@@ -7,6 +7,7 @@ from frappe.model.document import Document
 from frappe.utils import flt, format_date, getdate, now_datetime
 
 from erpnext_germany.bookkeeping.lockdown import ensure_can_post
+from erpnext_germany.bookkeeping.party import apply_party, validate_party
 from erpnext_germany.bookkeeping.posting import flip, split_amount
 from erpnext_germany.bookkeeping.tax_derivation import derive_tax
 
@@ -58,6 +59,7 @@ class PostingBatch(Document):
 		self.validate_not_posted()
 		self.validate_period()
 		self.run_method("enrich_entries")
+		self.set_parties()
 		# Frappe checks link fields before it runs validate, so anything filled
 		# in above would otherwise never be checked against what it points at.
 		# Checked with Frappe's own machinery rather than by hand, so a derived
@@ -66,6 +68,16 @@ class PostingBatch(Document):
 		self.validate_entries()
 		self.set_totals()
 		self.set_title()
+
+	def set_parties(self):
+		"""Work out whose account each line touches.
+
+		Before the link check rather than inside validate_entry: `party` is a
+		dynamic link and Frappe cannot check it until `party_type` stands next
+		to it. What the derivation produced is then checked like anything else.
+		"""
+		for entry in self.entries:
+			apply_party(entry, _("Row {0}").format(entry.idx))
 
 	def enrich_entries(self):
 		"""Where another app fills in what only it can know.
@@ -136,6 +148,7 @@ class PostingBatch(Document):
 		for fieldname in ("account", "against_account"):
 			self.validate_account(label, entry.get(fieldname))
 
+		validate_party(entry, self.company, label)
 		self.set_tax(entry, label)
 
 	def set_tax(self, entry, label: str):
@@ -263,16 +276,27 @@ class PostingBatch(Document):
 			journal_entry.cheque_date = entry.posting_date
 
 		for account, debit, credit in self.get_ledger_rows(entry):
-			journal_entry.append(
-				"accounts",
-				{
-					"account": account,
-					"cost_center": entry.cost_center,
-					"debit_in_account_currency": debit,
-					"credit_in_account_currency": credit,
-					"user_remark": entry.remark,
-				},
-			)
+			row = {
+				"account": account,
+				"cost_center": entry.cost_center,
+				"debit_in_account_currency": debit,
+				"credit_in_account_currency": credit,
+				"user_remark": entry.remark,
+			}
+			# Only the row that actually hits the personal account carries the
+			# person. Putting the party on the contra side would make ERPNext
+			# settle against an account the party does not have.
+			if entry.party_account and account == entry.party_account:
+				row.update(
+					{
+						"party_type": entry.party_type,
+						"party": entry.party,
+						"reference_type": entry.reference_type,
+						"reference_name": entry.reference_name,
+					}
+				)
+
+			journal_entry.append("accounts", row)
 
 		journal_entry.insert()
 		journal_entry.submit()

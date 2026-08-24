@@ -19,6 +19,13 @@
   "applied_tax_key",
   "tax_account",
   "deductible_tax_account",
+  "section_break_party",
+  "party_account",
+  "party_type",
+  "party",
+  "column_break_party",
+  "reference_type",
+  "reference_name",
   "section_break_details",
   "remark",
   "document_number_2",
@@ -146,6 +153,57 @@
    "no_copy": 1,
    "options": "Account",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_party",
+   "fieldtype": "Section Break",
+   "label": "Party",
+   "depends_on": "party_account",
+   "collapsible": 1,
+   "collapsible_depends_on": "party"
+  },
+  {
+   "fieldname": "party_account",
+   "fieldtype": "Link",
+   "options": "Account",
+   "read_only": 1,
+   "label": "Personal Account",
+   "description": "Whichever of the two accounts is a receivable or payable account. Derived, because choosing the account already said it."
+  },
+  {
+   "fieldname": "party_type",
+   "fieldtype": "Link",
+   "options": "Party Type",
+   "read_only": 1,
+   "label": "Party Type",
+   "description": "Follows from the personal account: a receivable is a customer, a payable a supplier."
+  },
+  {
+   "fieldname": "party",
+   "fieldtype": "Dynamic Link",
+   "options": "party_type",
+   "label": "Party",
+   "mandatory_depends_on": "party_account",
+   "description": "Who the booking is against. Required as soon as one side is a personal account."
+  },
+  {
+   "fieldname": "column_break_party",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reference_type",
+   "fieldtype": "Link",
+   "options": "DocType",
+   "read_only": 1,
+   "label": "Open Item Type"
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "options": "reference_type",
+   "label": "Open Item",
+   "depends_on": "party",
+   "description": "The invoice this booking settles. Leave empty and the money lands on the account without closing anything."
   },
   {
    "fieldname": "section_break_details",

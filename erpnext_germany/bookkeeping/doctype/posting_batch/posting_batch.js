@@ -1,6 +1,46 @@
 // Copyright (c) 2026, ALYF GmbH and contributors
 // For license information, please see license.txt
 
+// A receivable account means a customer, a payable account a supplier. The
+// server derives the same thing when it validates; this only spares whoever
+// is typing from saying it a second time, because Frappe checks a dynamic
+// link before any hook of ours could fill in its type.
+const PARTY_TYPES = { Receivable: "Customer", Payable: "Supplier" };
+
+frappe.ui.form.on("Posting Batch Entry", {
+	account: (frm, cdt, cdn) => set_party_type(cdt, cdn),
+	against_account: (frm, cdt, cdn) => set_party_type(cdt, cdn),
+});
+
+async function set_party_type(cdt, cdn) {
+	const row = locals[cdt][cdn];
+	const kinds = await Promise.all(
+		["account", "against_account"].map((fieldname) => account_type(row[fieldname]))
+	);
+	const personal = kinds.find((kind) => PARTY_TYPES[kind]);
+	const party_type = personal ? PARTY_TYPES[personal] : null;
+
+	if (row.party_type === party_type) {
+		return;
+	}
+
+	frappe.model.set_value(cdt, cdn, "party_type", party_type);
+	if (!party_type) {
+		// Nobody left to book against, so nothing may keep pointing at one.
+		frappe.model.set_value(cdt, cdn, "party", null);
+		frappe.model.set_value(cdt, cdn, "reference_name", null);
+	}
+}
+
+async function account_type(account) {
+	if (!account) {
+		return null;
+	}
+
+	const value = await frappe.db.get_value("Account", account, "account_type");
+	return value?.message?.account_type || null;
+}
+
 frappe.ui.form.on("Posting Batch", {
 	refresh(frm) {
 		frm.set_query("fiscal_year", () => ({ filters: { disabled: 0 } }));
@@ -14,6 +54,18 @@ frappe.ui.form.on("Posting Batch", {
 		frm.set_query("cost_center", "entries", () => ({
 			filters: { company: frm.doc.company, is_group: 0 },
 		}));
+
+		frm.set_query("reference_name", "entries", (doc, cdt, cdn) => {
+			const row = locals[cdt][cdn];
+			return {
+				filters: {
+					company: frm.doc.company,
+					docstatus: 1,
+					outstanding_amount: ["!=", 0],
+					[row.party_type === "Supplier" ? "supplier" : "customer"]: row.party,
+				},
+			};
+		});
 
 		if (frm.doc.status === "Posted") {
 			frm.set_intro(
