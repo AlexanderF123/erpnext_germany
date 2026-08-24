@@ -19,7 +19,9 @@
   "section_break_entries",
   "entries",
   "section_break_totals",
+  "target_amount",
   "total_amount",
+  "difference",
   "total_net_amount",
   "total_tax_amount",
   "column_break_totals",
@@ -113,11 +115,25 @@
    "label": "Control Totals"
   },
   {
+   "description": "What this batch is supposed to add up to, e.g. the total of a bank statement. Leave empty where there is nothing to reconcile against.",
+   "fieldname": "target_amount",
+   "fieldtype": "Currency",
+   "label": "Target Amount"
+  },
+  {
    "description": "Sum of all entry amounts. Each entry is a complete double entry, so this is both the debit and the credit total of the batch.",
    "fieldname": "total_amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Total Amount",
+   "read_only": 1
+  },
+  {
+   "depends_on": "target_amount",
+   "description": "Target amount minus total amount. Zero means the batch is reconciled.",
+   "fieldname": "difference",
+   "fieldtype": "Currency",
+   "label": "Difference",
    "read_only": 1
   },
   {

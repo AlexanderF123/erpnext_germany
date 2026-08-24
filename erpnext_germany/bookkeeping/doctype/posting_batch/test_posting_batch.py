@@ -198,6 +198,50 @@ class TestPostingBatch(FrappeTestCase):
 		self.assertEqual(batch.entry_count, 3)
 		self.assertEqual(batch.total_amount, 661.5)
 
+	def test_a_batch_without_a_target_is_never_off(self):
+		"""No claim, no difference.
+
+		Without this, every batch would open showing the whole of itself as a
+		difference -- an error message for something nobody asserted.
+		"""
+		batch = create_batch(entries=[entry(amount=119.0)])
+
+		self.assertFalse(batch.target_amount)
+		self.assertEqual(batch.difference, 0)
+
+	def test_the_difference_is_what_is_still_missing_from_the_target(self):
+		batch = create_batch(
+			target_amount=1000.0,
+			entries=[entry(amount=400.0), entry(amount=350.0, direction="Credit")],
+		)
+
+		self.assertEqual(batch.total_amount, 750.0)
+		self.assertEqual(batch.difference, 250.0)
+
+	def test_a_reconciled_batch_shows_no_difference(self):
+		batch = create_batch(target_amount=750.0, entries=[entry(amount=750.0)])
+
+		self.assertEqual(batch.difference, 0)
+
+	def test_a_batch_over_its_target_shows_a_negative_difference(self):
+		"""Too much has to read differently from too little.
+
+		An absolute value would tell whoever is reconciling that something is
+		wrong without telling them which way to look.
+		"""
+		batch = create_batch(target_amount=100.0, entries=[entry(amount=130.0)])
+
+		self.assertEqual(batch.difference, -30.0)
+
+	def test_the_difference_follows_the_entries(self):
+		batch = create_batch(target_amount=500.0, entries=[entry(amount=200.0)])
+		self.assertEqual(batch.difference, 300.0)
+
+		batch.append("entries", entry(amount=300.0))
+		batch.save()
+
+		self.assertEqual(batch.difference, 0)
+
 	def test_control_total_matches_the_posted_ledger(self):
 		"""The batch total has to equal what actually reaches the books."""
 		batch = create_batch(
