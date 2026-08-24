@@ -155,7 +155,7 @@
   {
    "fieldname": "remark",
    "fieldtype": "Data",
-   "label": "Remark"
+   "label": "Booking Text"
   },
   {
    "fieldname": "document_number_2",

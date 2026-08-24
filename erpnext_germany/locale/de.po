@@ -249,7 +249,7 @@ msgstr "Stadt"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.js:192
 msgid "Close"
-msgstr ""
+msgstr "Schließen"
 
 #. Label of a Link field in DocType 'Business Letter'
 #. Label of a Link field in DocType 'Business Trip'
@@ -384,11 +384,11 @@ msgstr "Entfernung"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.js:139
 msgid "DocType"
-msgstr ""
+msgstr "DocType"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.js:147
 msgid "Document Name"
-msgstr ""
+msgstr "Dokumentenname"
 
 #: erpnext_germany/erpnext_germany/report/zusammenfassende_meldung/zusammenfassende_meldung.js:50
 msgid "Download CSV"
@@ -504,7 +504,7 @@ msgstr "Deutschland"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.js:162
 msgid "Grand Total"
-msgstr ""
+msgstr "Gesamtbetrag"
 
 #. Name of a role
 #: erpnext_germany/erpnext_germany/doctype/religious_denomination/religious_denomination.json
@@ -754,7 +754,7 @@ msgstr "Öffentliche Verkehrsmittel"
 #. Linked DocType in Business Trip's connections
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.json
 msgid "Purchase Invoice"
-msgstr ""
+msgstr "Eingangsrechnung"
 
 #. Label of a Attach field in DocType 'Business Trip Accommodation'
 #. Label of a Attach field in DocType 'Business Trip Journey'
@@ -812,7 +812,7 @@ msgstr "Konfession"
 #. Label of a Card Break in the Germany Workspace
 #: erpnext_germany/erpnext_germany/workspace/germany/germany.json
 msgid "Reports"
-msgstr ""
+msgstr "Berichte"
 
 #. Label of a Data field in DocType 'VAT ID Check'
 #: erpnext_germany/erpnext_germany/doctype/vat_id_check/vat_id_check.json
@@ -933,7 +933,7 @@ msgstr "Name des Lieferanten"
 #: erpnext_germany/erpnext_germany/doctype/religious_denomination/religious_denomination.json
 #: erpnext_germany/erpnext_germany/doctype/vat_id_check/vat_id_check.json
 msgid "System Manager"
-msgstr ""
+msgstr "System-Manager"
 
 #: erpnext_germany/custom_fields.py:117
 msgid "Tax Bracket"
@@ -1110,7 +1110,7 @@ msgstr "Arbeitsstunden pro Woche"
 
 #: erpnext_germany/erpnext_germany/report/zusammenfassende_meldung/zusammenfassende_meldung.js:15
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 #: erpnext_germany/public/js/erpnext_germany/business_letter.js:7
 msgid "You can use {0} in the Subject and Content fields for dynamic values.<br><br>All address details are available under the <code>address</code> object (e.g., <code>{{ address.city }}</code>), contact details under the <code>contact</code> object (e.g., <code>{{ contact.first_name }}</code>), and any specific information related to the dynamically linked document under the <code>reference</code> object (e.g., <code>{{ reference.some_field }}</code>).<br><br>"
@@ -1121,7 +1121,7 @@ msgstr "Sie können in den Betreff- und Inhalt-Feldern {0} für dynamische Werte
 #: erpnext_germany/erpnext_germany/report/zusammenfassende_meldung/zusammenfassende_meldung.json
 #: erpnext_germany/erpnext_germany/workspace/germany/germany.json
 msgid "Zusammenfassende Meldung"
-msgstr ""
+msgstr "Zusammenfassende Meldung"
 
 #: erpnext_germany/erpnext_germany/doctype/business_letter/business_letter.py:49
 msgid "cancelled Business Letter {0}"
@@ -1146,7 +1146,6 @@ msgstr "{} Ungültig"
 #: erpnext_germany/erpnext_germany/workspace/germany/germany.json
 msgid "{} Open"
 msgstr "{} Offen"
-
 
 #. Name of a DocType
 #: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
@@ -1180,14 +1179,11 @@ msgstr "Startpunkt, so geschrieben wie in der Fahrt, z.B. <i>Heidelberg, Büro</
 msgid "Destination as it is written in the journey, e.g. <i>Baden-Baden</i>."
 msgstr "Ziel, so geschrieben wie in der Fahrt, z.B. <i>Baden-Baden</i>."
 
-#. Description of the 'Distance' (Int) field in DocType 'Business Trip Distance'
+#. Description of the 'Distance' (Int) field in DocType 'Business Trip
+#. Distance'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
-msgid ""
-"One way, in kilometers. A return journey is entered as two rows in the "
-"Business Trip."
-msgstr ""
-"Einfache Strecke in Kilometern. Hin- und Rückfahrt werden als zwei Zeilen in "
-"der Dienstreise erfasst."
+msgid "One way, in kilometers. A return journey is entered as two rows in the Business Trip."
+msgstr "Einfache Strecke in Kilometern. Hin- und Rückfahrt werden als zwei Zeilen in der Dienstreise erfasst."
 
 #. Label of a Check field in DocType 'Business Trip Distance'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
@@ -1208,12 +1204,8 @@ msgstr "Nur für Gesellschaft"
 #. Description of the 'Only for Company' (Link) field in DocType 'Business Trip
 #. Distance'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.json
-msgid ""
-"Leave empty and the distance counts for every company. Fill it in only to "
-"give one company a different distance for the same route."
-msgstr ""
-"Leer lassen, dann gilt die Entfernung für alle Gesellschaften. Nur ausfüllen, "
-"wenn eine Gesellschaft für dieselbe Strecke eine andere Entfernung führt."
+msgid "Leave empty and the distance counts for every company. Fill it in only to give one company a different distance for the same route."
+msgstr "Leer lassen, dann gilt die Entfernung für alle Gesellschaften. Nur ausfüllen, wenn eine Gesellschaft für dieselbe Strecke eine andere Entfernung führt."
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_distance/business_trip_distance.py
 msgid "Distance must be greater than zero."
@@ -1284,9 +1276,7 @@ msgstr "Fahrzeugart"
 #. Vehicle'
 #: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
 msgid "Motorcycles and other motor vehicles are reimbursed at a lower rate than cars."
-msgstr ""
-"Für Motorräder und andere motorbetriebene Fahrzeuge gilt ein niedrigerer Satz "
-"als für Pkw."
+msgstr "Für Motorräder und andere motorbetriebene Fahrzeuge gilt ein niedrigerer Satz als für Pkw."
 
 #. Option for the 'Vehicle Class' (Select) field in DocType 'Employee Vehicle'
 #: erpnext_germany/erpnext_germany/doctype/employee_vehicle/employee_vehicle.json
@@ -1336,9 +1326,7 @@ msgstr "Fahrzeug"
 #. Description of the 'Vehicle' (Link) field in DocType 'Business Trip Journey'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_journey/business_trip_journey.json
 msgid "Which of the employee's vehicles was driven. Determines the rate per kilometer."
-msgstr ""
-"Welches Fahrzeug des Mitarbeiters gefahren wurde. Bestimmt den Satz je "
-"Kilometer."
+msgstr "Welches Fahrzeug des Mitarbeiters gefahren wurde. Bestimmt den Satz je Kilometer."
 
 #. Label of a Currency field in DocType 'Business Trip Settings'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_settings/business_trip_settings.json
@@ -1348,12 +1336,8 @@ msgstr "Kilometerpauschale für andere motorbetriebene Fahrzeuge"
 #. Description of the 'Mileage Allowance for Other Motor Vehicles' (Currency)
 #. field in DocType 'Business Trip Settings'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_settings/business_trip_settings.json
-msgid ""
-"Rate for motorcycles and other motor vehicles, e.g. 0.20€/km. Falls back to "
-"the <i>Mileage Allowance</i> if left empty."
-msgstr ""
-"Satz für Motorräder und andere motorbetriebene Fahrzeuge, z.B. 0,20€/km. "
-"Ohne Angabe gilt die <i>Kilometerpauschale</i>."
+msgid "Rate for motorcycles and other motor vehicles, e.g. 0.20€/km. Falls back to the <i>Mileage Allowance</i> if left empty."
+msgstr "Satz für Motorräder und andere motorbetriebene Fahrzeuge, z.B. 0,20€/km. Ohne Angabe gilt die <i>Kilometerpauschale</i>."
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
 msgid "Row {0}: {1} does not belong to {2}."
@@ -1373,9 +1357,7 @@ msgstr "Deaktiviertes Fahrzeug"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
 msgid "Row {0}: {1} is not a private vehicle, so no mileage allowance can be paid."
-msgstr ""
-"Zeile {0}: {1} ist kein privates Fahrzeug, daher kann keine "
-"Kilometerpauschale gezahlt werden."
+msgstr "Zeile {0}: {1} ist kein privates Fahrzeug, daher kann keine Kilometerpauschale gezahlt werden."
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
 msgid "No Mileage Allowance"
@@ -1454,12 +1436,8 @@ msgstr "Mahlzeiten bestätigt"
 #. Description of the 'Meals Confirmed' (Check) field in DocType 'Business Trip
 #. Intake'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
-msgid ""
-"Set once the traveller has been asked about meals. Without it, the intake keeps asking -- an "
-"unanswered question must not silently become a \"no\"."
-msgstr ""
-"Setzen, sobald nach gestellten Mahlzeiten gefragt wurde. Ohne dieses Häkchen fragt die "
-"Erfassung weiter -- eine unbeantwortete Frage darf nicht stillschweigend zum \"Nein\" werden."
+msgid "Set once the traveller has been asked about meals. Without it, the intake keeps asking -- an unanswered question must not silently become a \"no\"."
+msgstr "Setzen, sobald nach gestellten Mahlzeiten gefragt wurde. Ohne dieses Häkchen fragt die Erfassung weiter -- eine unbeantwortete Frage darf nicht stillschweigend zum \"Nein\" werden."
 
 #. Label of a Section Break in DocType 'Business Trip Intake'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
@@ -1480,8 +1458,7 @@ msgstr "Offene Rückfragen"
 #. Trip Intake'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
 msgid "One question per line. Answer them by filling in the named fields, then save again."
-msgstr ""
-"Eine Frage je Zeile. Zum Beantworten die genannten Felder füllen und erneut speichern."
+msgstr "Eine Frage je Zeile. Zum Beantworten die genannten Felder füllen und erneut speichern."
 
 #. Label of a Small Text field in DocType 'Business Trip Intake'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
@@ -1503,9 +1480,7 @@ msgstr "Dienstreise erzeugen"
 #. Trip Intake'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
 msgid "Tick once all questions are answered: saving then creates the Business Trip as a draft."
-msgstr ""
-"Setzen, wenn alle Rückfragen beantwortet sind: Beim Speichern entsteht die Dienstreise als "
-"Entwurf."
+msgstr "Setzen, wenn alle Rückfragen beantwortet sind: Beim Speichern entsteht die Dienstreise als Entwurf."
 
 #. Option for the 'Status' (Select) field in DocType 'Business Trip Intake'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.json
@@ -1536,8 +1511,7 @@ msgstr "Standard-Region"
 #. Settings'
 #: erpnext_germany/erpnext_germany/doctype/business_trip_settings/business_trip_settings.json
 msgid "Used when a destination does not name a region of its own, e.g. for domestic travel."
-msgstr ""
-"Wird verwendet, wenn das Ziel keine eigene Region benennt, z.B. bei Inlandsreisen."
+msgstr "Wird verwendet, wenn das Ziel keine eigene Region benennt, z.B. bei Inlandsreisen."
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
 msgid "The return must not be before the departure."
@@ -1568,18 +1542,12 @@ msgid "Where did the trip start?"
 msgstr "Wo begann die Reise?"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
-msgid ""
-"Which region applies to {0}? Set a default region in Business Trip Settings for domestic "
-"travel."
-msgstr ""
-"Welche Region gilt für {0}? Für Inlandsreisen eine Standard-Region in den "
-"Dienstreise-Einstellungen hinterlegen."
+msgid "Which region applies to {0}? Set a default region in Business Trip Settings for domestic travel."
+msgstr "Welche Region gilt für {0}? Für Inlandsreisen eine Standard-Region in den Dienstreise-Einstellungen hinterlegen."
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
 msgid "Own car, company car or train? A mileage allowance is only paid for a private car."
-msgstr ""
-"Eigenes Auto, Firmenwagen oder Bahn? Eine Kilometerpauschale gibt es nur für das private "
-"Fahrzeug."
+msgstr "Eigenes Auto, Firmenwagen oder Bahn? Eine Kilometerpauschale gibt es nur für das private Fahrzeug."
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
 msgid "How many kilometers is the route, one way?"
@@ -1587,20 +1555,15 @@ msgstr "Wie viele Kilometer ist die Strecke, einfach?"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
 msgid "Which private vehicle was driven? None is recorded for this employee yet."
-msgstr ""
-"Welches private Fahrzeug wurde gefahren? Für diesen Mitarbeiter ist noch keines hinterlegt."
+msgstr "Welches private Fahrzeug wurde gefahren? Für diesen Mitarbeiter ist noch keines hinterlegt."
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
 msgid "Which of your vehicles did you drive?"
 msgstr "Welches Ihrer Fahrzeuge sind Sie gefahren?"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
-msgid ""
-"Were any meals provided (hotel breakfast, business lunch)? Tick Meals Confirmed once "
-"answered."
-msgstr ""
-"Wurden Mahlzeiten gestellt (Frühstück im Hotel, Bewirtung)? Nach der Antwort "
-"\"Mahlzeiten bestätigt\" setzen."
+msgid "Were any meals provided (hotel breakfast, business lunch)? Tick Meals Confirmed once answered."
+msgstr "Wurden Mahlzeiten gestellt (Frühstück im Hotel, Bewirtung)? Nach der Antwort \"Mahlzeiten bestätigt\" setzen."
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
 msgid "{0} already covers these days. Add to it, or is this a separate trip?"
@@ -1620,8 +1583,7 @@ msgstr "Summe: {0}"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
 msgid "No meal allowance: a one-day trip has to be longer than {0} hours."
-msgstr ""
-"Kein Verpflegungsmehraufwand: Eine Eintagesreise muss länger als {0} Stunden dauern."
+msgstr "Kein Verpflegungsmehraufwand: Eine Eintagesreise muss länger als {0} Stunden dauern."
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip_intake/business_trip_intake.py
 msgid "No mileage allowance: it is only paid for a private car."
@@ -2353,12 +2315,6 @@ msgstr "BU-Schlüssel"
 #. Column of the entry mask, where the trade uses its own word
 #: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
 msgctxt "Entry mask column"
-msgid "Posting Date"
-msgstr "Datum"
-
-#. Column of the entry mask, where the trade uses its own word
-#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
-msgctxt "Entry mask column"
 msgid "Cost Center"
 msgstr "Kost 1"
 
@@ -2367,3 +2323,97 @@ msgstr "Kost 1"
 msgctxt "Entry mask column"
 msgid "Remark"
 msgstr "Buchungstext"
+
+msgid "Bookings before this date do not use this key."
+msgstr "Buchungen vor diesem Datum verwenden diesen Schlüssel nicht."
+
+msgid "Defaults to the employee of the logged in user."
+msgstr "Voreingestellt ist der Mitarbeiter des angemeldeten Benutzers."
+
+msgid "Departure, including the time of day."
+msgstr "Abfahrt, mit Uhrzeit."
+
+msgid "Determines how the amount is read: input and output tax are taken out of the amount, reverse charge is added on top of it."
+msgstr "Bestimmt, wie der Umsatz gelesen wird: Vorsteuer und Umsatzsteuer werden aus dem Betrag herausgerechnet, Reverse Charge kommt oben darauf."
+
+msgid "Determines the allowance rates. Resolved from the destination, otherwise the default region."
+msgstr "Bestimmt die Pauschbeträge. Wird aus dem Reiseziel abgeleitet, sonst gilt die Standardregion."
+
+msgid "Document number, e.g. the invoice number."
+msgstr "Belegnummer, z. B. die Rechnungsnummer."
+
+msgid "Everything posted on or before this date becomes unchangeable. Corrections are booked as a general reversal from here on."
+msgstr "Alles, was bis einschließlich zu diesem Datum gebucht ist, wird unveränderbar. Korrekturen werden ab dann als Generalumkehr gebucht."
+
+msgid "How this key is called in the booking line, e.g. Vorsteuer 19 %."
+msgstr "Wie dieser Schlüssel in der Buchungszeile heißt, z. B. Vorsteuer 19 %."
+
+msgid "Number of ledger entries covered by this lockdown, recorded at the time of locking."
+msgstr "Anzahl der Buchungszeilen, die diese Festschreibung abdeckt, festgehalten im Moment des Festschreibens."
+
+msgid "One way, in kilometers. Taken from the Business Trip Distance table if the route is known."
+msgstr "Einfache Strecke in Kilometern. Wird aus den hinterlegten Entfernungen übernommen, wenn die Strecke bekannt ist."
+
+msgid "Return, including the time of day."
+msgstr "Rückkehr, mit Uhrzeit."
+
+msgid "Reverse charge only: the input tax account that offsets the tax owed. Without it the reversal would not balance."
+msgstr "Nur bei Reverse Charge: das Vorsteuerkonto, das die geschuldete Steuer ausgleicht. Ohne dieses Konto ginge die Buchung nicht auf."
+
+msgid "Sum of all entry amounts. Each entry is a complete double entry, so this is both the debit and the credit total of the batch."
+msgstr "Summe aller Umsätze. Jede Zeile ist ein vollständiger Buchungssatz, deshalb ist das zugleich die Soll- und die Habensumme des Stapels."
+
+msgid "The DATEV tax key (BU-Schlüssel) this entry is exported with. Reconcile it with the chart of accounts of your tax advisor before the first export."
+msgstr "Der BU-Schlüssel, mit dem diese Buchung nach DATEV exportiert wird. Vor dem ersten Export mit dem Kontenrahmen der Kanzlei abstimmen."
+
+msgid "The amount as it stands on the document. With a tax key for input or output tax this is the gross amount and the tax is taken out of it; under reverse charge it is the net amount and the tax is added on top. Always positive: a correction is booked as a general reversal, never as a negative amount."
+msgstr "Der Umsatz, wie er auf dem Beleg steht. Bei einem Schlüssel für Vorsteuer oder Umsatzsteuer ist das der Bruttobetrag, aus dem die Steuer herausgerechnet wird; bei Reverse Charge ist es der Nettobetrag, auf den die Steuer aufgeschlagen wird. Immer positiv: eine Korrektur wird als Generalumkehr gebucht, nie als negativer Betrag."
+
+msgid "The kind of documents collected in this batch, e.g. all bank statements of a month."
+msgstr "Die Art der Belege, die in diesem Stapel gesammelt werden, z. B. alle Kontoauszüge eines Monats."
+
+msgid "The tax account per company. Rate and effect are the same everywhere; only the account depends on the chart of accounts."
+msgstr "Das Steuerkonto je Gesellschaft. Satz und Wirkung sind überall gleich; nur das Konto hängt vom Kontenrahmen ab."
+
+msgid "What reaches the revenue or expense account. The gross amount is the amount as entered: the tax either sits inside it or, under reverse charge, does not move between the two accounts at all."
+msgstr "Was auf dem Erlös- oder Aufwandskonto ankommt. Der Bruttobetrag ist der erfasste Umsatz: die Steuer steckt entweder darin oder bewegt sich, bei Reverse Charge, gar nicht erst zwischen den beiden Konten."
+
+msgid "Where the tax of this key is booked in this company."
+msgstr "Wohin die Steuer dieses Schlüssels in dieser Gesellschaft gebucht wird."
+
+msgid "Where the trip started, e.g. <i>Heidelberg, Büro</i>."
+msgstr "Wo die Reise begonnen hat, z. B. <i>Heidelberg, Büro</i>."
+
+msgid "Which side the amount applies to the account. The contra account receives the opposite side."
+msgstr "Auf welcher Seite der Umsatz das Konto trifft. Das Gegenkonto erhält die andere Seite."
+
+msgid "From Row"
+msgstr "Von Zeile"
+
+msgid "To Row"
+msgstr "Bis Zeile"
+
+msgid "Kind"
+msgstr "Art"
+
+msgid "Posted By"
+msgstr "Gebucht von"
+
+msgid "Posting"
+msgstr "Buchung"
+
+msgid "Sign"
+msgstr "Vorzeichen"
+
+msgid "Trip"
+msgstr "Reise"
+
+msgid "Account Ranges"
+msgstr "Kontenbereiche"
+
+msgid "Journey Details"
+msgstr "Reiseverlauf"
+
+msgid "Posted On"
+msgstr "Gebucht am"
+

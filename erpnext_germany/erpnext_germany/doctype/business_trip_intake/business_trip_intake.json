@@ -151,7 +151,7 @@
   {
    "fieldname": "section_break_travel",
    "fieldtype": "Section Break",
-   "label": "Journey"
+   "label": "Journey Details"
   },
   {
    "fieldname": "mode_of_transport",
