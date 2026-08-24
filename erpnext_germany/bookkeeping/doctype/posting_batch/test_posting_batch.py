@@ -21,8 +21,8 @@ def posting_accounts(root_type: str, count: int = 1, company: str = TEST_COMPANY
 
 	Resolved from the chart of accounts instead of hard-coded, so the tests do
 	not depend on how a particular ERPNext version names its accounts.
-	Receivable and payable accounts are excluded because they would require a
-	party on every entry.
+	Receivable and payable accounts are left out here because a line touching
+	one has to name a party; `party_account` returns those.
 	"""
 	accounts = frappe.get_all(
 		"Account",
@@ -69,6 +69,21 @@ def entry(amount=119.0, direction="Debit", posting_date=IN_PERIOD, **kwargs):
 	}
 	row.update(kwargs)
 	return row
+
+
+def party_account(account_type: str, company: str = TEST_COMPANY) -> str:
+	"""A receivable or payable account of the company."""
+	accounts = frappe.get_all(
+		"Account",
+		filters={"company": company, "is_group": 0, "disabled": 0, "account_type": account_type},
+		pluck="name",
+		order_by="name asc",
+		limit=1,
+	)
+	if not accounts:
+		raise ValueError(f"Need a {account_type} account for {company}")
+
+	return accounts[0]
 
 
 def create_batch(entries=None, **kwargs) -> "frappe.Document":

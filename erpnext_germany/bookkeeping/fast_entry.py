@@ -35,6 +35,8 @@ ENTRY_FIELDS = (
 	"document_number_2",
 	"cost_center",
 	"remark",
+	"party",
+	"reference_name",
 )
 
 ROW_FIELDS = (
@@ -45,6 +47,9 @@ ROW_FIELDS = (
 	"net_amount",
 	"tax_amount",
 	"tax_account",
+	"party_type",
+	"party_account",
+	"reference_type",
 )
 
 

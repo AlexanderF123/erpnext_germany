@@ -2433,3 +2433,54 @@ msgctxt "Entry number column"
 msgid "No."
 msgstr "Nr."
 
+msgid "Personal Account"
+msgstr "Personenkonto (Sachkonto)"
+
+msgid "Open Item"
+msgstr "Offener Posten"
+
+msgid "Open Item Type"
+msgstr "Art des offenen Postens"
+
+msgid "Whichever of the two accounts is a receivable or payable account. Derived, because choosing the account already said it."
+msgstr "Welches der beiden Konten ein Debitoren- oder Kreditorenkonto ist. Abgeleitet, denn mit der Kontowahl ist es bereits gesagt."
+
+msgid "Follows from the personal account: a receivable is a customer, a payable a supplier."
+msgstr "Folgt aus dem Personenkonto: ein Debitorenkonto ist ein Kunde, ein Kreditorenkonto ein Lieferant."
+
+msgid "Who the booking is against. Required as soon as one side is a personal account."
+msgstr "Gegen wen gebucht wird. Pflicht, sobald eine Seite ein Personenkonto ist."
+
+msgid "The invoice this booking settles. Leave empty and the money lands on the account without closing anything."
+msgstr "Die Rechnung, die diese Buchung ausgleicht. Leer lassen, dann landet das Geld auf dem Konto, ohne etwas zu schließen."
+
+msgid "{0}: Only one side of a booking can be a personal account."
+msgstr "{0}: Nur eine Seite einer Buchung kann ein Personenkonto sein."
+
+msgid "Only one side of a booking can be a personal account."
+msgstr "Nur eine Seite einer Buchung kann ein Personenkonto sein."
+
+msgid "{0}: {1} is a personal account and needs a party."
+msgstr "{0}: {1} ist ein Personenkonto und braucht einen Geschäftspartner."
+
+msgid "{0}: Neither account is a personal account, so there is nobody to book against."
+msgstr "{0}: Keines der Konten ist ein Personenkonto, es gibt also niemanden, gegen den gebucht wird."
+
+msgid "{0}: {1} is a {2} account, so the party cannot be a {3}."
+msgstr "{0}: {1} ist ein {2}-Konto, der Geschäftspartner kann also kein {3} sein."
+
+msgid "{0}: An open item needs a personal account."
+msgstr "{0}: Ein offener Posten braucht ein Personenkonto."
+
+msgid "{0}: {1} {2} does not exist."
+msgstr "{0}: {1} {2} gibt es nicht."
+
+msgid "{0}: {1} belongs to another company."
+msgstr "{0}: {1} gehört zu einer anderen Gesellschaft."
+
+msgid "{0}: {1} is not posted."
+msgstr "{0}: {1} ist nicht gebucht."
+
+msgid "{0}: {1} is already settled."
+msgstr "{0}: {1} ist bereits ausgeglichen."
+
