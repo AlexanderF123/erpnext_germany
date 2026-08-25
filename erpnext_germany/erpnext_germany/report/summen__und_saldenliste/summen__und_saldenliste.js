@@ -41,7 +41,39 @@ frappe.query_reports["Summen- und Saldenliste"] = {
 			],
 			reqd: 1,
 		},
+		{
+			fieldname: "cost_center",
+			label: __("Cost Center"),
+			fieldtype: "Link",
+			options: "Cost Center",
+			get_query: () => {
+				const company = frappe.query_report.get_filter_value("company");
+				return {
+					filters: company ? { company: company } : {},
+				};
+			},
+		},
+		{
+			fieldname: "with_previous_year",
+			label: __("Compare With Previous Year"),
+			fieldtype: "Check",
+			default: 1,
+		},
+		{
+			fieldname: "hide_empty_rows",
+			label: __("Hide Accounts Without Balance"),
+			fieldtype: "Check",
+			default: 1,
+		},
 	],
+
+	formatter(value, row, column, data, default_formatter) {
+		if (column.fieldname === "account" && data && data.account) {
+			return get_ledger_link(data);
+		}
+
+		return default_formatter(value, row, column, data);
+	},
 };
 
 function get_previous_month() {
@@ -49,4 +81,21 @@ function get_previous_month() {
 	const date = new Date();
 	date.setDate(0); // set to last day of previous month
 	return date.getMonth() + 1; // getMonth() is 0-indexed
+}
+
+function get_ledger_link(data) {
+	/* Link an account to its Kontoblatt for the evaluated period.
+
+	The period boundaries are supplied by the report itself, so the dates always
+	match the figures in the row, and the link itself is built in one place for
+	every evaluation in this app. */
+	const filters = frappe.query_report.get_filter_values();
+
+	return erpnext_germany.account_sheet.link({
+		company: filters.company,
+		account: data.account,
+		from_date: data.period_from_date,
+		to_date: data.period_to_date,
+		cost_center: filters.cost_center,
+	});
 }
