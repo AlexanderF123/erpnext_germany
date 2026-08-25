@@ -1147,3 +1147,39 @@ msgstr "{} Ungültig"
 msgid "{} Open"
 msgstr "{} Offen"
 
+
+#: erpnext_germany/erpnext_germany/report/kontoblatt/kontoblatt.py
+msgid "Balance carried forward"
+msgstr "Saldovortrag"
+
+#: erpnext_germany/erpnext_germany/report/kontoblatt/kontoblatt.py
+msgid "Contra Account"
+msgstr "Gegenkonto"
+
+#: erpnext_germany/erpnext_germany/report/kontoblatt/kontoblatt.py
+msgid "Booking Text"
+msgstr "Buchungstext"
+
+#: erpnext_germany/erpnext_germany/report/kontoblatt/kontoblatt.py
+msgid "Document Field 1"
+msgstr "Belegfeld 1"
+
+#: erpnext_germany/erpnext_germany/report/kontoblatt/kontoblatt.py
+msgid "Document Field 2"
+msgstr "Belegfeld 2"
+
+#: erpnext_germany/erpnext_germany/report/kontoblatt/kontoblatt.py
+msgid "Choose a company."
+msgstr "Bitte eine Gesellschaft wählen."
+
+#: erpnext_germany/erpnext_germany/report/kontoblatt/kontoblatt.py
+msgid "Choose the account whose sheet you want to see."
+msgstr "Bitte das Konto wählen, dessen Kontoblatt Sie sehen möchten."
+
+#: erpnext_germany/erpnext_germany/report/kontoblatt/kontoblatt.js
+msgid "Show document"
+msgstr "Beleg anzeigen"
+
+#: erpnext_germany/erpnext_germany/report/kontoblatt/kontoblatt.js
+msgid "Close Document"
+msgstr "Beleg schließen"

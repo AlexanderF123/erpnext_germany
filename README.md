@@ -8,6 +8,10 @@ App to hold regional code for Germany, built on top of ERPNext.
 
     - _Summen- und Saldenliste_
     - _Zusammenfassende Meldung_
+    - _Kontoblatt_ — the entries of one account in order, each line showing the
+      balance as it stood at that moment, starting from the balance carried in.
+      Document fields, contra account and booking text are on the line, and the
+      document filed with a booking opens beside the sheet.
 
 - Section for Register Information (Registerart, -gericht und nummer) in **Company**, **Customer** and **Supplier**
 
