@@ -20,6 +20,12 @@ build-backend = "flit_core.buildapi"
 frappe = ">=15.64.0,<16.0.0"
 erpnext = ">=15.58.0,<16.0.0"
 
+[tool.pytest.ini_options]
+# Tests below a doctype, report, page or tests directory need a running site
+# and belong to `bench run-tests`. Everything else must stay import-safe
+# without a bench, which is what this job checks.
+addopts = "--ignore-glob=*/doctype/* --ignore-glob=*/report/* --ignore-glob=*/page/* --ignore-glob=*/tests/*"
+
 [tool.ruff]
 line-length = 110
 target-version = "py310"

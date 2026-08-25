@@ -24,4 +24,4 @@ jobs:
       - name: Test with pytest
         run: |
           pip install pytest
-          pytest erpnext_germany/utils/test_utils.py
+          pytest erpnext_germany/utils/ erpnext_germany/gobd/

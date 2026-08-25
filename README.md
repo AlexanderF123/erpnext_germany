@@ -23,6 +23,10 @@ App to hold regional code for Germany, built on top of ERPNext.
 
     This ensures consecutive numbering of transactions. Applies to **Quotation**, **Sales Order**, **Sales Invoice**.
 
+- **GoBD data export** for a tax audit
+
+    What a Betriebsprüfer asks for: the books of a fiscal year as CSV files, together with an index describing every column, per the _Beschreibungsstandard_ (GDPdU DTD of 2004). Built from the **Company**, filed as an attachment on it, and byte-for-byte repeatable so a second copy is provably the same package.
+
 - Restrict deletion of attachments to submitted transactions
 - Custom fields in **Employee** (tax information, etc.)
 - List of religios denominations ("Konfessionen")

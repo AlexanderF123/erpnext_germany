@@ -1147,3 +1147,27 @@ msgstr "{} Ungültig"
 msgid "{} Open"
 msgstr "{} Offen"
 
+
+#: erpnext_germany/gobd/export.py
+msgid "Fiscal Year {0} not found"
+msgstr "Wirtschaftsjahr {0} nicht gefunden"
+
+#: erpnext_germany/gobd/export.py
+msgid "Fiscal year {0}, {1} to {2}"
+msgstr "Wirtschaftsjahr {0}, {1} bis {2}"
+
+#: erpnext_germany/public/js/company.js
+msgid "GoBD Export"
+msgstr "GoBD-Export"
+
+#: erpnext_germany/public/js/company.js
+msgid "Building the audit data package ..."
+msgstr "Prüfdatenpaket wird erstellt ..."
+
+#: erpnext_germany/public/js/company.js
+msgid "Package Ready"
+msgstr "Paket erstellt"
+
+#: erpnext_germany/public/js/company.js
+msgid "The package is attached to this company: {0}"
+msgstr "Das Paket hängt an dieser Gesellschaft: {0}"
