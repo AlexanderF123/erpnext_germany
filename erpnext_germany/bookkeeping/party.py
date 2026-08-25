@@ -85,11 +85,12 @@ def derive_party(account: str, against_account: str, label: str = "") -> Derived
 def apply_party(entry, label: str = ""):
 	"""Write the party side of a line onto the line, and check what was given.
 
-	`party_type` is not filled in here, it is checked. Frappe validates a
-	dynamic link before it runs any hook of ours, so a party that arrives
-	without its type is refused by the framework long before this code sees
-	it -- the same pair, and the same rule, that a Journal Entry Account has
-	carried for as long as ERPNext has existed.
+	Neither `party_type` nor `reference_type` is filled in here -- both are
+	checked. Frappe validates a dynamic link before it runs any hook of ours,
+	so a value that arrives without its type is refused by the framework long
+	before this code sees it. Both therefore come in as a pair, the same rule
+	a Journal Entry Account has carried for as long as ERPNext has existed;
+	the form fills them in as soon as an account is chosen.
 
 	What this does own is the answer the accounts imply: which of the two is
 	the personal one, and which kind of document it can settle.
@@ -97,24 +98,38 @@ def apply_party(entry, label: str = ""):
 	derived = derive_party(entry.account, entry.against_account, label)
 
 	entry.party_account = derived.account
-	entry.reference_type = derived.reference_type if entry.reference_name else None
 
 	if not derived.wanted:
 		# A line that stopped touching a personal account must not keep a
 		# person, or the ledger would carry a party nothing points at.
 		entry.party_type = None
 		entry.party = None
+		entry.reference_type = None
 		entry.reference_name = None
 		return
 
-	if entry.party_type and entry.party_type != derived.party_type:
-		frappe.throw(
-			_("{0}: {1} is a {2} account, so the party cannot be a {3}.").format(
-				label, derived.account, derived.party_type, entry.party_type
-			)
-		)
-
+	check_type(entry.party_type, derived.party_type, derived.account, label)
 	entry.party_type = derived.party_type
+
+	if not entry.reference_name:
+		entry.reference_type = None
+		return
+
+	check_type(entry.reference_type, derived.reference_type, derived.account, label)
+	entry.reference_type = derived.reference_type
+
+
+def check_type(given: str | None, expected: str, account: str, label: str):
+	"""Refuse a type that contradicts what the account says.
+
+	Correcting it silently would be worse: somebody chose the wrong one, and
+	the booking they get would not be the booking they described.
+
+	Both names are run through `_()` because they are DocType names, which
+	Frappe translates -- otherwise a German message would end in English.
+	"""
+	if given and given != expected:
+		frappe.throw(_("{0}: {1} implies {2}, not {3}.").format(label, account, _(expected), _(given)))
 
 
 def validate_party(entry, company: str, label: str):

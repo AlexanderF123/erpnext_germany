@@ -2466,9 +2466,6 @@ msgstr "{0}: {1} ist ein Personenkonto und braucht einen Geschäftspartner."
 msgid "{0}: Neither account is a personal account, so there is nobody to book against."
 msgstr "{0}: Keines der Konten ist ein Personenkonto, es gibt also niemanden, gegen den gebucht wird."
 
-msgid "{0}: {1} is a {2} account, so the party cannot be a {3}."
-msgstr "{0}: {1} ist ein {2}-Konto, der Geschäftspartner kann also kein {3} sein."
-
 msgid "{0}: An open item needs a personal account."
 msgstr "{0}: Ein offener Posten braucht ein Personenkonto."
 
@@ -2483,4 +2480,7 @@ msgstr "{0}: {1} ist nicht gebucht."
 
 msgid "{0}: {1} is already settled."
 msgstr "{0}: {1} ist bereits ausgeglichen."
+
+msgid "{0}: {1} implies {2}, not {3}."
+msgstr "{0}: {1} bedeutet {2}, nicht {3}."
 
