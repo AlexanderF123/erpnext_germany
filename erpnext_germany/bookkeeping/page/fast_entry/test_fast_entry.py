@@ -2,6 +2,7 @@
 # See license.txt
 
 import frappe
+from erpnext.accounts.doctype.sales_invoice.test_sales_invoice import create_sales_invoice
 from frappe.tests.utils import FrappeTestCase
 
 from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import (
@@ -12,6 +13,7 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 	create_batch,
 	entry,
 	make_tax_key,
+	party_account,
 	posting_accounts,
 	set_account_tax_key,
 )
@@ -24,6 +26,7 @@ from erpnext_germany.bookkeeping.fast_entry import (
 	update_entry,
 )
 from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
+from erpnext_germany.bookkeeping.tests.test_party import customer
 
 test_dependencies = ["Company"]
 
@@ -252,3 +255,101 @@ class TestAccountBalances(FrappeTestCase):
 			sorted(get_balances(self.batch.name, frappe.as_json([self.asset]))),
 			[self.asset],
 		)
+
+
+class TestPersonalAccountsOnTheScreen(FrappeTestCase):
+	"""Booking against a tenant is most of what a property manager books.
+
+	The screen could not do it at all until it carried the person: a line on a
+	receivable account needs a party, and a party needs the type that Frappe
+	checks before any code of ours runs.
+	"""
+
+	def setUp(self):
+		self.bank = posting_accounts("Asset", 1)[0]
+		self.expense = posting_accounts("Expense", 1)[0]
+		self.debtors = party_account("Receivable")
+		self.customer = customer()
+		self.batch = create_batch(entries=[])
+
+	def line(self, **kwargs) -> dict:
+		values = {
+			"posting_date": IN_PERIOD,
+			"amount": 100.0,
+			"direction": "Credit",
+			"account": self.debtors,
+			"against_account": self.bank,
+			"party": self.customer,
+		}
+		values.update(kwargs)
+		return values
+
+	def open_invoice(self) -> str:
+		return create_sales_invoice(
+			customer=self.customer, debit_to=self.debtors, posting_date=IN_PERIOD
+		).name
+
+	def test_a_line_against_a_person_can_be_typed(self):
+		row = add_entry(self.batch.name, self.line())["row"]
+
+		self.assertEqual(row["party"], self.customer)
+		self.assertEqual(row["party_type"], "Customer")
+		self.assertEqual(row["party_account"], self.debtors)
+
+	def test_a_settlement_can_be_typed(self):
+		invoice = self.open_invoice()
+
+		row = add_entry(self.batch.name, self.line(reference_name=invoice))["row"]
+
+		self.assertEqual(row["reference_name"], invoice)
+		self.assertEqual(row["reference_type"], "Sales Invoice")
+
+	def test_the_screen_never_sends_the_types(self):
+		"""They follow from the accounts, so the browser is not asked for them
+		and could not talk the ledger into a different answer if it tried."""
+		row = add_entry(self.batch.name, self.line(party_type="Supplier"))["row"]
+
+		self.assertEqual(row["party_type"], "Customer")
+
+	def test_a_person_without_a_personal_account_is_refused(self):
+		self.assertRaises(
+			frappe.ValidationError,
+			add_entry,
+			self.batch.name,
+			self.line(account=self.expense, against_account=self.bank),
+		)
+
+	def test_a_correction_can_take_the_open_item_back_off(self):
+		"""A field the screen sends empty has to clear, or a wrong settlement
+		could never be undone from here."""
+		invoice = self.open_invoice()
+		row = add_entry(self.batch.name, self.line(reference_name=invoice))["row"]
+
+		corrected = update_entry(self.batch.name, row["name"], self.line(reference_name=""))["row"]
+
+		self.assertFalse(corrected["reference_name"])
+		self.assertFalse(corrected["reference_type"])
+
+	def test_the_screen_is_told_who_can_stand_on_a_line(self):
+		context = get_context(self.batch.name)
+
+		parties = {party["name"]: party for party in context["parties"]}
+		self.assertIn(self.customer, parties)
+		self.assertEqual(parties[self.customer]["party_type"], "Customer")
+
+	def test_the_screen_is_told_which_invoices_are_open(self):
+		invoice = self.open_invoice()
+
+		context = get_context(self.batch.name)
+
+		offered = {item["name"]: item for item in context["open_items"]}
+		self.assertIn(invoice, offered)
+		self.assertEqual(offered[invoice]["party"], self.customer)
+		self.assertEqual(offered[invoice]["party_type"], "Customer")
+
+	def test_an_account_says_which_kind_of_person_it_implies(self):
+		"""The screen has to know before it can offer anybody."""
+		by_name = {account["name"]: account for account in get_context(self.batch.name)["accounts"]}
+
+		self.assertEqual(by_name[self.debtors]["party_type"], "Customer")
+		self.assertIsNone(by_name[self.bank]["party_type"])

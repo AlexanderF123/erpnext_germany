@@ -2484,3 +2484,18 @@ msgstr "{0}: {1} ist bereits ausgeglichen."
 msgid "{0}: {1} implies {2}, not {3}."
 msgstr "{0}: {1} bedeutet {2}, nicht {3}."
 
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Party"
+msgstr "Geschäftspartner"
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Open Item"
+msgstr "OPOS"
+
+msgid "A personal account needs a party."
+msgstr "Ein Personenkonto braucht einen Geschäftspartner."

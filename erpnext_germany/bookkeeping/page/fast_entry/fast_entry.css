@@ -1,0 +1,173 @@
+/* Copyright (c) 2026, ALYF GmbH and contributors */
+/* For license information, please see license.txt */
+
+/* Frappe reads this file into the Page document itself, so the screen
+   still works in any install without an asset build step. */
+
+.fast-entry {
+	font-variant-numeric: tabular-nums;
+}
+.fe-totals {
+	display: flex;
+	gap: 24px;
+	padding: 8px 0 12px;
+	flex-wrap: wrap;
+}
+.fe-difference {
+	font-weight: 600;
+}
+.fe-number {
+	width: 44px;
+	text-align: right;
+	padding-right: 8px;
+	color: var(--text-muted);
+	flex: 0 0 44px;
+}
+.fe-balances {
+	display: flex;
+	gap: 20px;
+	padding: 4px 0 10px;
+	flex-wrap: wrap;
+	min-height: 22px;
+	font-size: var(--text-sm);
+	color: var(--text-muted);
+}
+.fe-balance label {
+	margin: 0 6px 0 0;
+	font-weight: 500;
+}
+.fe-reconciled {
+	color: var(--green-600);
+}
+.fe-off {
+	color: var(--red-600);
+}
+.fe-total label {
+	display: block;
+	font-size: 11px;
+	color: var(--text-muted);
+	margin: 0;
+}
+.fe-total {
+	font-size: 15px;
+	font-weight: 600;
+}
+.fe-hint {
+	font-size: 11px;
+	color: var(--text-muted);
+	padding-bottom: 8px;
+}
+.fe-hint kbd {
+	font-size: 10px;
+}
+.fe-table {
+	overflow-x: auto;
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius);
+}
+.fe-row {
+	display: flex;
+	align-items: stretch;
+	border-bottom: 1px solid var(--border-color);
+}
+.fe-row:last-child {
+	border-bottom: none;
+}
+.fe-cell {
+	padding: 4px 8px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 12px;
+	flex: none;
+}
+.fe-right {
+	text-align: right;
+}
+.fe-head {
+	background: var(--subtle-fg);
+	font-weight: 600;
+	position: sticky;
+	top: 0;
+}
+.fe-head-cell {
+	color: var(--text-muted);
+	font-size: 11px;
+	text-transform: uppercase;
+}
+.fe-line {
+	background: var(--bg-color);
+}
+.fe-line .fe-cell {
+	padding: 0;
+	position: relative;
+}
+.fe-input {
+	width: 100%;
+	border: none;
+	border-right: 1px solid var(--border-color);
+	padding: 6px 8px;
+	font-size: 13px;
+	background: transparent;
+}
+.fe-input:focus {
+	outline: 2px solid var(--primary);
+	outline-offset: -2px;
+}
+.fe-input.fe-right {
+	text-align: right;
+}
+.fe-disabled {
+	opacity: 0.5;
+}
+.fe-shut {
+	background: var(--subtle-fg);
+}
+.fe-derived {
+	flex: 1 1 auto;
+	min-width: 120px;
+	color: var(--text-muted);
+	text-align: right;
+}
+.fe-pending {
+	opacity: 0.55;
+}
+.fe-failed {
+	background: var(--red-50);
+	color: var(--red-600);
+	cursor: pointer;
+}
+.fe-suggestions {
+	position: absolute;
+	z-index: 10;
+	top: 100%;
+	left: 0;
+	min-width: 100%;
+	background: var(--fg-color);
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius);
+	box-shadow: var(--shadow-md);
+	max-height: 240px;
+	overflow-y: auto;
+}
+.fe-suggestion {
+	padding: 4px 8px;
+	font-size: 12px;
+	white-space: nowrap;
+	cursor: pointer;
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+}
+.fe-suggestion-hint {
+	color: var(--text-muted);
+	font-size: 11px;
+}
+.fe-suggestion.fe-active .fe-suggestion-hint {
+	color: inherit;
+	opacity: 0.8;
+}
+.fe-suggestion.fe-active {
+	background: var(--primary);
+	color: white;
+}
