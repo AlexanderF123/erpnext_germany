@@ -1,0 +1,142 @@
+name: Bench Tests
+
+# The tests below doctype/, report/, page/ and tests/ need a running site and
+# are invisible to pytest by design (see pyproject.toml). Without this job they
+# were invisible to CI as well -- which is how an arithmetic error in a balance
+# survived a review and a green build.
+
+on:
+  pull_request: {}
+  push:
+    branches: [version-15-hotfix]
+
+concurrency:
+  group: bench-tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bench-tests:
+    name: bench run-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    services:
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MARIADB_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+      redis-cache:
+        image: redis:alpine
+        ports:
+          - 13000:6379
+
+      redis-queue:
+        image: redis:alpine
+        ports:
+          - 11000:6379
+
+    steps:
+      - name: Check out the app
+        uses: actions/checkout@v4
+        with:
+          path: erpnext_germany
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends mariadb-client
+
+      - name: Let the database speak utf8mb4
+        run: |
+          # Frappe stores emoji and every European character in the same
+          # column; anything narrower than utf8mb4 fails at install time.
+          mysql -h 127.0.0.1 -u root -proot -e "
+            SET GLOBAL character_set_server = 'utf8mb4';
+            SET GLOBAL collation_server = 'utf8mb4_unicode_ci';
+          "
+
+      - name: Install bench
+        run: pip install frappe-bench
+
+      - name: Build the bench
+        run: |
+          bench init \
+            --skip-assets \
+            --skip-redis-config-generation \
+            --frappe-branch version-15 \
+            --python "$(which python)" \
+            frappe-bench
+
+      - name: Point the bench at the service containers
+        working-directory: frappe-bench
+        run: |
+          bench set-config -g db_host 127.0.0.1
+          bench set-config -g redis_cache "redis://127.0.0.1:13000"
+          bench set-config -g redis_queue "redis://127.0.0.1:11000"
+          bench set-config -g redis_socketio "redis://127.0.0.1:11000"
+
+      - name: Add ERPNext and this app
+        working-directory: frappe-bench
+        run: |
+          bench get-app --branch version-15 --resolve-deps erpnext
+          # ERPNext's own test company reaches into Payment Gateway, which
+          # lives in the payments app. Without it the first test that asks for
+          # a Company dies before running.
+          bench get-app --branch version-15 payments
+          # Business Trip settles into an Expense Claim, which is HRMS. The
+          # bookkeeping module does not need it, but the app as a whole does.
+          bench get-app --branch version-15 hrms
+          bench get-app "${GITHUB_WORKSPACE}/erpnext_germany"
+
+      - name: Create the test site
+        working-directory: frappe-bench
+        run: |
+          bench new-site test.localhost \
+            --mariadb-user-host-login-scope='%' \
+            --db-root-password root \
+            --admin-password admin \
+            --no-mariadb-socket
+          bench --site test.localhost install-app erpnext payments hrms erpnext_germany
+          bench --site test.localhost set-config allow_tests true
+          bench --site test.localhost set-config developer_mode 1
+          # bench run-tests collects every test_*.py, including the ones that
+          # are plain pytest and never see a site. They import pytest, so the
+          # bench environment needs it too.
+          ./env/bin/pip install pytest
+
+      - name: Lay down ERPNext's test fixtures
+        working-directory: frappe-bench
+        # A test company pulls ERPNext's default warehouses behind it, and
+        # those need master data the setup wizard normally creates. Without
+        # this the first test that asks for a Company dies on a missing
+        # Warehouse Type.
+        run: bench --site test.localhost execute erpnext.setup.utils.before_tests
+
+      - name: Run the tests
+        working-directory: frappe-bench
+        run: bench --site test.localhost run-tests --app erpnext_germany
+
+      - name: Show the site log when something failed
+        if: failure()
+        working-directory: frappe-bench
+        run: |
+          tail -n 200 logs/*.log 2>/dev/null || true
+          tail -n 200 sites/test.localhost/logs/*.log 2>/dev/null || true
