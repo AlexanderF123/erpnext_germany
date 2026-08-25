@@ -1,0 +1,105 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-20 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "row_number",
+  "label",
+  "row_type",
+  "sign",
+  "accounts",
+  "column_break_span",
+  "from_row",
+  "to_row",
+  "reference_row"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "description": "The number the line is referred to by. Result lines point at these.",
+   "fieldname": "row_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Row",
+   "reqd": 1
+  },
+  {
+   "columns": 3,
+   "description": "How the line is printed, e.g. Gesamtleistung.",
+   "fieldname": "label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Label",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "default": "Accounts",
+   "fieldname": "row_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Accounts\nSubtotal\nRatio",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "default": "+",
+   "description": "Which way is up for this line. On an account line it decides whether the figure reads as revenue or as cost; on a result line it decides whether the total is printed as it stands or the other way round, so that a cost total can be printed positive.",
+   "fieldname": "sign",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Sign",
+   "options": "+\n-"
+  },
+  {
+   "columns": 3,
+   "depends_on": "eval: doc.row_type == 'Accounts'",
+   "description": "One account number or range per line, e.g. 4100-4199. Lines starting with # are notes.",
+   "fieldname": "accounts",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Account Ranges"
+  },
+  {
+   "fieldname": "column_break_span",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: doc.row_type != 'Accounts'",
+   "description": "First account line that counts towards this result.",
+   "fieldname": "from_row",
+   "fieldtype": "Int",
+   "label": "From Row"
+  },
+  {
+   "depends_on": "eval: doc.row_type != 'Accounts'",
+   "description": "Last account line that counts towards this result.",
+   "fieldname": "to_row",
+   "fieldtype": "Int",
+   "label": "To Row"
+  },
+  {
+   "depends_on": "eval: doc.row_type == 'Ratio'",
+   "description": "The line this one is expressed as a percentage of.",
+   "fieldname": "reference_row",
+   "fieldtype": "Int",
+   "label": "Reference Row"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-20 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Bookkeeping",
+ "name": "BWA Row",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

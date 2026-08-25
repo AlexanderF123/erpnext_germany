@@ -215,6 +215,92 @@ def get_custom_fields():
 				"translatable": 0,
 			}
 		],
+		# A posted entry is never deleted and never edited, only reversed -- and
+		# the reversal has to say why and stay tied to what it undoes.
+		#
+		# Prefixed on purpose: ERPNext has a "reversal_of" of its own, which
+		# belongs to the Exchange Rate Revaluation and means something else.
+		# Sharing that field would make our rules fire on its entries.
+		"Journal Entry": [
+			{
+				"fieldtype": "Section Break",
+				"fieldname": "german_reversal_sb",
+				"label": _("General Reversal"),
+				"insert_after": "user_remark",
+				"collapsible": 1,
+				"collapsible_depends_on": "eval: doc.general_reversal_of || doc.general_reversal_by",
+			},
+			{
+				"fieldtype": "Link",
+				"fieldname": "general_reversal_of",
+				"label": _("General Reversal Of"),
+				"options": "Journal Entry",
+				"read_only": 1,
+				"insert_after": "german_reversal_sb",
+				"no_copy": 1,
+			},
+			{
+				"fieldtype": "Small Text",
+				"fieldname": "reversal_reason",
+				"label": _("Reversal Reason"),
+				"depends_on": "general_reversal_of",
+				"mandatory_depends_on": "general_reversal_of",
+				"read_only_depends_on": "eval: doc.docstatus > 0",
+				"insert_after": "general_reversal_of",
+				"no_copy": 1,
+			},
+			{
+				"fieldtype": "Link",
+				"fieldname": "general_reversal_by",
+				"label": _("Reversed By"),
+				"options": "Journal Entry",
+				"read_only": 1,
+				# Set once the reversal exists, which is after this entry was
+				# posted -- hence editable after submit.
+				"allow_on_submit": 1,
+				"insert_after": "reversal_reason",
+				"no_copy": 1,
+			},
+		],
+		"Account": [
+			{
+				"fieldtype": "Data",
+				"fieldname": "account_label",
+				"label": _("Account Label"),
+				"description": _(
+					"What this company calls the account. Used for entry and reports; the chart of"
+					" accounts itself stays as it is."
+				),
+				"insert_after": "account_name",
+				"translatable": 0,
+			},
+			# The Automatikkonto principle: the tax hangs on the account, so
+			# booking to it is enough to get rate, tax account and tax amount.
+			{
+				"fieldtype": "Section Break",
+				"fieldname": "german_tax_sb",
+				"label": _("Tax Derivation"),
+				"insert_after": "tax_rate",
+				"collapsible": 1,
+			},
+			{
+				"fieldtype": "Link",
+				"fieldname": "tax_key",
+				"label": _("Tax Key"),
+				"options": "Tax Key",
+				"description": _("Bookings to this account derive their tax from this key."),
+				"insert_after": "german_tax_sb",
+			},
+			{
+				"fieldtype": "Check",
+				"fieldname": "is_automatic_account",
+				"label": _("Automatic Account"),
+				"description": _("Set automatically for every account that has a tax key."),
+				"read_only": 1,
+				"in_standard_filter": 1,
+				"insert_after": "tax_key",
+			},
+		],
 	}
 
 	if "hrms" in get_installed_apps():

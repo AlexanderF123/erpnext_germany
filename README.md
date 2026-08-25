@@ -8,6 +8,40 @@ App to hold regional code for Germany, built on top of ERPNext.
 
     - _Summen- und Saldenliste_
     - _Zusammenfassende Meldung_
+    - _Kontoblatt_ (account sheet with a running balance)
+    - _Betriebswirtschaftliche Auswertung_ (BWA, per a configurable scheme)
+    - _Prüfliste Monatsabschluss_ (month-end checklist, incl. VAT verification)
+    - _Belegnummernkreise_ (gap check over document ranges)
+
+- **Bookkeeping** the way a German accountant works (dt. Buchführung nach DATEV)
+
+    A separate module for entering and posting bookkeeping data in the terms and
+    the workflow a DATEV user knows.
+
+    - **Posting Batch** (_Buchungsstapel_) — collect entries and post them to the
+      ledger in one transaction. One line is one complete entry: account, contra
+      account, amount, side. A target amount and a running difference make the
+      batch reconcilable against a bank statement or an adding-machine tape.
+      Lines can name a party and settle one of its open items.
+    - **Fast Entry** (_Buchungsmaske_) — the DATEV entry mask: one line, the
+      familiar tab order and column names, no mouse. Accounts, tax keys, parties
+      and open items are resolved in the browser, so nothing waits for the
+      server; the balance of both accounts is shown while typing.
+    - **Tax Key** (_BU-Schlüssel_) — derive net, tax and tax account from the
+      account, including reverse charge under § 13b UStG. Accounts carrying a
+      tax key are flagged as _Automatikkonten_.
+    - **Ledger Lockdown** (_Festschreibung_) — close a period per § 146 Abs. 4
+      AO. Hooked on **GL Entry**, so every route into a closed period is covered,
+      including the reversal a cancellation produces.
+    - **General reversal** (_Generalumkehr_) — the German way to correct a posted
+      entry, with a mandatory reason.
+    - **Document Range** (_Belegkreis_) — consecutive document numbers per range,
+      checked for gaps.
+    - **Booking Text Shortcut** (_Buchungstextkonstante_) — short codes that
+      expand into a booking text while typing.
+    - **GoBD export** — what a Betriebsprüfer asks for: the data as files,
+      together with an index describing every column, per the
+      _Beschreibungsstandard_ (GDPdU DTD of 2004).
 
 - Section for Register Information (Registerart, -gericht und nummer) in **Company**, **Customer** and **Supplier**
 

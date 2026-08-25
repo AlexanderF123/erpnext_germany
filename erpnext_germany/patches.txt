@@ -14,3 +14,9 @@ erpnext_germany.patches.remove_some_employee_property_setters
 execute:from erpnext_germany.install import make_property_setters; make_property_setters()
 erpnext_germany.patches.move_business_trip_region_data_to_child_table #2
 erpnext_germany.patches.import_business_trip_regions # 2026-01-30
+execute:from erpnext_germany.install import make_custom_fields; make_custom_fields() # 2026-08-20 tax key
+execute:from erpnext_germany.install import insert_custom_records; insert_custom_records() # 2026-08-20 tax keys
+execute:from erpnext_germany.install import make_property_setters; make_property_setters() # 2026-08-20 account search
+execute:from erpnext_germany.install import make_custom_fields; make_custom_fields() # 2026-08-20 account label
+execute:from erpnext_germany.install import make_custom_fields; make_custom_fields() # 2026-08-20 general reversal
+execute:from erpnext_germany.install import insert_custom_records; insert_custom_records() # 2026-08-20 standard BWA schema

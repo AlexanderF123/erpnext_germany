@@ -249,7 +249,7 @@ msgstr "Stadt"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.js:192
 msgid "Close"
-msgstr ""
+msgstr "Schließen"
 
 #. Label of a Link field in DocType 'Business Letter'
 #. Label of a Link field in DocType 'Business Trip'
@@ -384,11 +384,11 @@ msgstr "Entfernung"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.js:139
 msgid "DocType"
-msgstr ""
+msgstr "DocType"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.js:147
 msgid "Document Name"
-msgstr ""
+msgstr "Dokumentenname"
 
 #: erpnext_germany/erpnext_germany/report/zusammenfassende_meldung/zusammenfassende_meldung.js:50
 msgid "Download CSV"
@@ -504,7 +504,7 @@ msgstr "Deutschland"
 
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.js:162
 msgid "Grand Total"
-msgstr ""
+msgstr "Gesamtbetrag"
 
 #. Name of a role
 #: erpnext_germany/erpnext_germany/doctype/religious_denomination/religious_denomination.json
@@ -754,7 +754,7 @@ msgstr "Öffentliche Verkehrsmittel"
 #. Linked DocType in Business Trip's connections
 #: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.json
 msgid "Purchase Invoice"
-msgstr ""
+msgstr "Eingangsrechnung"
 
 #. Label of a Attach field in DocType 'Business Trip Accommodation'
 #. Label of a Attach field in DocType 'Business Trip Journey'
@@ -812,7 +812,7 @@ msgstr "Konfession"
 #. Label of a Card Break in the Germany Workspace
 #: erpnext_germany/erpnext_germany/workspace/germany/germany.json
 msgid "Reports"
-msgstr ""
+msgstr "Berichte"
 
 #. Label of a Data field in DocType 'VAT ID Check'
 #: erpnext_germany/erpnext_germany/doctype/vat_id_check/vat_id_check.json
@@ -933,7 +933,7 @@ msgstr "Name des Lieferanten"
 #: erpnext_germany/erpnext_germany/doctype/religious_denomination/religious_denomination.json
 #: erpnext_germany/erpnext_germany/doctype/vat_id_check/vat_id_check.json
 msgid "System Manager"
-msgstr ""
+msgstr "System-Manager"
 
 #: erpnext_germany/custom_fields.py:117
 msgid "Tax Bracket"
@@ -1110,7 +1110,7 @@ msgstr "Arbeitsstunden pro Woche"
 
 #: erpnext_germany/erpnext_germany/report/zusammenfassende_meldung/zusammenfassende_meldung.js:15
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 #: erpnext_germany/public/js/erpnext_germany/business_letter.js:7
 msgid "You can use {0} in the Subject and Content fields for dynamic values.<br><br>All address details are available under the <code>address</code> object (e.g., <code>{{ address.city }}</code>), contact details under the <code>contact</code> object (e.g., <code>{{ contact.first_name }}</code>), and any specific information related to the dynamically linked document under the <code>reference</code> object (e.g., <code>{{ reference.some_field }}</code>).<br><br>"
@@ -1121,7 +1121,7 @@ msgstr "Sie können in den Betreff- und Inhalt-Feldern {0} für dynamische Werte
 #: erpnext_germany/erpnext_germany/report/zusammenfassende_meldung/zusammenfassende_meldung.json
 #: erpnext_germany/erpnext_germany/workspace/germany/germany.json
 msgid "Zusammenfassende Meldung"
-msgstr ""
+msgstr "Zusammenfassende Meldung"
 
 #: erpnext_germany/erpnext_germany/doctype/business_letter/business_letter.py:49
 msgid "cancelled Business Letter {0}"
@@ -1147,3 +1147,919 @@ msgstr "{} Ungültig"
 msgid "{} Open"
 msgstr "{} Offen"
 
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.js
+msgid "Distance filled in from {0}"
+msgstr "Entfernung übernommen aus {0}"
+
+#. Label of a Link field in DocType 'Business Trip Journey'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_journey/business_trip_journey.json
+msgid "Vehicle"
+msgstr "Fahrzeug"
+
+#. Description of the 'Vehicle' (Link) field in DocType 'Business Trip Journey'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_journey/business_trip_journey.json
+msgid "Which of the employee's vehicles was driven. Determines the rate per kilometer."
+msgstr "Welches Fahrzeug des Mitarbeiters gefahren wurde. Bestimmt den Satz je Kilometer."
+
+#. Label of a Currency field in DocType 'Business Trip Settings'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_settings/business_trip_settings.json
+msgid "Mileage Allowance for Other Motor Vehicles"
+msgstr "Kilometerpauschale für andere motorbetriebene Fahrzeuge"
+
+#. Description of the 'Mileage Allowance for Other Motor Vehicles' (Currency)
+#. field in DocType 'Business Trip Settings'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_settings/business_trip_settings.json
+msgid "Rate for motorcycles and other motor vehicles, e.g. 0.20€/km. Falls back to the <i>Mileage Allowance</i> if left empty."
+msgstr "Satz für Motorräder und andere motorbetriebene Fahrzeuge, z.B. 0,20€/km. Ohne Angabe gilt die <i>Kilometerpauschale</i>."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
+msgid "Row {0}: {1} does not belong to {2}."
+msgstr "Zeile {0}: {1} gehört nicht zu {2}."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
+msgid "Wrong Vehicle"
+msgstr "Falsches Fahrzeug"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
+msgid "Row {0}: {1} is disabled."
+msgstr "Zeile {0}: {1} ist deaktiviert."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
+msgid "Disabled Vehicle"
+msgstr "Deaktiviertes Fahrzeug"
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
+msgid "Row {0}: {1} is not a private vehicle, so no mileage allowance can be paid."
+msgstr "Zeile {0}: {1} ist kein privates Fahrzeug, daher kann keine Kilometerpauschale gezahlt werden."
+
+#: erpnext_germany/erpnext_germany/doctype/business_trip/business_trip.py
+msgid "No Mileage Allowance"
+msgstr "Keine Kilometerpauschale"
+
+#. Label of a Link field in DocType 'Business Trip Settings'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_settings/business_trip_settings.json
+msgid "Default Region"
+msgstr "Standard-Region"
+
+#. Description of the 'Default Region' (Link) field in DocType 'Business Trip
+#. Settings'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_settings/business_trip_settings.json
+msgid "Used when a destination does not name a region of its own, e.g. for domestic travel."
+msgstr "Wird verwendet, wenn das Ziel keine eigene Region benennt, z.B. bei Inlandsreisen."
+
+#. Description of the 'Breakfast was Provided' (Check) field in DocType
+#. 'Business Trip Allowance'
+#: erpnext_germany/erpnext_germany/doctype/business_trip_allowance/business_trip_allowance.json
+msgid "Only tick what was actually provided. Nothing here is assumed."
+msgstr "Nur ankreuzen, was tatsächlich gestellt wurde. Hier wird nichts unterstellt."
+
+#: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.js:58
+msgid "Compare With Previous Year"
+msgstr "Vorjahresvergleich"
+
+#: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.js:64
+msgid "Hide Accounts Without Balance"
+msgstr "Konten ohne Saldo ausblenden"
+
+#: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.py:131
+msgid "Previous year in {0}"
+msgstr "Vorjahr in {0}"
+
+#: erpnext_germany/erpnext_germany/report/summen__und_saldenliste/summen__und_saldenliste.py:138
+msgid "Previous year up to and including {0}"
+msgstr "Vorjahr bis einschließlich {0}"
+
+#: erpnext_germany/modules.txt
+msgid "Bookkeeping"
+msgstr "Buchführung"
+
+msgid "Posting Batch"
+msgstr "Buchungsstapel"
+
+msgid "Posting Batch Entry"
+msgstr "Buchungssatz"
+
+msgid "Ledger Lockdown"
+msgstr "Festschreibung"
+
+msgid "Contra Account"
+msgstr "Gegenkonto"
+
+msgid "Direction"
+msgstr "Soll/Haben"
+
+msgid "Document Number"
+msgstr "Belegfeld 1"
+
+msgid "Second Document Number"
+msgstr "Belegfeld 2"
+
+msgid "Document Circle"
+msgstr "Belegkreis"
+
+msgid "Control Totals"
+msgstr "Kontrollsummen"
+
+msgid "Locked Up To"
+msgstr "Festgeschrieben bis"
+
+msgid "Locked On"
+msgstr "Festgeschrieben am"
+
+msgid "Locked By"
+msgstr "Festgeschrieben von"
+
+msgid "Ledger Entries"
+msgstr "Buchungssätze"
+
+msgid "This batch has been posted and cannot be changed."
+msgstr "Dieser Stapel ist gebucht und kann nicht mehr geändert werden."
+
+msgid "Batch Already Posted"
+msgstr "Stapel bereits gebucht"
+
+msgid "From Date must be on or before To Date."
+msgstr "Das Von-Datum muss vor oder auf dem Bis-Datum liegen."
+
+msgid "Row {0}"
+msgstr "Zeile {0}"
+
+msgid "{0}: Amount must be greater than zero. Book a correction as a general reversal."
+msgstr "{0}: Der Betrag muss größer als null sein. Eine Korrektur wird als Generalumkehr gebucht."
+
+msgid "{0}: Posting date {1} is outside the batch period."
+msgstr "{0}: Das Buchungsdatum {1} liegt außerhalb des Stapelzeitraums."
+
+msgid "{0}: Account and contra account must be different."
+msgstr "{0}: Konto und Gegenkonto müssen verschieden sein."
+
+msgid "{0}: {1} does not belong to {2}."
+msgstr "{0}: {1} gehört nicht zu {2}."
+
+msgid "{0}: {1} is a group account and cannot be posted to."
+msgstr "{0}: {1} ist ein Sammelkonto und kann nicht bebucht werden."
+
+msgid "{0}: {1} is disabled."
+msgstr "{0}: {1} ist deaktiviert."
+
+msgid "A posted batch cannot be deleted."
+msgstr "Ein gebuchter Stapel kann nicht gelöscht werden."
+
+msgid "This batch has already been posted."
+msgstr "Dieser Stapel wurde bereits gebucht."
+
+msgid "There is nothing to post."
+msgstr "Es gibt nichts zu buchen."
+
+msgid "{0} entries posted."
+msgstr "{0} Zeilen gebucht."
+
+msgid "Batch Posted"
+msgstr "Stapel gebucht"
+
+msgid "A lockdown cannot be changed. Create a new one to close a later period."
+msgstr "Eine Festschreibung kann nicht geändert werden. Für einen späteren Zeitraum eine neue anlegen."
+
+msgid "Lockdown Is Final"
+msgstr "Festschreibung ist endgültig"
+
+msgid "{0} is already locked up to {1}. A lockdown can only move forward."
+msgstr "{0} ist bereits bis {1} festgeschrieben. Eine Festschreibung kann nur vorwärts laufen."
+
+msgid "Period Already Locked"
+msgstr "Zeitraum bereits festgeschrieben"
+
+msgid "A lockdown cannot be deleted. It is the record that a period was closed."
+msgstr "Eine Festschreibung kann nicht gelöscht werden. Sie ist der Nachweis, dass ein Zeitraum geschlossen wurde."
+
+msgid "Period Is Locked"
+msgstr "Zeitraum ist festgeschrieben"
+
+msgid "This batch has been posted. Corrections are booked as a general reversal."
+msgstr "Dieser Stapel ist gebucht. Korrekturen werden als Generalumkehr gebucht."
+
+msgid "Post {0} entries to the ledger? This cannot be undone."
+msgstr "{0} Zeilen ins Hauptbuch buchen? Das lässt sich nicht rückgängig machen."
+
+msgid "Posting entries…"
+msgstr "Zeilen werden gebucht …"
+
+msgid "Everything posted on or before this date becomes unchangeable. A lockdown cannot be undone."
+msgstr "Alles, was bis einschließlich zu diesem Datum gebucht ist, wird unveränderbar. Eine Festschreibung lässt sich nicht rückgängig machen."
+
+msgid "{0} is locked up to {1}."
+msgstr "{0} ist bis {1} festgeschrieben."
+
+msgid "Lock {0} up to {1}? This cannot be undone."
+msgstr "{0} bis {1} festschreiben? Das lässt sich nicht rückgängig machen."
+
+msgid "Post Batch"
+msgstr "Stapel verarbeiten"
+
+msgid "{0} is locked up to {1}. Nothing can be posted into a closed period."
+msgstr "{0} ist bis {1} festgeschrieben. In einen geschlossenen Zeitraum kann nicht gebucht werden."
+
+msgid "Booking Entries"
+msgstr "Buchungszeilen"
+
+msgid "Number of Entries"
+msgstr "Anzahl Buchungssätze"
+
+msgid "Tax Key"
+msgstr "Steuerschlüssel"
+
+msgid "Tax Key Number"
+msgstr "Steuerschlüssel-Nummer"
+
+msgid "Tax Effect"
+msgstr "Steuerwirkung"
+
+msgid "Tax Accounts"
+msgstr "Steuerkonten"
+
+msgid "Deductible Tax Account"
+msgstr "Abziehbares Steuerkonto"
+
+msgid "Applied Tax Key"
+msgstr "Angewandter Steuerschlüssel"
+
+msgid "Tax Breakdown"
+msgstr "Steueraufteilung"
+
+msgid "Tax Derivation"
+msgstr "Steuerfindung"
+
+msgid "Automatic Account"
+msgstr "Automatikkonto"
+
+msgid "Total Net Amount"
+msgstr "Summe Netto"
+
+msgid "Total Tax Amount"
+msgstr "Summe Steuer"
+
+msgid "Input Tax"
+msgstr "Vorsteuer"
+
+msgid "Output Tax"
+msgstr "Umsatzsteuer"
+
+msgid "Reverse Charge"
+msgstr "Reverse Charge"
+
+msgid "Tax Free"
+msgstr "Steuerfrei"
+
+msgid "{0} is not a known tax effect."
+msgstr "{0} ist keine bekannte Steuerwirkung."
+
+msgid "A tax free key cannot carry a tax rate."
+msgstr "Ein steuerfreier Schlüssel kann keinen Steuersatz tragen."
+
+msgid "The tax rate must be between 0 and 100 percent."
+msgstr "Der Steuersatz muss zwischen 0 und 100 Prozent liegen."
+
+msgid "Row {0}: {1} already has a tax account for this key."
+msgstr "Zeile {0}: {1} hat für diesen Schlüssel bereits ein Steuerkonto."
+
+msgid "Row {0}: A deductible tax account only applies to reverse charge."
+msgstr "Zeile {0}: Ein abziehbares Steuerkonto gilt nur bei Reverse Charge."
+
+msgid "Row {0}: {1} is a group account and cannot be posted to."
+msgstr "Zeile {0}: {1} ist ein Gruppenkonto und kann nicht bebucht werden."
+
+msgid "{0}Tax key {1} is disabled."
+msgstr "{0}Steuerschlüssel {1} ist deaktiviert."
+
+msgid "{0}Tax key {1} only applies from {2}."
+msgstr "{0}Steuerschlüssel {1} gilt erst ab {2}."
+
+msgid "{0}{1} is a tax account and cannot carry a tax key itself."
+msgstr "{0}{1} ist ein Steuerkonto und kann selbst keinen Steuerschlüssel tragen."
+
+msgid "{0}Tax key {1} has no tax account for {2}."
+msgstr "{0}Steuerschlüssel {1} hat kein Steuerkonto für {2}."
+
+msgid "{0}Tax key {1} has no deductible tax account for {2}."
+msgstr "{0}Steuerschlüssel {1} hat kein abziehbares Steuerkonto für {2}."
+
+msgid "Bookings to this account derive their tax from this key."
+msgstr "Buchungen auf dieses Konto leiten ihre Steuer aus diesem Schlüssel ab."
+
+msgid "Set automatically for every account that has a tax key."
+msgstr "Wird für jedes Konto mit Steuerschlüssel automatisch gesetzt."
+
+msgid "Only needed where the booking deviates from the account, e.g. reverse charge or tax free. Left empty, the key of the account applies."
+msgstr "Nur nötig, wo die Buchung vom Konto abweicht, z. B. Reverse Charge oder steuerfrei. Bleibt das Feld leer, gilt der Schlüssel des Kontos."
+
+msgid "The key that actually applied: the one typed on the line, or the one on the account."
+msgstr "Der Schlüssel, der tatsächlich gegriffen hat: der in der Zeile erfasste oder der des Kontos."
+
+msgid "Reverse charge only: the input tax that offsets the tax owed."
+msgstr "Nur bei Reverse Charge: die Vorsteuer, die die geschuldete Steuer ausgleicht."
+
+msgid "Derived from the tax key of this company."
+msgstr "Abgeleitet aus dem Steuerschlüssel dieser Gesellschaft."
+
+msgid "Sum of the net amounts. Differs from the total amount wherever tax is involved."
+msgstr "Summe der Nettobeträge. Weicht vom Gesamtbetrag ab, sobald Steuer im Spiel ist."
+
+msgid "Sum of the derived tax. Under reverse charge this tax is not part of the total amount."
+msgstr "Summe der abgeleiteten Steuer. Bei Reverse Charge ist diese Steuer nicht Teil des Gesamtbetrags."
+
+msgid "Fast Entry"
+msgstr "Buchungsmaske"
+
+msgid "Booking Text Shortcut"
+msgstr "Buchungstextkonstante"
+
+msgid "Booking Text"
+msgstr "Buchungstext"
+
+msgid "Shortcut"
+msgstr "Kürzel"
+
+msgid "Net / Tax"
+msgstr "Netto / Steuer"
+
+msgid "Open Batch"
+msgstr "Stapel öffnen"
+
+msgid "saves the line"
+msgstr "bucht die Zeile"
+
+msgid "copies the previous line"
+msgstr "übernimmt die Vorzeile"
+
+msgid "clears the line"
+msgstr "leert die Zeile"
+
+msgid "Enter an amount."
+msgstr "Betrag eingeben."
+
+msgid "Enter D for debit or C for credit."
+msgstr "S für Soll oder H für Haben eingeben."
+
+msgid "Enter an account and a contra account."
+msgstr "Konto und Gegenkonto eingeben."
+
+msgid "Account and contra account must be different."
+msgstr "Konto und Gegenkonto müssen verschieden sein."
+
+msgid "Enter a posting date."
+msgstr "Buchungsdatum eingeben."
+
+msgid "This line is no longer part of the batch."
+msgstr "Diese Zeile gehört nicht mehr zum Stapel."
+
+msgid "A shortcut cannot be empty."
+msgstr "Ein Kürzel darf nicht leer sein."
+
+msgid "Typed into the booking text and expanded on Tab, e.g. MI for Miete."
+msgstr "Wird im Buchungstext getippt und mit Tab ausgeschrieben, z. B. MI für Miete."
+
+msgctxt "Debit or credit column"
+msgid "D/C"
+msgstr "S/H"
+
+msgctxt "Debit shorthand"
+msgid "D"
+msgstr "S"
+
+msgctxt "Credit shorthand"
+msgid "C"
+msgstr "H"
+
+msgid "Account Label"
+msgstr "Kontenbeschriftung"
+
+msgid "General Reversal"
+msgstr "Generalumkehr"
+
+msgid "General Reversal Of"
+msgstr "Generalumkehr von"
+
+msgid "Reversal Reason"
+msgstr "Stornogrund"
+
+msgid "Reversed By"
+msgstr "Storniert durch"
+
+msgid "A reversal needs a reason."
+msgstr "Eine Generalumkehr braucht einen Grund."
+
+msgid "Reason Required"
+msgstr "Grund erforderlich"
+
+msgid "Only a posted entry can be reversed."
+msgstr "Nur eine gebuchte Buchung kann storniert werden."
+
+msgid "This entry was already reversed by {0}."
+msgstr "Diese Buchung wurde bereits durch {0} storniert."
+
+msgid "Already Reversed"
+msgstr "Bereits storniert"
+
+msgid "A reversal cannot itself be reversed. Book the correction as a new entry."
+msgstr "Eine Generalumkehr kann nicht selbst storniert werden. Die Korrektur ist eine neue Buchung."
+
+msgid "Already A Reversal"
+msgstr "Ist bereits eine Generalumkehr"
+
+msgid "Reversed by {0}."
+msgstr "Storniert durch {0}."
+
+msgid "Entry Reversed"
+msgstr "Buchung storniert"
+
+msgid "This entry reverses {0}."
+msgstr "Diese Buchung storniert {0}."
+
+msgid "This entry was reversed by {0}."
+msgstr "Diese Buchung wurde durch {0} storniert."
+
+msgid "Why this entry is being corrected. Stays with the reversal."
+msgstr "Warum diese Buchung korrigiert wird. Bleibt an der Generalumkehr hängen."
+
+msgctxt "General reversal dialog"
+msgid "Reverse"
+msgstr "Stornieren"
+
+msgid "Reversing ..."
+msgstr "Storniere ..."
+
+msgid "BWA Schema"
+msgstr "BWA-Schema"
+
+msgid "Betriebswirtschaftliche Auswertung"
+msgstr "Betriebswirtschaftliche Auswertung"
+
+msgid "How this arrangement is called, e.g. BWA Standard SKR03."
+msgstr "Wie diese Form heisst, z. B. BWA Standard SKR03."
+
+msgid "Chart of Accounts"
+msgstr "Kontenrahmen"
+
+msgid "Which chart the account ranges belong to, e.g. SKR03. Ranges are read as numbers, so a form belongs to the chart it was written for."
+msgstr "Zu welchem Kontenrahmen die Kontenbereiche gehören, z. B. SKR03. Bereiche werden als Zahlen gelesen, eine Form gehört also zu dem Rahmen, für den sie geschrieben wurde."
+
+msgid "Used when no arrangement is chosen in the report."
+msgstr "Wird verwendet, wenn im Bericht keine Form gewählt ist."
+
+msgid "The number the line is referred to by. Result lines point at these."
+msgstr "Die Nummer, unter der die Zeile angesprochen wird. Ergebniszeilen verweisen darauf."
+
+msgid "How the line is printed, e.g. Gesamtleistung."
+msgstr "Wie die Zeile gedruckt wird, z. B. Gesamtleistung."
+
+msgid "Which way is up for this line. On an account line it decides whether the figure reads as revenue or as cost; on a result line it decides whether the total is printed as it stands or the other way round, so that a cost total can be printed positive."
+msgstr "Welche Richtung für diese Zeile oben ist. Auf einer Kontenzeile entscheidet sie, ob der Betrag als Erlös oder als Kosten gelesen wird; auf einer Ergebniszeile, ob die Summe so gedruckt wird, wie sie steht, oder umgekehrt, damit eine Kostensumme positiv gedruckt werden kann."
+
+msgid "One account number or range per line, e.g. 4100-4199. Lines starting with # are notes."
+msgstr "Eine Kontonummer oder ein Bereich je Zeile, z. B. 4100-4199. Zeilen mit # sind Notizen."
+
+msgid "First account line that counts towards this result."
+msgstr "Erste Kontenzeile, die in dieses Ergebnis eingeht."
+
+msgid "Last account line that counts towards this result."
+msgstr "Letzte Kontenzeile, die in dieses Ergebnis eingeht."
+
+msgid "The line this one is expressed as a percentage of."
+msgstr "Die Zeile, von der diese der Prozentsatz ist."
+
+msgid "Choose the arrangement the BWA should be drawn up in."
+msgstr "Form wählen, in der die BWA aufgestellt werden soll."
+
+msgid "Row {0} appears twice."
+msgstr "Zeile {0} kommt zweimal vor."
+
+msgid "Row {0} comes after row {1}. The rows have to be numbered upwards."
+msgstr "Zeile {0} steht nach Zeile {1}. Die Zeilen müssen aufsteigend nummeriert sein."
+
+msgid "Row {0} has an unknown type {1}."
+msgstr "Zeile {0} hat den unbekannten Typ {1}."
+
+msgid "Row {0} covers no accounts."
+msgstr "Zeile {0} erfasst keine Konten."
+
+msgid "Row {0}: {1}"
+msgstr "Zeile {0}: {1}"
+
+msgid "Row {0} starts its total at row {1} and ends it at row {2}."
+msgstr "Zeile {0} beginnt ihre Summe bei Zeile {1} und endet bei Zeile {2}."
+
+msgid "Row {0} would count itself or a line below it."
+msgstr "Zeile {0} würde sich selbst oder eine Zeile darunter mitzählen."
+
+msgid "Result Points Downwards"
+msgstr "Ergebnis verweist nach unten"
+
+msgid "Row {0} refers to row {1}, which does not exist."
+msgstr "Zeile {0} verweist auf Zeile {1}, die es nicht gibt."
+
+msgid "Not covered by the BWA"
+msgstr "Nicht in der BWA erfasst"
+
+msgctxt "BWA column"
+msgid "Item"
+msgstr "Position"
+
+msgid "Cumulative"
+msgstr "Kumuliert"
+
+msgid "{0} previous year"
+msgstr "{0} Vorjahr"
+
+msgid "Deviation"
+msgstr "Abweichung"
+
+msgid "Show Accounts"
+msgstr "Konten anzeigen"
+
+msgid "Kontoblatt"
+msgstr "Kontoblatt"
+
+msgid "Choose the account whose sheet you want to see."
+msgstr "Konto wählen, dessen Kontoblatt angezeigt werden soll."
+
+msgid "Choose a company."
+msgstr "Gesellschaft wählen."
+
+msgid "Document Field 1"
+msgstr "Belegfeld 1"
+
+msgid "Document Field 2"
+msgstr "Belegfeld 2"
+
+msgid "Balance"
+msgstr "Saldo"
+
+msgid "Balance carried forward"
+msgstr "Saldovortrag"
+
+msgid "Voucher"
+msgstr "Beleg"
+
+msgid "Voucher Type"
+msgstr "Belegart"
+
+msgid "Show document"
+msgstr "Beleg anzeigen"
+
+msgid "Close Document"
+msgstr "Beleg schließen"
+
+msgctxt "Document panel"
+msgid "Open"
+msgstr "Öffnen"
+
+msgctxt "Document panel"
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Document"
+msgstr "Beleg"
+
+msgid "Pruefliste Monatsabschluss"
+msgstr "Prüfliste Monatsabschluss"
+
+msgid "Month End Checklist"
+msgstr "Prüfliste Monatsabschluss"
+
+msgid "VAT Verification"
+msgstr "Umsatzsteuer-Verprobung"
+
+msgid "Balances on Clearing Accounts"
+msgstr "Salden auf Verrechnungs- und Interimskonten"
+
+msgid "Postings Without a Cost Center"
+msgstr "Buchungen ohne Kostenstelle"
+
+msgid "Suppliers With a Debit Balance"
+msgstr "Kreditoren mit Sollsaldo"
+
+msgid "Customers With a Credit Balance"
+msgstr "Debitoren mit Habensaldo"
+
+msgid "Postings to Disabled Accounts"
+msgstr "Buchungen auf gesperrten Konten"
+
+msgid "Vouchers Without a Document"
+msgstr "Belege ohne Anhang"
+
+msgid "Expected {0}, booked {1}. From: {2}"
+msgstr "Erwartet {0}, gebucht {1}. Aus: {2}"
+
+msgid "no accounts"
+msgstr "keine Konten"
+
+msgid "{0}: {1} finding(s)"
+msgstr "{0}: {1} Auffälligkeit(en)"
+
+msgid "Nothing to look at."
+msgstr "Nichts zu prüfen."
+
+msgid "This period has not been closed yet. The checklist is filed with the lockdown."
+msgstr "Dieser Zeitraum ist noch nicht festgeschrieben. Die Prüfliste wird zur Festschreibung abgelegt."
+
+msgid "Nothing to File Against"
+msgstr "Keine Festschreibung vorhanden"
+
+msgid "Check"
+msgstr "Prüfung"
+
+msgid "Findings"
+msgstr "Auffälligkeiten"
+
+msgid "Detail"
+msgstr "Detail"
+
+msgid "Only Checks With Findings"
+msgstr "Nur Prüfungen mit Auffälligkeiten"
+
+msgid "Clean"
+msgstr "In Ordnung"
+
+msgid "Attention"
+msgstr "Prüfen"
+
+msgid "File With The Lockdown"
+msgstr "Zur Festschreibung ablegen"
+
+msgid "Filed with the lockdown."
+msgstr "Zur Festschreibung abgelegt."
+
+msgid "GoBD Export"
+msgstr "GoBD-Export"
+
+msgid "Building the audit data package ..."
+msgstr "Prüfdatenpaket wird erstellt ..."
+
+msgid "Package Ready"
+msgstr "Paket erstellt"
+
+msgid "The package is attached to this company: {0}"
+msgstr "Das Paket hängt an dieser Gesellschaft: {0}"
+
+msgid "Download"
+msgstr "Herunterladen"
+
+msgid "Fiscal year {0}, {1} to {2}"
+msgstr "Wirtschaftsjahr {0}, {1} bis {2}"
+
+msgid "Document Range"
+msgstr "Belegkreis"
+
+msgid "Belegnummernkreise"
+msgstr "Belegnummernkreise"
+
+msgid "How this range is called, e.g. Ausgangsrechnungen 2026."
+msgstr "Wie dieser Belegkreis heisst, z. B. Ausgangsrechnungen 2026."
+
+msgid "A number belongs to a year. One dated outside it is either misfiled or backdated."
+msgstr "Eine Nummer gehört zu einem Jahr. Ein Beleg mit Datum ausserhalb ist entweder falsch abgelegt oder rückdatiert."
+
+msgid "Where the numbers of this range come from."
+msgstr "Woher die Nummern dieses Belegkreises stammen."
+
+msgid "What every number of this range starts with, e.g. RE-2026-. Leave empty where the numbers carry none."
+msgstr "Womit jede Nummer dieses Belegkreises beginnt, z. B. RE-2026-. Leer lassen, wenn die Nummern keinen Vorsatz tragen."
+
+msgid "{0} is not a kind of document range."
+msgstr "{0} ist keine Art von Belegkreis."
+
+msgid "{0} already reads the same documents. Give both a prefix to tell them apart."
+msgstr "{0} liest bereits dieselben Belege. Beide brauchen einen Vorsatz, der sie unterscheidet."
+
+msgid "{0} already counts the numbers starting with {1}."
+msgstr "{0} zählt bereits die Nummern, die mit {1} beginnen."
+
+msgid "Ranges Overlap"
+msgstr "Belegkreise überschneiden sich"
+
+msgid "Choose a fiscal year."
+msgstr "Wirtschaftsjahr wählen."
+
+msgid "Finding"
+msgstr "Befund"
+
+msgid "Numbers"
+msgstr "Nummern"
+
+msgid "Count"
+msgstr "Anzahl"
+
+msgid "Document Type"
+msgstr "Belegart"
+
+msgid "Range"
+msgstr "Belegkreis"
+
+msgid "Gap"
+msgstr "Lücke"
+
+msgid "Duplicate"
+msgstr "Doppelt"
+
+msgid "Outside the period"
+msgstr "Ausserhalb des Zeitraums"
+
+msgid "Not countable"
+msgstr "Nicht zählbar"
+
+msgid "Nothing was written under this."
+msgstr "Darunter wurde nichts geschrieben."
+
+msgid "Used by {0} documents."
+msgstr "Von {0} Belegen benutzt."
+
+msgid "Dated {0}."
+msgstr "Datiert auf {0}."
+
+msgid "This number has no counting part, so it is not part of the sequence."
+msgstr "Diese Nummer hat keinen zählenden Teil und gehört damit nicht zur Nummernfolge."
+
+msgid "Gaps in the Document Numbering"
+msgstr "Lücken in der Belegnummerierung"
+
+msgid "{0}, {1}"
+msgstr "{0}, {1}"
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Amount"
+msgstr "Umsatz"
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Tax Key"
+msgstr "BU-Schlüssel"
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Cost Center"
+msgstr "Kost 1"
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Remark"
+msgstr "Buchungstext"
+
+msgid "Bookings before this date do not use this key."
+msgstr "Buchungen vor diesem Datum verwenden diesen Schlüssel nicht."
+
+msgid "Determines how the amount is read: input and output tax are taken out of the amount, reverse charge is added on top of it."
+msgstr "Bestimmt, wie der Umsatz gelesen wird: Vorsteuer und Umsatzsteuer werden aus dem Betrag herausgerechnet, Reverse Charge kommt oben darauf."
+
+msgid "Document number, e.g. the invoice number."
+msgstr "Belegnummer, z. B. die Rechnungsnummer."
+
+msgid "Everything posted on or before this date becomes unchangeable. Corrections are booked as a general reversal from here on."
+msgstr "Alles, was bis einschließlich zu diesem Datum gebucht ist, wird unveränderbar. Korrekturen werden ab dann als Generalumkehr gebucht."
+
+msgid "How this key is called in the booking line, e.g. Vorsteuer 19 %."
+msgstr "Wie dieser Schlüssel in der Buchungszeile heißt, z. B. Vorsteuer 19 %."
+
+msgid "Number of ledger entries covered by this lockdown, recorded at the time of locking."
+msgstr "Anzahl der Buchungszeilen, die diese Festschreibung abdeckt, festgehalten im Moment des Festschreibens."
+
+msgid "Reverse charge only: the input tax account that offsets the tax owed. Without it the reversal would not balance."
+msgstr "Nur bei Reverse Charge: das Vorsteuerkonto, das die geschuldete Steuer ausgleicht. Ohne dieses Konto ginge die Buchung nicht auf."
+
+msgid "Sum of all entry amounts. Each entry is a complete double entry, so this is both the debit and the credit total of the batch."
+msgstr "Summe aller Umsätze. Jede Zeile ist ein vollständiger Buchungssatz, deshalb ist das zugleich die Soll- und die Habensumme des Stapels."
+
+msgid "The DATEV tax key (BU-Schlüssel) this entry is exported with. Reconcile it with the chart of accounts of your tax advisor before the first export."
+msgstr "Der BU-Schlüssel, mit dem diese Buchung nach DATEV exportiert wird. Vor dem ersten Export mit dem Kontenrahmen der Kanzlei abstimmen."
+
+msgid "The amount as it stands on the document. With a tax key for input or output tax this is the gross amount and the tax is taken out of it; under reverse charge it is the net amount and the tax is added on top. Always positive: a correction is booked as a general reversal, never as a negative amount."
+msgstr "Der Umsatz, wie er auf dem Beleg steht. Bei einem Schlüssel für Vorsteuer oder Umsatzsteuer ist das der Bruttobetrag, aus dem die Steuer herausgerechnet wird; bei Reverse Charge ist es der Nettobetrag, auf den die Steuer aufgeschlagen wird. Immer positiv: eine Korrektur wird als Generalumkehr gebucht, nie als negativer Betrag."
+
+msgid "The kind of documents collected in this batch, e.g. all bank statements of a month."
+msgstr "Die Art der Belege, die in diesem Stapel gesammelt werden, z. B. alle Kontoauszüge eines Monats."
+
+msgid "The tax account per company. Rate and effect are the same everywhere; only the account depends on the chart of accounts."
+msgstr "Das Steuerkonto je Gesellschaft. Satz und Wirkung sind überall gleich; nur das Konto hängt vom Kontenrahmen ab."
+
+msgid "What reaches the revenue or expense account. The gross amount is the amount as entered: the tax either sits inside it or, under reverse charge, does not move between the two accounts at all."
+msgstr "Was auf dem Erlös- oder Aufwandskonto ankommt. Der Bruttobetrag ist der erfasste Umsatz: die Steuer steckt entweder darin oder bewegt sich, bei Reverse Charge, gar nicht erst zwischen den beiden Konten."
+
+msgid "Where the tax of this key is booked in this company."
+msgstr "Wohin die Steuer dieses Schlüssels in dieser Gesellschaft gebucht wird."
+
+msgid "Which side the amount applies to the account. The contra account receives the opposite side."
+msgstr "Auf welcher Seite der Umsatz das Konto trifft. Das Gegenkonto erhält die andere Seite."
+
+msgid "From Row"
+msgstr "Von Zeile"
+
+msgid "To Row"
+msgstr "Bis Zeile"
+
+msgid "Kind"
+msgstr "Art"
+
+msgid "Posted By"
+msgstr "Gebucht von"
+
+msgid "Posting"
+msgstr "Buchung"
+
+msgid "Sign"
+msgstr "Vorzeichen"
+
+msgid "Trip"
+msgstr "Reise"
+
+msgid "Account Ranges"
+msgstr "Kontenbereiche"
+
+msgid "Posted On"
+msgstr "Gebucht am"
+
+msgid "Target Amount"
+msgstr "Sollwert"
+
+msgid "Difference"
+msgstr "Differenz"
+
+msgid "What this batch is supposed to add up to, e.g. the total of a bank statement. Leave empty where there is nothing to reconcile against."
+msgstr "Worauf dieser Stapel hinauslaufen soll, z. B. die Summe eines Kontoauszugs. Leer lassen, wo es nichts abzustimmen gibt."
+
+msgid "Target amount minus total amount. Zero means the batch is reconciled."
+msgstr "Sollwert minus Summe der Umsätze. Null heißt: der Stapel stimmt."
+
+msgctxt "Entry number column"
+msgid "No."
+msgstr "Nr."
+
+msgid "Personal Account"
+msgstr "Personenkonto (Sachkonto)"
+
+msgid "Open Item"
+msgstr "Offener Posten"
+
+msgid "Open Item Type"
+msgstr "Art des offenen Postens"
+
+msgid "Whichever of the two accounts is a receivable or payable account. Derived, because choosing the account already said it."
+msgstr "Welches der beiden Konten ein Debitoren- oder Kreditorenkonto ist. Abgeleitet, denn mit der Kontowahl ist es bereits gesagt."
+
+msgid "Follows from the personal account: a receivable is a customer, a payable a supplier."
+msgstr "Folgt aus dem Personenkonto: ein Debitorenkonto ist ein Kunde, ein Kreditorenkonto ein Lieferant."
+
+msgid "Who the booking is against. Required as soon as one side is a personal account."
+msgstr "Gegen wen gebucht wird. Pflicht, sobald eine Seite ein Personenkonto ist."
+
+msgid "The invoice this booking settles. Leave empty and the money lands on the account without closing anything."
+msgstr "Die Rechnung, die diese Buchung ausgleicht. Leer lassen, dann landet das Geld auf dem Konto, ohne etwas zu schließen."
+
+msgid "{0}: Only one side of a booking can be a personal account."
+msgstr "{0}: Nur eine Seite einer Buchung kann ein Personenkonto sein."
+
+msgid "Only one side of a booking can be a personal account."
+msgstr "Nur eine Seite einer Buchung kann ein Personenkonto sein."
+
+msgid "{0}: {1} is a personal account and needs a party."
+msgstr "{0}: {1} ist ein Personenkonto und braucht einen Geschäftspartner."
+
+msgid "{0}: Neither account is a personal account, so there is nobody to book against."
+msgstr "{0}: Keines der Konten ist ein Personenkonto, es gibt also niemanden, gegen den gebucht wird."
+
+msgid "{0}: An open item needs a personal account."
+msgstr "{0}: Ein offener Posten braucht ein Personenkonto."
+
+msgid "{0}: {1} {2} does not exist."
+msgstr "{0}: {1} {2} gibt es nicht."
+
+msgid "{0}: {1} belongs to another company."
+msgstr "{0}: {1} gehört zu einer anderen Gesellschaft."
+
+msgid "{0}: {1} is not posted."
+msgstr "{0}: {1} ist nicht gebucht."
+
+msgid "{0}: {1} is already settled."
+msgstr "{0}: {1} ist bereits ausgeglichen."
+
+msgid "{0}: {1} implies {2}, not {3}."
+msgstr "{0}: {1} bedeutet {2}, nicht {3}."
+
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Party"
+msgstr "Geschäftspartner"
+
+#. Column of the entry mask, where the trade uses its own word
+#: erpnext_germany/bookkeeping/page/fast_entry/fast_entry.js
+msgctxt "Entry mask column"
+msgid "Open Item"
+msgstr "OPOS"
+
+msgid "A personal account needs a party."
+msgstr "Ein Personenkonto braucht einen Geschäftspartner."
