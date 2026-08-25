@@ -6,6 +6,7 @@
 // is typing from saying it a second time, because Frappe checks a dynamic
 // link before any hook of ours could fill in its type.
 const PARTY_TYPES = { Receivable: "Customer", Payable: "Supplier" };
+const OPEN_ITEM_TYPES = { Customer: "Sales Invoice", Supplier: "Purchase Invoice" };
 
 frappe.ui.form.on("Posting Batch Entry", {
 	account: (frm, cdt, cdn) => set_party_type(cdt, cdn),
@@ -24,7 +25,16 @@ async function set_party_type(cdt, cdn) {
 		return;
 	}
 
+	// Both types have to stand next to their value before the document is
+	// saved: Frappe checks a dynamic link before any server hook of ours runs.
 	frappe.model.set_value(cdt, cdn, "party_type", party_type);
+	frappe.model.set_value(
+		cdt,
+		cdn,
+		"reference_type",
+		party_type ? OPEN_ITEM_TYPES[party_type] : null
+	);
+
 	if (!party_type) {
 		// Nobody left to book against, so nothing may keep pointing at one.
 		frappe.model.set_value(cdt, cdn, "party", null);
