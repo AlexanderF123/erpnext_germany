@@ -17,6 +17,8 @@ import frappe
 from frappe.query_builder.functions import Count, Max
 from frappe.utils import add_days, nowdate
 
+from erpnext_germany.bookkeeping.party import PARTY_TYPES
+
 USAGE_WINDOW_DAYS = 90
 
 
@@ -31,7 +33,7 @@ def get_accounts(company: str) -> list[dict]:
 	accounts = frappe.get_all(
 		"Account",
 		filters={"company": company, "is_group": 0, "disabled": 0},
-		fields=["name", "account_number", "account_name", "account_label", "tax_key"],
+		fields=["name", "account_number", "account_name", "account_label", "tax_key", "account_type"],
 	)
 
 	usage = get_usage(company)
@@ -44,6 +46,10 @@ def get_accounts(company: str) -> list[dict]:
 			# booking actually call the account.
 			"label": account.account_label or account.account_name,
 			"tax_key": account.tax_key,
+			# Whether choosing this account means naming a person, and which
+			# kind. The screen needs it to know what to offer next; the rule
+			# itself stays where every other party question is answered.
+			"party_type": PARTY_TYPES.get(account.account_type),
 			"uses": usage.get(account.name, {}).get("uses", 0),
 			"last_used": usage.get(account.name, {}).get("last_used"),
 		}

@@ -192,28 +192,89 @@ def party_field(party_type: str) -> str:
 
 @frappe.whitelist()
 def get_open_items(company: str, party_type: str, party: str) -> list[dict]:
-	"""This party's unsettled documents, oldest first.
+	"""This party's unsettled documents, oldest first."""
+	if not party:
+		return []
+
+	reference_type = OPEN_ITEM_TYPES.get(party_type)
+	if not reference_type:
+		return []
+
+	frappe.has_permission(reference_type, throw=True)
+	return open_items(company, party_type, party=party, limit=50)
+
+
+def open_items(company: str, party_type: str, party: str = "", limit: int | None = None) -> list[dict]:
+	"""Unsettled documents of one kind of party, oldest first.
 
 	Oldest first because that is the order they are settled in unless somebody
 	says otherwise, so the one being looked for is usually near the top.
 	"""
 	reference_type = OPEN_ITEM_TYPES.get(party_type)
-	if not reference_type or not party:
+	if not reference_type:
 		return []
 
-	frappe.has_permission(reference_type, throw=True)
+	filters = {"company": company, "docstatus": 1, "outstanding_amount": ("!=", 0)}
+	if party:
+		filters[party_field(party_type)] = party
 
 	rows = frappe.get_all(
 		reference_type,
-		filters={
-			"company": company,
-			party_field(party_type): party,
-			"docstatus": 1,
-			"outstanding_amount": ("!=", 0),
-		},
-		fields=["name", "posting_date", "due_date", "grand_total", "outstanding_amount"],
+		filters=filters,
+		fields=[
+			"name",
+			f"{party_field(party_type)} as party",
+			"posting_date",
+			"due_date",
+			"grand_total",
+			"outstanding_amount",
+		],
 		order_by="due_date asc, posting_date asc",
-		limit=50,
+		limit=limit,
 	)
 
 	return [dict(row) for row in rows]
+
+
+def all_open_items(company: str) -> list[dict]:
+	"""Everything of this company that is still unsettled, both sides.
+
+	Handed to the entry screen whole, for the reason the chart of accounts is:
+	the invoice a payment settles has to be findable between two keystrokes,
+	and a round trip per party would put a wait exactly where the typing is
+	fastest. Should a company ever carry more open items than a browser wants
+	to hold, this is the place to turn into a query.
+	"""
+	rows = []
+	for party_type in PARTY_TYPES.values():
+		# Somebody who may only book sales still gets a screen; they are simply
+		# offered nothing on the other side.
+		if not frappe.has_permission(OPEN_ITEM_TYPES[party_type]):
+			continue
+
+		for item in open_items(company, party_type):
+			item["party_type"] = party_type
+			rows.append(item)
+
+	return rows
+
+
+def get_parties() -> list[dict]:
+	"""Everybody who can stand on a line, both sides at once.
+
+	Handed to the entry screen whole, the way the chart of accounts is: a
+	person is resolved while the finger is still on the key, or the screen has
+	stopped being faster than the paper journal it replaces.
+	"""
+	rows = []
+	for party_type in PARTY_TYPES.values():
+		if not frappe.has_permission(party_type):
+			continue
+
+		# Customer.customer_name, Supplier.supplier_name -- what the person is
+		# called, as opposed to what the record is named.
+		field = f"{party_type.lower()}_name"
+		for row in frappe.get_all(party_type, filters={"disabled": 0}, fields=["name", field]):
+			rows.append({"name": row.name, "label": row.get(field) or row.name, "party_type": party_type})
+
+	return rows

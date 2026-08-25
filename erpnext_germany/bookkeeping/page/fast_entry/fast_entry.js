@@ -55,6 +55,13 @@ const FIELDS = [
 		width: 110,
 	},
 	{ fieldname: "account", label: __("Account"), kind: "account", width: 190 },
+	{ fieldname: "party", label: __("Party", null, COLUMN), kind: "party", width: 170 },
+	{
+		fieldname: "reference_name",
+		label: __("Open Item", null, COLUMN),
+		kind: "open_item",
+		width: 150,
+	},
 	{
 		fieldname: "cost_center",
 		label: __("Cost Center", null, COLUMN),
@@ -64,8 +71,12 @@ const FIELDS = [
 	{ fieldname: "remark", label: __("Remark", null, COLUMN), kind: "remark", width: 200 },
 ];
 
-const CARRIED_OVER = ["posting_date", "account", "against_account", "cost_center"];
+// The person carries over like the account does -- a stack of statements is
+// usually one tenant's. The open item never does: each payment settles a
+// different invoice, and a carried one would settle the wrong.
+const CARRIED_OVER = ["posting_date", "account", "against_account", "cost_center", "party"];
 const ACCOUNT_FIELDS = ["account", "against_account"];
+const PARTY_FIELDS = ["party", "reference_name"];
 const DRAFT_KEY = "erpnext_germany:fast_entry:line";
 const MAX_SUGGESTIONS = 8;
 
@@ -89,7 +100,6 @@ erpnext_germany.FastEntry = class FastEntry {
 		// posted while this screen is open, so the figure cannot go stale.
 		this.balances = {};
 
-		inject_styles();
 		this.make_batch_field();
 		this.make_body();
 		this.bind_shortcuts();
@@ -196,6 +206,9 @@ erpnext_germany.FastEntry = class FastEntry {
 	set_enabled(enabled) {
 		this.$line.toggleClass("fe-disabled", !enabled);
 		Object.values(this.inputs).forEach(($input) => $input.prop("disabled", !enabled));
+		if (enabled) {
+			this.sync_party();
+		}
 	}
 
 	// --- loading ---------------------------------------------------------
@@ -219,14 +232,14 @@ erpnext_germany.FastEntry = class FastEntry {
 			return;
 		}
 
-		this.index_accounts();
+		this.index_lookups();
 		this.render_rows();
 		this.apply_totals(this.context.totals);
 		this.set_enabled(true);
 		this.reset_line(this.restore_draft());
 	}
 
-	index_accounts() {
+	index_lookups() {
 		// Pre-lowercased once so that filtering on every keystroke stays a
 		// plain string compare over an array.
 		// The order comes from the server: accounts used a lot recently first,
@@ -249,6 +262,20 @@ erpnext_germany.FastEntry = class FastEntry {
 			display: `${key.key_number} ${key.name}`,
 			haystack: `${key.key_number} ${key.name}`.toLowerCase(),
 		}));
+
+		this.party_index = (this.context.parties || []).map((party) => ({
+			...party,
+			display: party.label,
+			haystack: `${party.name} ${party.label}`.toLowerCase(),
+		}));
+
+		this.open_item_index = (this.context.open_items || []).map((item) => ({
+			...item,
+			display: `${item.name}  ${format_number(item.outstanding_amount, null, 2)}`,
+			// The due date is what tells two invoices of the same tenant apart.
+			hint: item.due_date ? frappe.datetime.str_to_user(item.due_date) : "",
+			haystack: item.name.toLowerCase(),
+		}));
 	}
 
 	// --- the line --------------------------------------------------------
@@ -265,6 +292,12 @@ erpnext_germany.FastEntry = class FastEntry {
 	on_input(field, $input) {
 		if (field.kind === "account") {
 			this.refresh_balances();
+			this.sync_party();
+		}
+
+		if (field.kind === "party") {
+			// Somebody else's invoice is never the one being settled.
+			this.inputs.reference_name.val("");
 		}
 
 		if (field.kind === "direction") {
@@ -285,11 +318,61 @@ erpnext_germany.FastEntry = class FastEntry {
 	}
 
 	index_for(kind) {
+		// The last two depend on what the rest of the line says, so they are
+		// worked out per call rather than built once.
 		return {
 			account: this.account_index,
 			cost_center: this.cost_center_index,
 			tax_key: this.tax_key_index,
+			party: this.parties_for_line(),
+			open_item: this.open_items_for_line(),
 		}[kind];
+	}
+
+	// --- the person on the line ------------------------------------------
+
+	line_party_type() {
+		// Which of the two accounts is a personal one decides whether this line
+		// names a person at all, and which kind. Two personal accounts would be
+		// two bookings; the server refuses that, so nothing is offered here.
+		const types = ACCOUNT_FIELDS.map((fieldname) => {
+			const name = resolve(this.account_index, this.inputs[fieldname].val() || "");
+			const account = this.account_index.find((entry) => entry.name === name);
+			return account ? account.party_type : null;
+		}).filter(Boolean);
+
+		return types.length === 1 ? types[0] : null;
+	}
+
+	parties_for_line() {
+		const party_type = this.line_party_type();
+		if (!party_type) {
+			return [];
+		}
+		return this.party_index.filter((party) => party.party_type === party_type);
+	}
+
+	open_items_for_line() {
+		const party = resolve(this.parties_for_line(), this.inputs.party.val() || "");
+		if (!party) {
+			return [];
+		}
+		return this.open_item_index.filter((item) => item.party === party);
+	}
+
+	sync_party() {
+		// A line touching no personal account has nobody to book against, so
+		// the two columns are shut rather than left to be filled in vain --
+		// the entry mask has always skipped what it cannot ask for.
+		const wanted = Boolean(this.line_party_type());
+		for (const fieldname of PARTY_FIELDS) {
+			const $input = this.inputs[fieldname];
+			if (!wanted) {
+				$input.val("");
+			}
+			$input.prop("disabled", !wanted);
+			$input.closest(".fe-cell").toggleClass("fe-shut", !wanted);
+		}
 	}
 
 	on_keydown(field, $input, event) {
@@ -396,7 +479,11 @@ erpnext_germany.FastEntry = class FastEntry {
 
 	focus_next(fieldname) {
 		const position = FIELDS.findIndex((field) => field.fieldname === fieldname);
-		const next = FIELDS[position + 1];
+		// A column that does not apply to this line is stepped over rather
+		// than stopped at.
+		const next = FIELDS.slice(position + 1).find(
+			(field) => !this.inputs[field.fieldname].prop("disabled")
+		);
 		if (next) {
 			this.inputs[next.fieldname].focus().select();
 		}
@@ -423,14 +510,11 @@ erpnext_germany.FastEntry = class FastEntry {
 				return normalise_direction(raw) || "";
 			case "date":
 				return parse_date(raw, this.context.batch.from_date);
-			case "account":
-				return resolve(this.account_index, raw);
-			case "cost_center":
-				return resolve(this.cost_center_index, raw);
-			case "tax_key":
-				return resolve(this.tax_key_index, raw);
-			default:
-				return raw;
+			default: {
+				// Everything else is either picked from a list or plain text.
+				const index = this.index_for(field.kind);
+				return index ? resolve(index, raw) : raw;
+			}
 		}
 	}
 
@@ -445,6 +529,7 @@ erpnext_germany.FastEntry = class FastEntry {
 		this.write_line(values || {});
 		this.$preview.text("");
 		this.clear_draft();
+		this.sync_party();
 		// The accounts carry over, so their balances belong on screen before
 		// the first keystroke of the next document rather than after it.
 		this.refresh_balances();
@@ -508,6 +593,9 @@ erpnext_germany.FastEntry = class FastEntry {
 		}
 		if (!values.posting_date) {
 			return __("Enter a posting date.");
+		}
+		if (this.line_party_type() && !values.party) {
+			return __("A personal account needs a party.");
 		}
 		return null;
 	}
@@ -837,6 +925,10 @@ function display_value(field, value, screen) {
 			return display_of(screen?.account_index, value);
 		case "cost_center":
 			return display_of(screen?.cost_center_index, value);
+		case "party":
+			return display_of(screen?.party_index, value);
+		case "open_item":
+			return display_of(screen?.open_item_index, value);
 		case "tax_key":
 			return display_of(screen?.tax_key_index, value);
 		default:
@@ -865,50 +957,4 @@ function derived_text(row) {
 	return frappe.utils.escape_html(
 		`${format_number(row.net_amount, null, 2)} / ${format_number(row.tax_amount, null, 2)}`
 	);
-}
-
-function inject_styles() {
-	// Carried in the page instead of a stylesheet so that the screen works in
-	// any install without an asset build step.
-	if (document.getElementById("fast-entry-styles")) {
-		return;
-	}
-
-	$(`<style id="fast-entry-styles">
-		.fast-entry { font-variant-numeric: tabular-nums; }
-		.fe-totals { display: flex; gap: 24px; padding: 8px 0 12px; flex-wrap: wrap; }
-		.fe-difference { font-weight: 600; }
-		.fe-number { width: 44px; text-align: right; padding-right: 8px;
-			color: var(--text-muted); flex: 0 0 44px; }
-		.fe-balances { display: flex; gap: 20px; padding: 4px 0 10px; flex-wrap: wrap;
-			min-height: 22px; font-size: var(--text-sm); color: var(--text-muted); }
-		.fe-balance label { margin: 0 6px 0 0; font-weight: 500; }
-		.fe-reconciled { color: var(--green-600); }
-		.fe-off { color: var(--red-600); }
-		.fe-total label { display: block; font-size: 11px; color: var(--text-muted); margin: 0; }
-		.fe-total { font-size: 15px; font-weight: 600; }
-		.fe-hint { font-size: 11px; color: var(--text-muted); padding-bottom: 8px; }
-		.fe-hint kbd { font-size: 10px; }
-		.fe-table { overflow-x: auto; border: 1px solid var(--border-color); border-radius: var(--border-radius); }
-		.fe-row { display: flex; align-items: stretch; border-bottom: 1px solid var(--border-color); }
-		.fe-row:last-child { border-bottom: none; }
-		.fe-cell { padding: 4px 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; flex: none; }
-		.fe-right { text-align: right; }
-		.fe-head { background: var(--subtle-fg); font-weight: 600; position: sticky; top: 0; }
-		.fe-head-cell { color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
-		.fe-line { background: var(--bg-color); }
-		.fe-line .fe-cell { padding: 0; position: relative; }
-		.fe-input { width: 100%; border: none; border-right: 1px solid var(--border-color); padding: 6px 8px; font-size: 13px; background: transparent; }
-		.fe-input:focus { outline: 2px solid var(--primary); outline-offset: -2px; }
-		.fe-input.fe-right { text-align: right; }
-		.fe-disabled { opacity: 0.5; }
-		.fe-derived { flex: 1 1 auto; min-width: 120px; color: var(--text-muted); text-align: right; }
-		.fe-pending { opacity: 0.55; }
-		.fe-failed { background: var(--red-50); color: var(--red-600); cursor: pointer; }
-		.fe-suggestions { position: absolute; z-index: 10; top: 100%; left: 0; min-width: 100%; background: var(--fg-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow-md); max-height: 240px; overflow-y: auto; }
-		.fe-suggestion { padding: 4px 8px; font-size: 12px; white-space: nowrap; cursor: pointer; display: flex; justify-content: space-between; gap: 16px; }
-		.fe-suggestion-hint { color: var(--text-muted); font-size: 11px; }
-		.fe-suggestion.fe-active .fe-suggestion-hint { color: inherit; opacity: 0.8; }
-		.fe-suggestion.fe-active { background: var(--primary); color: white; }
-	</style>`).appendTo(document.head);
 }

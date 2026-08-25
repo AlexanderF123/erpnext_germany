@@ -23,6 +23,7 @@ from frappe.utils import flt
 from erpnext_germany.bookkeeping.account_search import get_accounts
 from erpnext_germany.bookkeeping.doctype.posting_batch.posting_batch import OPEN
 from erpnext_germany.bookkeeping.ledger import LedgerScope, get_totals
+from erpnext_germany.bookkeeping.party import all_open_items, derive_party, get_parties
 
 ENTRY_FIELDS = (
 	"posting_date",
@@ -71,6 +72,8 @@ def get_context(batch: str) -> dict:
 		"tax_keys": get_tax_keys(),
 		"text_shortcuts": get_text_shortcuts(),
 		"cost_centers": get_cost_centers(doc.company),
+		"parties": get_parties(),
+		"open_items": all_open_items(doc.company),
 		"rows": [_row(entry) for entry in doc.entries],
 		"totals": _totals(doc),
 	}
@@ -198,11 +201,33 @@ def _clean(row: dict | str) -> dict:
 
 	Net, tax and the tax accounts are derived on save; letting the browser
 	send them would make the ledger depend on what a client believed.
+
+	A field the screen sent empty is kept empty rather than dropped, or a
+	correction could never take anything back off a line.
 	"""
 	if isinstance(row, str):
 		row = frappe.parse_json(row)
 
-	return {field: row.get(field) for field in ENTRY_FIELDS if row.get(field) not in (None, "")}
+	values = {field: (row[field] if row[field] != "" else None) for field in ENTRY_FIELDS if field in row}
+	return _with_types(values)
+
+
+def _with_types(values: dict) -> dict:
+	"""Fill in the types the dynamic links need before the document sees them.
+
+	The screen sends the person and the invoice, never their types -- those
+	follow from the accounts, and asking a browser to work that out would put
+	the rule in two places. They have to be here rather than in the document's
+	own validation because Frappe checks a dynamic link before it runs any
+	hook of ours.
+	"""
+	if not values.get("account") or not values.get("against_account"):
+		return values
+
+	derived = derive_party(values["account"], values["against_account"])
+	values["party_type"] = derived.party_type if values.get("party") else None
+	values["reference_type"] = derived.reference_type if values.get("reference_name") else None
+	return values
 
 
 def _row(entry) -> dict:
