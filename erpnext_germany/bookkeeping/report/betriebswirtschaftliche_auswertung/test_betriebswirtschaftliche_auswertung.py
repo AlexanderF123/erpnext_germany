@@ -11,7 +11,6 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 	posting_accounts,
 )
 from erpnext_germany.bookkeeping.ledger import LedgerScope, get_totals
-from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 from erpnext_germany.bookkeeping.report.betriebswirtschaftliche_auswertung import (
 	betriebswirtschaftliche_auswertung as report,
 )
@@ -134,15 +133,6 @@ class TestBetriebswirtschaftlicheAuswertung(FrappeTestCase):
 		self.loose = ensure_account(LOOSE_NUMBER, "BWA Test Ohne Zeile", "Expense")
 		self.bank = posting_accounts("Asset", 1)[0]
 		ensure_schema()
-
-		# frappe.db.delete on purpose: a lockdown cannot be removed through the
-		# document lifecycle by design, so test isolation has to go past it.
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
-
-	def tearDown(self):
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
 
 	# --- helpers ----------------------------------------------------------
 

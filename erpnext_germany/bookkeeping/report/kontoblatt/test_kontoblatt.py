@@ -11,7 +11,6 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 	posting_accounts,
 )
 from erpnext_germany.bookkeeping.ledger import LedgerScope, get_totals
-from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 from erpnext_germany.bookkeeping.report.kontoblatt import kontoblatt
 from erpnext_germany.bookkeeping.reversal import reverse_entry
 
@@ -59,18 +58,9 @@ def ensure_account(number: str, label: str, root_type: str) -> str:
 
 class TestKontoblatt(FrappeTestCase):
 	def setUp(self):
-		# frappe.db.delete on purpose: a lockdown cannot be removed through the
-		# document lifecycle by design, so test isolation has to go past it.
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
-
 		self.account = ensure_account(ACCOUNT_NUMBER, "Kontoblatt Test", "Expense")
 		self.bank = posting_accounts("Asset", 1)[0]
 		self.today = nowdate()
-
-	def tearDown(self):
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
 
 	# --- helpers ----------------------------------------------------------
 

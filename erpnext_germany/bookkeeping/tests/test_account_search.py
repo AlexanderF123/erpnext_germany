@@ -11,7 +11,6 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 	fiscal_year_for,
 	posting_accounts,
 )
-from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 
 test_dependencies = ["Company"]
 
@@ -25,9 +24,6 @@ def set_label(account: str, label: str | None):
 
 class TestAccountSearch(FrappeTestCase):
 	def setUp(self):
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
-
 		self.first, self.second = posting_accounts("Expense", 2)
 		self.asset = posting_accounts("Asset", 1)[0]
 		set_label(self.first, None)
@@ -36,8 +32,6 @@ class TestAccountSearch(FrappeTestCase):
 	def tearDown(self):
 		set_label(self.first, None)
 		set_label(self.second, None)
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
 
 	def book(self, account: str, times: int, on: str | None = None):
 		"""Put real ledger entries behind an account.

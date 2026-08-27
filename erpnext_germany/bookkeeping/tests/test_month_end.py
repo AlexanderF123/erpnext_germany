@@ -3,7 +3,7 @@
 
 import frappe
 from frappe.tests.utils import FrappeTestCase
-from frappe.utils import add_days, nowdate
+from frappe.utils import nowdate
 
 from erpnext_germany.bookkeeping import month_end
 from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import (
@@ -12,7 +12,6 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 	posting_accounts,
 )
 from erpnext_germany.bookkeeping.doctype.tax_key.test_tax_key import clear_tax_keys
-from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 
 test_dependencies = ["Company"]
 
@@ -65,10 +64,6 @@ def disable(account: str, disabled: int):
 
 class TestMonthEndChecks(FrappeTestCase):
 	def setUp(self):
-		# frappe.db.delete on purpose: a lockdown cannot be removed through the
-		# document lifecycle by design, so test isolation has to go past it.
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
 		clear_tax_keys()
 
 		self.expense = ensure_account("91100", "Monatsabschluss Aufwand", "Expense")
@@ -76,8 +71,6 @@ class TestMonthEndChecks(FrappeTestCase):
 		self.today = nowdate()
 
 	def tearDown(self):
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
 		clear_tax_keys()
 
 	# --- helpers ----------------------------------------------------------
@@ -251,38 +244,18 @@ class TestMonthEndChecks(FrappeTestCase):
 
 	# --- keeping the result -----------------------------------------------
 
-	def test_the_result_is_filed_with_the_lockdown_that_closes_the_period(self):
+	def test_the_result_is_filed_with_the_company(self):
 		"""What an auditor asks later is what the people who closed it saw."""
 		self.book(self.expense, 100.0)
-		lockdown = frappe.get_doc(
-			{"doctype": "Ledger Lockdown", "company": TEST_COMPANY, "locked_up_to": self.today}
-		).insert()
-		clear_lockdown_cache()
+
+		month_end.archive(TEST_COMPANY, self.today, self.today)
 
 		files = frappe.get_all(
 			"File",
-			filters={"attached_to_doctype": "Ledger Lockdown", "attached_to_name": lockdown.name},
+			filters={"attached_to_doctype": "Company", "attached_to_name": TEST_COMPANY},
 			pluck="file_name",
 		)
-		self.assertEqual(len(files), 1)
-		self.assertTrue(files[0].startswith("Pruefliste"))
-
-	def test_filing_by_hand_needs_a_lockdown_to_file_against(self):
-		with self.assertRaises(frappe.ValidationError):
-			month_end.archive(TEST_COMPANY, self.today, self.today)
-
-	def test_the_period_a_lockdown_closes_starts_after_the_previous_one(self):
-		"""So the checklist covers what is newly closed, not the whole year."""
-		first = add_days(self.today, -40)
-		frappe.get_doc(
-			{"doctype": "Ledger Lockdown", "company": TEST_COMPANY, "locked_up_to": first}
-		).insert()
-		clear_lockdown_cache()
-		second = frappe.get_doc(
-			{"doctype": "Ledger Lockdown", "company": TEST_COMPANY, "locked_up_to": self.today}
-		).insert()
-
-		self.assertEqual(str(month_end.period_start(second)), add_days(first, 1))
+		self.assertTrue([name for name in files if name.startswith("Pruefliste")])
 
 	def test_the_result_reads_as_a_page(self):
 		results = month_end.run_checks(TEST_COMPANY, self.today, self.today)

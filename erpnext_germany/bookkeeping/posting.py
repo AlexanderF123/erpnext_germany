@@ -4,8 +4,6 @@ Kept free of Frappe imports so the rules can be unit tested without a bench.
 Anything that touches the database belongs in the controllers.
 """
 
-from datetime import date
-
 DEBIT = "Debit"
 CREDIT = "Credit"
 
@@ -34,14 +32,3 @@ def flip(sides: tuple[float, float]) -> tuple[float, float]:
 	"""
 	debit, credit = sides
 	return credit, debit
-
-
-def is_locked(posting_date: date, locked_up_to: date | None) -> bool:
-	"""Return True if the date falls into a period that has been locked down.
-
-	The lockdown date itself is included: locking up to 31 March closes March.
-	"""
-	if not locked_up_to:
-		return False
-
-	return posting_date <= locked_up_to

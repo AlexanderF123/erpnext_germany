@@ -1645,9 +1645,6 @@ msgstr "Buchungsstapel"
 msgid "Posting Batch Entry"
 msgstr "Buchungssatz"
 
-msgid "Ledger Lockdown"
-msgstr "Festschreibung"
-
 msgid "Contra Account"
 msgstr "Gegenkonto"
 
@@ -1665,18 +1662,6 @@ msgstr "Belegkreis"
 
 msgid "Control Totals"
 msgstr "Kontrollsummen"
-
-msgid "Locked Up To"
-msgstr "Festgeschrieben bis"
-
-msgid "Locked On"
-msgstr "Festgeschrieben am"
-
-msgid "Locked By"
-msgstr "Festgeschrieben von"
-
-msgid "Ledger Entries"
-msgstr "Buchungssätze"
 
 msgid "This batch has been posted and cannot be changed."
 msgstr "Dieser Stapel ist gebucht und kann nicht mehr geändert werden."
@@ -1723,24 +1708,6 @@ msgstr "{0} Zeilen gebucht."
 msgid "Batch Posted"
 msgstr "Stapel gebucht"
 
-msgid "A lockdown cannot be changed. Create a new one to close a later period."
-msgstr "Eine Festschreibung kann nicht geändert werden. Für einen späteren Zeitraum eine neue anlegen."
-
-msgid "Lockdown Is Final"
-msgstr "Festschreibung ist endgültig"
-
-msgid "{0} is already locked up to {1}. A lockdown can only move forward."
-msgstr "{0} ist bereits bis {1} festgeschrieben. Eine Festschreibung kann nur vorwärts laufen."
-
-msgid "Period Already Locked"
-msgstr "Zeitraum bereits festgeschrieben"
-
-msgid "A lockdown cannot be deleted. It is the record that a period was closed."
-msgstr "Eine Festschreibung kann nicht gelöscht werden. Sie ist der Nachweis, dass ein Zeitraum geschlossen wurde."
-
-msgid "Period Is Locked"
-msgstr "Zeitraum ist festgeschrieben"
-
 msgid "This batch has been posted. Corrections are booked as a general reversal."
 msgstr "Dieser Stapel ist gebucht. Korrekturen werden als Generalumkehr gebucht."
 
@@ -1750,23 +1717,8 @@ msgstr "{0} Zeilen ins Hauptbuch buchen? Das lässt sich nicht rückgängig mach
 msgid "Posting entries…"
 msgstr "Zeilen werden gebucht …"
 
-msgid "Everything posted on or before this date becomes unchangeable. A lockdown cannot be undone."
-msgstr "Alles, was bis einschließlich zu diesem Datum gebucht ist, wird unveränderbar. Eine Festschreibung lässt sich nicht rückgängig machen."
-
-msgid "{0} is locked up to {1}."
-msgstr "{0} ist bis {1} festgeschrieben."
-
-msgid "Lock {0} up to {1}? This cannot be undone."
-msgstr "{0} bis {1} festschreiben? Das lässt sich nicht rückgängig machen."
-
 msgid "Post Batch"
 msgstr "Stapel verarbeiten"
-
-msgid "{0} is locked up to {1}. Nothing can be posted into a closed period."
-msgstr "{0} ist bis {1} festgeschrieben. In einen geschlossenen Zeitraum kann nicht gebucht werden."
-
-msgid "{0} is locked up to {1}. Documents in a closed period cannot be cancelled. Book a general reversal instead."
-msgstr "{0} ist bis {1} festgeschrieben. Belege in einem geschlossenen Zeitraum können nicht storniert werden. Stattdessen eine Generalumkehr buchen."
 
 msgid "Booking Entries"
 msgstr "Buchungszeilen"
@@ -2174,12 +2126,6 @@ msgstr "{0}: {1} Auffälligkeit(en)"
 msgid "Nothing to look at."
 msgstr "Nichts zu prüfen."
 
-msgid "This period has not been closed yet. The checklist is filed with the lockdown."
-msgstr "Dieser Zeitraum ist noch nicht festgeschrieben. Die Prüfliste wird zur Festschreibung abgelegt."
-
-msgid "Nothing to File Against"
-msgstr "Keine Festschreibung vorhanden"
-
 msgid "Check"
 msgstr "Prüfung"
 
@@ -2198,11 +2144,11 @@ msgstr "In Ordnung"
 msgid "Attention"
 msgstr "Prüfen"
 
-msgid "File With The Lockdown"
-msgstr "Zur Festschreibung ablegen"
+msgid "File With The Company"
+msgstr "Zur Firma ablegen"
 
-msgid "Filed with the lockdown."
-msgstr "Zur Festschreibung abgelegt."
+msgid "Filed with the company."
+msgstr "Zur Firma abgelegt."
 
 msgid "GoBD Export"
 msgstr "GoBD-Export"
@@ -2342,14 +2288,8 @@ msgstr "Bestimmt die Pauschbeträge. Wird aus dem Reiseziel abgeleitet, sonst gi
 msgid "Document number, e.g. the invoice number."
 msgstr "Belegnummer, z. B. die Rechnungsnummer."
 
-msgid "Everything posted on or before this date becomes unchangeable. Corrections are booked as a general reversal from here on."
-msgstr "Alles, was bis einschließlich zu diesem Datum gebucht ist, wird unveränderbar. Korrekturen werden ab dann als Generalumkehr gebucht."
-
 msgid "How this key is called in the booking line, e.g. Vorsteuer 19 %."
 msgstr "Wie dieser Schlüssel in der Buchungszeile heißt, z. B. Vorsteuer 19 %."
-
-msgid "Number of ledger entries covered by this lockdown, recorded at the time of locking."
-msgstr "Anzahl der Buchungszeilen, die diese Festschreibung abdeckt, festgehalten im Moment des Festschreibens."
 
 msgid "One way, in kilometers. Taken from the Business Trip Distance table if the route is known."
 msgstr "Einfache Strecke in Kilometern. Wird aus den hinterlegten Entfernungen übernommen, wenn die Strecke bekannt ist."

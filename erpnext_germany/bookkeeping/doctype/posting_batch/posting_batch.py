@@ -6,7 +6,6 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import flt, format_date, getdate, now_datetime
 
-from erpnext_germany.bookkeeping.lockdown import ensure_can_post
 from erpnext_germany.bookkeeping.party import apply_party, validate_party
 from erpnext_germany.bookkeeping.posting import flip, split_amount
 from erpnext_germany.bookkeeping.tax_derivation import derive_tax
@@ -237,9 +236,6 @@ class PostingBatch(Document):
 
 		if not self.entries:
 			frappe.throw(_("There is nothing to post."))
-
-		for entry in self.entries:
-			ensure_can_post(self.company, entry.posting_date)
 
 		for entry in self.entries:
 			entry.journal_entry = self.create_journal_entry(entry).name

@@ -8,11 +8,9 @@ from frappe.utils import add_days, nowdate
 from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import (
 	TEST_COMPANY,
 	fiscal_year_for,
-	lock,
 	posting_accounts,
 )
 from erpnext_germany.bookkeeping.ledger import LedgerScope, get_totals
-from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 from erpnext_germany.bookkeeping.reversal import REVERSAL_REMARK, reverse_entry
 
 test_dependencies = ["Company"]
@@ -22,18 +20,9 @@ REASON = "Betrag falsch erfasst"
 
 class TestReversal(FrappeTestCase):
 	def setUp(self):
-		# frappe.db.delete on purpose: a lockdown cannot be removed through the
-		# document lifecycle by design, so test isolation has to go past it.
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
-
 		self.expense, self.other_expense = posting_accounts("Expense", 2)
 		self.asset = posting_accounts("Asset", 1)[0]
 		self.day = nowdate()
-
-	def tearDown(self):
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
 
 	# --- helpers ----------------------------------------------------------
 
@@ -149,13 +138,6 @@ class TestReversal(FrappeTestCase):
 
 		with self.assertRaises(frappe.ValidationError):
 			reverse_entry(reversal_name, REASON)
-
-	def test_a_reversal_cannot_be_posted_into_a_closed_period(self):
-		original_name = self.book(100.0, on=add_days(nowdate(), -40))
-		lock(locked_up_to=nowdate())
-
-		with self.assertRaises(frappe.ValidationError):
-			reverse_entry(original_name, REASON)
 
 	def test_a_reversal_without_a_reason_is_refused_on_the_document(self):
 		"""Not only through the button: the rule lives on the document."""

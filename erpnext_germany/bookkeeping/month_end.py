@@ -428,95 +428,26 @@ def rendered_finding(finding: Finding) -> str:
 
 @frappe.whitelist()
 def archive(company: str, from_date: str, to_date: str) -> str:
-	"""File the result with the lockdown that closes this period.
+	"""File the result with the company.
 
-	Kept with the lockdown rather than as a loose file, because the question
-	an auditor asks later is not "was there a checklist" but "what did the
-	people who closed this month see when they closed it".
+	Filed rather than left on screen, because the question an auditor asks
+	later is not "was there a checklist" but "what did the people who closed
+	this month see when they closed it".
 	"""
-	lockdown = lockdown_for(company, to_date)
-	if not lockdown:
-		frappe.throw(
-			_("This period has not been closed yet. The checklist is filed with the lockdown."),
-			title=_("Nothing to File Against"),
-		)
-
-	return attach(lockdown, company, frappe.utils.getdate(from_date), frappe.utils.getdate(to_date))
+	return attach(company, frappe.utils.getdate(from_date), frappe.utils.getdate(to_date))
 
 
-def attach(lockdown: str, company: str, from_date: date, to_date: date) -> str:
+def attach(company: str, from_date: date, to_date: date) -> str:
 	results = run_checks(company, from_date, to_date)
 	file = frappe.get_doc(
 		{
 			"doctype": "File",
 			"file_name": f"Pruefliste {company} {frappe.utils.format_date(to_date)}.html",
-			"attached_to_doctype": "Ledger Lockdown",
-			"attached_to_name": lockdown,
+			"attached_to_doctype": "Company",
+			"attached_to_name": company,
 			"content": render(company, from_date, to_date, results),
 			"is_private": 1,
 		}
 	).insert()
 
 	return file.name
-
-
-def lockdown_for(company: str, to_date) -> str | None:
-	"""The lockdown that closes a period ending on this date, if there is one."""
-	rows = frappe.get_all(
-		"Ledger Lockdown",
-		filters={"company": company, "locked_up_to": (">=", to_date)},
-		pluck="name",
-		order_by="locked_up_to asc",
-		limit=1,
-	)
-	return rows[0] if rows else None
-
-
-def archive_on_lockdown(doc, method=None):
-	"""File the checklist with a lockdown as it is created.
-
-	Automatic rather than a button somebody has to remember: the evidence is
-	worth having exactly at the moment the period stops being changeable, and
-	a step that has to be remembered is one that gets skipped in a busy month.
-
-	A failure here must not stop the lockdown. Closing a period is the point;
-	the checklist is the record of it.
-	"""
-	try:
-		attach(doc.name, doc.company, period_start(doc), frappe.utils.getdate(doc.locked_up_to))
-	except Exception:
-		frappe.log_error(
-			title="Month end checklist could not be filed",
-			message=frappe.get_traceback(with_context=True),
-		)
-
-
-def period_start(lockdown) -> date:
-	"""The first day this lockdown closes.
-
-	The day after the previous one, so the checklist covers exactly what is
-	newly closed rather than everything since the books began.
-	"""
-	previous = frappe.get_all(
-		"Ledger Lockdown",
-		filters={
-			"company": lockdown.company,
-			"locked_up_to": ("<", lockdown.locked_up_to),
-			"name": ("!=", lockdown.name),
-		},
-		pluck="locked_up_to",
-		order_by="locked_up_to desc",
-		limit=1,
-	)
-	if previous:
-		return frappe.utils.add_days(previous[0], 1)
-
-	year_start = frappe.db.get_value(
-		"Fiscal Year",
-		{
-			"year_start_date": ("<=", lockdown.locked_up_to),
-			"year_end_date": (">=", lockdown.locked_up_to),
-		},
-		"year_start_date",
-	)
-	return frappe.utils.getdate(year_start) if year_start else frappe.utils.getdate(lockdown.locked_up_to)

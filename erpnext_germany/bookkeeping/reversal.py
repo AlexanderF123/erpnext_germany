@@ -27,8 +27,6 @@ from frappe import _
 from frappe.query_builder import Case
 from frappe.query_builder.functions import Sum
 
-from erpnext_germany.bookkeeping.lockdown import ensure_can_post
-
 REVERSAL_REMARK = "Generalumkehr"
 
 
@@ -50,7 +48,6 @@ def reverse_entry(journal_entry: str, reason: str, posting_date: str | None = No
 	_validate_can_reverse(original)
 
 	posting_date = posting_date or frappe.utils.nowdate()
-	ensure_can_post(original.company, posting_date)
 
 	reversal = _build_reversal(original, reason, posting_date)
 	reversal.insert()
