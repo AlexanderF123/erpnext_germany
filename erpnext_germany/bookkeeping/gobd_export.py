@@ -7,11 +7,9 @@ Every table declared here is written twice: once as data and once into the
 index that describes it. Both come from the same declaration, so the package
 cannot describe itself wrongly.
 
-Two things a Betriebspruefer looks for first are answered per booking rather
-than as a separate document: who entered it, and when it became unchangeable.
-The first is the document's own author. The second is derived from the
-lockdown covering the posting date -- which is the honest answer, because
-that is the moment the entry actually stopped being changeable.
+Who entered a booking is answered per booking rather than as a separate
+document, because that is one of the first things a Betriebspruefer looks
+for and the document already knows it.
 """
 
 import io
@@ -67,8 +65,6 @@ def get_tables() -> list[Table]:
 				Column("cost_center", "Kostenstelle"),
 				Column("entered_by", "Erfasser"),
 				Column("entered_on", "Erfassungsdatum", DATE),
-				Column("locked_on", "Festschreibedatum", DATE),
-				Column("locked_by", "Festgeschrieben von"),
 				Column("reversal_of", "Generalumkehr zu"),
 			),
 		),
@@ -127,16 +123,6 @@ def get_tables() -> list[Table]:
 				Column("voucher_no", "Belegnummer"),
 				Column("file_name", "Dateiname"),
 				Column("file_id", "Belegkennung"),
-			),
-		),
-		Table(
-			"festschreibungen",
-			"Festschreibungsprotokoll",
-			(
-				Column("lockdown", "Festschreibung"),
-				Column("locked_up_to", "Festgeschrieben bis", DATE),
-				Column("locked_on", "Festgeschrieben am", DATE),
-				Column("locked_by", "Festgeschrieben von"),
 			),
 		),
 		Table(
@@ -214,7 +200,6 @@ def collect(company: str, from_date: date, to_date: date) -> dict[str, list[dict
 		"kreditoren": get_parties("Supplier"),
 		"anlagenverzeichnis": get_assets(company, to_date),
 		"belegverknuepfungen": get_attachments(vouchers),
-		"festschreibungen": get_lockdowns(company),
 		"aenderungshistorie": get_changes(vouchers),
 	}
 
@@ -223,7 +208,7 @@ def collect(company: str, from_date: date, to_date: date) -> dict[str, list[dict
 
 
 def get_journal(company: str, from_date: date, to_date: date) -> list[dict]:
-	"""Every ledger entry of the year, with who entered it and when it was locked.
+	"""Every ledger entry of the year, with who entered it and when.
 
 	Cancelled entries are in it. An audit package that quietly leaves out what
 	was taken back is worth less than none: the taking back is exactly what a
@@ -258,7 +243,6 @@ def get_journal(company: str, from_date: date, to_date: date) -> list[dict]:
 			"Account", filters={"company": company}, fields=["name", "account_number", "account_name"]
 		)
 	}
-	lockdowns = get_lockdown_dates(company)
 	documents = document_fields({(entry.voucher_type, entry.voucher_no) for entry in entries})
 	reversals = reversal_links(
 		[entry.voucher_no for entry in entries if entry.voucher_type == "Journal Entry"]
@@ -268,7 +252,6 @@ def get_journal(company: str, from_date: date, to_date: date) -> list[dict]:
 	rows = []
 	for entry in entries:
 		account = accounts.get(entry.account) or frappe._dict()
-		locked_on, locked_by = lockdown_for(lockdowns, entry.posting_date)
 		document = documents.get((entry.voucher_type, entry.voucher_no)) or frappe._dict()
 		# Read through the same rule the Kontoblatt reads it through, so an
 		# incoming invoice carries the supplier's number here as well.
@@ -291,8 +274,6 @@ def get_journal(company: str, from_date: date, to_date: date) -> list[dict]:
 				"cost_center": entry.cost_center,
 				"entered_by": entry.owner,
 				"entered_on": entry.creation,
-				"locked_on": locked_on,
-				"locked_by": locked_by,
 				"reversal_of": reversals.get(entry.voucher_no),
 			}
 		)
@@ -393,23 +374,6 @@ def get_attachments(vouchers: set[tuple[str, str]]) -> list[dict]:
 	]
 
 
-def get_lockdowns(company: str) -> list[dict]:
-	return [
-		{
-			"lockdown": row.name,
-			"locked_up_to": row.locked_up_to,
-			"locked_on": row.creation,
-			"locked_by": row.owner,
-		}
-		for row in frappe.get_all(
-			"Ledger Lockdown",
-			filters={"company": company},
-			fields=["name", "locked_up_to", "creation", "owner"],
-			order_by="locked_up_to asc",
-		)
-	]
-
-
 def get_changes(vouchers: set[tuple[str, str]]) -> list[dict]:
 	"""What was changed on a posted document after it was posted."""
 	if not vouchers:
@@ -438,34 +402,6 @@ def get_changes(vouchers: set[tuple[str, str]]) -> list[dict]:
 
 
 # --- what the journal is built from -----------------------------------------
-
-
-def get_lockdown_dates(company: str) -> list[tuple]:
-	"""The lockdowns of the company, oldest first, as (up to, when, who)."""
-	return [
-		(getdate(row.locked_up_to), row.creation, row.owner)
-		for row in frappe.get_all(
-			"Ledger Lockdown",
-			filters={"company": company},
-			fields=["locked_up_to", "creation", "owner"],
-			order_by="locked_up_to asc",
-		)
-	]
-
-
-def lockdown_for(lockdowns: list[tuple], posting_date) -> tuple:
-	"""When an entry stopped being changeable, and who made it so.
-
-	The first lockdown that reaches this posting date, because that is the one
-	that closed it. Entries in a period nobody has closed yet carry nothing --
-	which is the truth about them.
-	"""
-	posting_date = getdate(posting_date)
-	for locked_up_to, locked_on, locked_by in lockdowns:
-		if posting_date <= locked_up_to:
-			return (locked_on, locked_by)
-
-	return (None, None)
 
 
 def fiscal_year_range(fiscal_year: str) -> tuple[date, date]:

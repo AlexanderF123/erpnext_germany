@@ -10,7 +10,6 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 	fiscal_year_for,
 	posting_accounts,
 )
-from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 from erpnext_germany.bookkeeping.report.belegnummernkreise import belegnummernkreise as report
 from erpnext_germany.bookkeeping.tests.test_month_end import ensure_account
 
@@ -22,20 +21,11 @@ RANGE_NAME = "Belegkreis Test"
 
 class TestBelegnummernkreise(FrappeTestCase):
 	def setUp(self):
-		# frappe.db.delete on purpose: a lockdown cannot be removed through the
-		# document lifecycle by design, so test isolation has to go past it.
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
-
 		self.expense = ensure_account("91100", "Monatsabschluss Aufwand", "Expense")
 		self.bank = posting_accounts("Asset", 1)[0]
 		self.today = nowdate()
 		self.fiscal_year = fiscal_year_for(self.today)
 		self.range = self.ensure_range()
-
-	def tearDown(self):
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
 
 	# --- helpers ----------------------------------------------------------
 

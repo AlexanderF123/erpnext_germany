@@ -79,14 +79,14 @@ frappe.query_reports["Pruefliste Monatsabschluss"] = {
 	},
 
 	onload(report) {
-		report.page.add_inner_button(__("File With The Lockdown"), () => file_result(report));
+		report.page.add_inner_button(__("File With The Company"), () => file_result(report));
 	},
 };
 
 function file_result(report) {
-	/* Keep the result with the lockdown that closes this period. The question an
-	auditor asks later is not whether there was a checklist, but what the people
-	who closed the month saw when they closed it. */
+	/* Keep the result with the company. The question an auditor asks later is
+	not whether there was a checklist, but what the people who closed the month
+	saw when they closed it. */
 	const filters = frappe.query_report.get_filter_values();
 	const [from_date, to_date] = report_period(report);
 
@@ -96,7 +96,7 @@ function file_result(report) {
 		freeze: true,
 		callback: (response) => {
 			if (response.message) {
-				frappe.show_alert({ message: __("Filed with the lockdown."), indicator: "green" });
+				frappe.show_alert({ message: __("Filed with the company."), indicator: "green" });
 			}
 		},
 	});

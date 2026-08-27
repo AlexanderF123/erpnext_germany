@@ -10,7 +10,6 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 	fiscal_year_for,
 	posting_accounts,
 )
-from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 from erpnext_germany.bookkeeping.month_end import get_titles
 from erpnext_germany.bookkeeping.report.pruefliste_monatsabschluss import (
 	pruefliste_monatsabschluss as report,
@@ -22,18 +21,9 @@ test_dependencies = ["Company"]
 
 class TestPrueflisteMonatsabschluss(FrappeTestCase):
 	def setUp(self):
-		# frappe.db.delete on purpose: a lockdown cannot be removed through the
-		# document lifecycle by design, so test isolation has to go past it.
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
-
 		self.expense = ensure_account("91100", "Monatsabschluss Aufwand", "Expense")
 		self.bank = posting_accounts("Asset", 1)[0]
 		self.today = nowdate()
-
-	def tearDown(self):
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
 
 	def book(self, amount: float = 100.0) -> str:
 		batch = frappe.get_doc(

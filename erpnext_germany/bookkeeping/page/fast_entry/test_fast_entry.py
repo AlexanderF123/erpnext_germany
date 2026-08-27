@@ -25,7 +25,6 @@ from erpnext_germany.bookkeeping.fast_entry import (
 	remove_entry,
 	update_entry,
 )
-from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 from erpnext_germany.bookkeeping.tests.test_party import customer
 
 test_dependencies = ["Company"]
@@ -33,8 +32,6 @@ test_dependencies = ["Company"]
 
 class TestFastEntry(FrappeTestCase):
 	def setUp(self):
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
 		clear_tax_keys()
 
 		self.asset, self.tax_account = posting_accounts("Asset", 2)
@@ -42,8 +39,6 @@ class TestFastEntry(FrappeTestCase):
 		self.batch = create_batch(entries=[])
 
 	def tearDown(self):
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
 		clear_tax_keys()
 
 	def line(self, **kwargs) -> dict:
@@ -192,8 +187,6 @@ class TestAccountBalances(FrappeTestCase):
 	"""
 
 	def setUp(self):
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
 		clear_tax_keys()
 
 		self.asset, self.other = posting_accounts("Asset", 2)

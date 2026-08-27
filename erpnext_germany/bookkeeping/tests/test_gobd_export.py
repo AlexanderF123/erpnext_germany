@@ -6,7 +6,7 @@ import zipfile
 
 import frappe
 from frappe.tests.utils import FrappeTestCase
-from frappe.utils import getdate, nowdate
+from frappe.utils import nowdate
 
 from erpnext_germany.bookkeeping import gobd_export
 from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import (
@@ -14,8 +14,6 @@ from erpnext_germany.bookkeeping.doctype.posting_batch.test_posting_batch import
 	fiscal_year_for,
 	posting_accounts,
 )
-from erpnext_germany.bookkeeping.gobd import format_date
-from erpnext_germany.bookkeeping.lockdown import clear_lockdown_cache
 from erpnext_germany.bookkeeping.tests.test_month_end import ensure_account
 
 test_dependencies = ["Company"]
@@ -23,20 +21,11 @@ test_dependencies = ["Company"]
 
 class TestGoBDExport(FrappeTestCase):
 	def setUp(self):
-		# frappe.db.delete on purpose: a lockdown cannot be removed through the
-		# document lifecycle by design, so test isolation has to go past it.
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
-
 		self.expense = ensure_account("91100", "Monatsabschluss Aufwand", "Expense")
 		self.bank = posting_accounts("Asset", 1)[0]
 		self.today = nowdate()
 		self.fiscal_year = fiscal_year_for(self.today)
 		self.from_date, self.to_date = gobd_export.fiscal_year_range(self.fiscal_year)
-
-	def tearDown(self):
-		frappe.db.delete("Ledger Lockdown")
-		clear_lockdown_cache()
 
 	# --- helpers ----------------------------------------------------------
 
@@ -104,25 +93,6 @@ class TestGoBDExport(FrappeTestCase):
 
 		self.assertIn(frappe.session.user, row)
 
-	def test_a_booking_in_a_closed_period_says_when_it_was_closed(self):
-		"""Derived from the lockdown that covers it, which is when it actually
-		stopped being changeable."""
-		voucher = self.book()
-		frappe.get_doc(
-			{"doctype": "Ledger Lockdown", "company": TEST_COMPANY, "locked_up_to": self.today}
-		).insert()
-		clear_lockdown_cache()
-
-		row = next(row for row in self.journal_rows() if voucher in row)
-		self.assertIn(format_date(getdate(nowdate())), row)
-
-	def test_a_booking_in_an_open_period_says_nothing_about_being_closed(self):
-		"""Which is the truth about it."""
-		voucher = self.book()
-		row = next(row for row in self.journal_rows() if voucher in row)
-
-		self.assertTrue(row.endswith(';"";"";""'))
-
 	def test_the_document_of_a_booking_is_linked_by_a_stable_identifier(self):
 		voucher = self.book()
 		file = frappe.get_doc(
@@ -156,13 +126,6 @@ class TestGoBDExport(FrappeTestCase):
 		row = next(row for row in self.journal_rows() if voucher in row)
 
 		self.assertIn("RE 4711", row)
-
-	def test_the_lockdown_protocol_is_part_of_the_package(self):
-		lockdown = frappe.get_doc(
-			{"doctype": "Ledger Lockdown", "company": TEST_COMPANY, "locked_up_to": self.today}
-		).insert()
-
-		self.assertIn(lockdown.name, self.package()["festschreibungen.csv"])
 
 	def test_the_accounts_are_in_the_package_with_their_numbers(self):
 		"""Number and name in their own columns, so the journal's account
