@@ -8,6 +8,9 @@ from frappe.tests.utils import FrappeTestCase
 
 from erpnext_germany.erpnext_germany.doctype.business_trip.business_trip import get_cost_center
 
+# Customer and Project reach Payment Gateway (payments app), which CI does not install.
+test_ignore = ["Customer", "Project"]
+
 
 class TestBusinessTrip(FrappeTestCase):
 	def test_cost_center_of_the_trip_wins(self):
